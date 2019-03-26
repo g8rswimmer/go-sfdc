@@ -2,6 +2,7 @@ package goforce
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"net/url"
 	"strings"
@@ -26,7 +27,7 @@ type sessionPasswordResponse struct {
 	InstanceURL string `json:"instance_url"`
 	ID          string `json:"id"`
 	TokenType   string `json:"token_type"`
-	IssuedAd    string `json:"issued_at"`
+	IssuedAt    string `json:"issued_at"`
 	Signature   string `json:"signature"`
 }
 
@@ -82,6 +83,9 @@ func passwordSessionResponse(request *http.Request, client *http.Client) (*sessi
 		return nil, err
 	}
 
+	if response.StatusCode != 200 {
+		return nil, fmt.Errorf("session response error: %d %s", response.StatusCode, response.Status)
+	}
 	decoder := json.NewDecoder(response.Body)
 	defer response.Body.Close()
 
