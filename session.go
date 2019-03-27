@@ -1,3 +1,4 @@
+// Package goforce provides structures and interfaces to work with Salesforce's APIs.
 package goforce
 
 import (
@@ -10,6 +11,18 @@ import (
 
 type grantType string
 
+// SessionPasswordCredentials is a structure for the OAuth credentials
+// that are needed to authenticate with a Salesforce org.
+//
+// URL is the login URL used, either https://test.salesforce.com or https://login.salesforce.com
+//
+// Username is the Salesforce user name for logging into the org.
+//
+// Password is the Salesforce password for the user.
+//
+// ClientID is the client ID from the connected application.
+//
+// ClientSecret is the client secret from the connected application.
 type SessionPasswordCredentials struct {
 	URL          string
 	Username     string
@@ -18,6 +31,8 @@ type SessionPasswordCredentials struct {
 	ClientSecret string
 }
 
+// Session is the authentication response.  This is used to generate the
+// authroization header for the Salesforce API calls.
 type Session struct {
 	response *sessionPasswordResponse
 }
@@ -36,6 +51,8 @@ const (
 )
 const oauthService = "/services/oauth2/token"
 
+// NewPasswordSession is used to authenticate with Salesforce and open a session.  The user will need to
+// supply the proper credentails and a HTTP client.
 func NewPasswordSession(credentials SessionPasswordCredentials, client *http.Client) (*Session, error) {
 
 	request, err := passwordSessionRequest(credentials)
