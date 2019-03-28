@@ -5,7 +5,7 @@ import "io"
 // PasswordCredentails is a structure for the OAuth credentials
 // that are needed to authenticate with a Salesforce org.
 //
-// URL is the login URL used, either https://test.salesforce.com or https://login.salesforce.com
+// URL is the login URL used, examples would be https://test.salesforce.com or https://login.salesforce.com
 //
 // Username is the Salesforce user name for logging into the org.
 //
