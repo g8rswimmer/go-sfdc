@@ -5,21 +5,24 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
-	"net/url"
 	"strings"
 	"testing"
+
+	"github.com/g8rswimmer/goforce"
+
+	"github.com/g8rswimmer/goforce/credentials"
 )
 
 func TestPasswordSessionRequest(t *testing.T) {
 
 	scenarios := []struct {
 		desc  string
-		creds SessionPasswordCredentials
+		creds credentials.PasswordCredentails
 		err   error
 	}{
 		{
 			desc: "Passing HTTP request",
-			creds: SessionPasswordCredentials{
+			creds: credentials.PasswordCredentails{
 				URL:          "http://test.password.session",
 				Username:     "myusername",
 				Password:     "12345",
@@ -30,7 +33,7 @@ func TestPasswordSessionRequest(t *testing.T) {
 		},
 		{
 			desc: "Bad URL",
-			creds: SessionPasswordCredentials{
+			creds: credentials.PasswordCredentails{
 				URL:          "123://something.com",
 				Username:     "myusername",
 				Password:     "12345",
@@ -43,7 +46,8 @@ func TestPasswordSessionRequest(t *testing.T) {
 
 	for _, scenario := range scenarios {
 
-		request, err := passwordSessionRequest(scenario.creds)
+		passwordCreds := credentials.NewPasswordCredentials(scenario.creds)
+		request, err := passwordSessionRequest(passwordCreds)
 
 		if err != nil && scenario.err == nil {
 			t.Errorf("%s Error was not expected %s", scenario.desc, err.Error())
@@ -59,8 +63,8 @@ func TestPasswordSessionRequest(t *testing.T) {
 					t.Errorf("%s HTTP request method needs to be POST not %s", scenario.desc, request.Method)
 				}
 
-				if request.URL.String() != scenario.creds.URL+oauthService {
-					t.Errorf("%s URL not matching %s :: %s", scenario.desc, scenario.creds.URL+oauthService, request.URL.String())
+				if request.URL.String() != scenario.creds.URL+oauthEndppoint {
+					t.Errorf("%s URL not matching %s :: %s", scenario.desc, scenario.creds.URL+oauthEndppoint, request.URL.String())
 				}
 
 				buf, err := ioutil.ReadAll(request.Body)
@@ -68,15 +72,17 @@ func TestPasswordSessionRequest(t *testing.T) {
 				if err != nil {
 					t.Fatal(err.Error())
 				}
-				form := url.Values{}
-				form.Add("grant_type", string(passwordGrantType))
-				form.Add("username", scenario.creds.Username)
-				form.Add("password", scenario.creds.Password)
-				form.Add("client_id", scenario.creds.ClientID)
-				form.Add("client_secret", scenario.creds.ClientSecret)
+				reader, err := passwordCreds.Retrieve()
+				if err != nil {
+					t.Fatal(err.Error())
+				}
+				body, err := ioutil.ReadAll(reader)
+				if err != nil {
+					t.Fatal(err.Error())
+				}
 
-				if form.Encode() != string(buf) {
-					t.Errorf("%s Form data %s :: %s", scenario.desc, string(buf), form.Encode())
+				if string(body) != string(buf) {
+					t.Errorf("%s Form data %s :: %s", scenario.desc, string(buf), string(body))
 				}
 			}
 		}
@@ -214,37 +220,38 @@ func TestPasswordSessionResponse(t *testing.T) {
 func TestNewPasswordSession(t *testing.T) {
 	scenarios := []struct {
 		desc    string
-		creds   SessionPasswordCredentials
-		client  *http.Client
+		config  goforce.Configuration
 		session *Session
 		err     error
 	}{
 		{
 			desc: "Passing",
-			creds: SessionPasswordCredentials{
-				URL:          "http://test.password.session",
-				Username:     "myusername",
-				Password:     "12345",
-				ClientID:     "some client id",
-				ClientSecret: "shhhh its a secret",
-			},
-			client: mockHTTPClient(func(req *http.Request) *http.Response {
-				resp := `
-				{
-					"access_token": "token",
-					"instance_url": "https://some.salesforce.instance.com",
-					"id": "https://test.salesforce.com/id/123456789",
-					"token_type": "Bearer",
-					"issued_at": "1553568410028",
-					"signature": "hello"
-				}`
+			config: goforce.Configuration{
+				Credentials: credentials.NewPasswordCredentials(credentials.PasswordCredentails{
+					URL:          "http://test.password.session",
+					Username:     "myusername",
+					Password:     "12345",
+					ClientID:     "some client id",
+					ClientSecret: "shhhh its a secret",
+				}),
+				Client: mockHTTPClient(func(req *http.Request) *http.Response {
+					resp := `
+					{
+						"access_token": "token",
+						"instance_url": "https://some.salesforce.instance.com",
+						"id": "https://test.salesforce.com/id/123456789",
+						"token_type": "Bearer",
+						"issued_at": "1553568410028",
+						"signature": "hello"
+					}`
 
-				return &http.Response{
-					StatusCode: 200,
-					Body:       ioutil.NopCloser(strings.NewReader(resp)),
-					Header:     make(http.Header),
-				}
-			}),
+					return &http.Response{
+						StatusCode: 200,
+						Body:       ioutil.NopCloser(strings.NewReader(resp)),
+						Header:     make(http.Header),
+					}
+				}),
+			},
 			session: &Session{
 				response: &sessionPasswordResponse{
 					AccessToken: "token",
@@ -259,35 +266,39 @@ func TestNewPasswordSession(t *testing.T) {
 		},
 		{
 			desc: "Error Request",
-			creds: SessionPasswordCredentials{
-				URL:          "123://test.password.session",
-				Username:     "myusername",
-				Password:     "12345",
-				ClientID:     "some client id",
-				ClientSecret: "shhhh its a secret",
+			config: goforce.Configuration{
+				Credentials: credentials.NewPasswordCredentials(credentials.PasswordCredentails{
+					URL:          "123://test.password.session",
+					Username:     "myusername",
+					Password:     "12345",
+					ClientID:     "some client id",
+					ClientSecret: "shhhh its a secret",
+				}),
+				Client: nil,
 			},
-			client:  nil,
 			session: nil,
 			err:     errors.New("parse 123://test.password.session/services/oauth2/token: first path segment in URL cannot contain colon"),
 		},
 		{
 			desc: "Error Response",
-			creds: SessionPasswordCredentials{
-				URL:          "http://test.password.session",
-				Username:     "myusername",
-				Password:     "12345",
-				ClientID:     "some client id",
-				ClientSecret: "shhhh its a secret",
-			},
-			client: mockHTTPClient(func(req *http.Request) *http.Response {
+			config: goforce.Configuration{
+				Credentials: credentials.NewPasswordCredentials(credentials.PasswordCredentails{
+					URL:          "http://test.password.session",
+					Username:     "myusername",
+					Password:     "12345",
+					ClientID:     "some client id",
+					ClientSecret: "shhhh its a secret",
+				}),
+				Client: mockHTTPClient(func(req *http.Request) *http.Response {
 
-				return &http.Response{
-					StatusCode: http.StatusInternalServerError,
-					Status:     "Some status",
-					Body:       ioutil.NopCloser(strings.NewReader("")),
-					Header:     make(http.Header),
-				}
-			}),
+					return &http.Response{
+						StatusCode: http.StatusInternalServerError,
+						Status:     "Some status",
+						Body:       ioutil.NopCloser(strings.NewReader("")),
+						Header:     make(http.Header),
+					}
+				}),
+			},
 			session: nil,
 			err:     fmt.Errorf("session response error: %d %s", http.StatusInternalServerError, "Some status"),
 		},
@@ -295,7 +306,7 @@ func TestNewPasswordSession(t *testing.T) {
 
 	for _, scenario := range scenarios {
 
-		session, err := NewPasswordSession(scenario.creds, scenario.client)
+		session, err := NewPasswordSession(scenario.config)
 
 		if err != nil && scenario.err == nil {
 			t.Errorf("%s Error was not expected %s", scenario.desc, err.Error())

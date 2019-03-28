@@ -6,7 +6,8 @@ Before calling a `Salesforce` API, a session will need to be created.  This can 
 
 ### Example
 ```
-	creds := goforce.SessionPasswordCredentials{
+	
+    creds := credentials.PasswordCredentails{
 		URL:          "https://test.salesforce.com",
 		Username:     "user@somename.com",
 		Password:     "myfunpassword",
@@ -14,7 +15,12 @@ Before calling a `Salesforce` API, a session will need to be created.  This can 
 		ClientSecret: "Some other numbers",
 	}
 
-	session, err := goforce.NewPasswordSession(creds, http.DefaultClient)
+	config := goforce.Configuration{
+        Credentials: crendentials.NewPasswordCredentials(creds),
+        Client: myHttpClient,
+    }
+
+    session, err := session.NewPasswordSession(config)
 
 	if err != nil {
         // handle the session error...
