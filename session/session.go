@@ -26,7 +26,7 @@ type sessionPasswordResponse struct {
 	Signature   string `json:"signature"`
 }
 
-const oauthEndppoint = "/services/oauth2/token"
+const oauthEndpoint = "/services/oauth2/token"
 
 // NewPasswordSession is used to authenticate with Salesforce and open a session.  The user will need to
 // supply the proper credentails and a HTTP client.
@@ -52,7 +52,7 @@ func NewPasswordSession(config goforce.Configuration) (*Session, error) {
 
 func passwordSessionRequest(creds *credentials.Credentials) (*http.Request, error) {
 
-	oauthURL := creds.URL() + oauthEndppoint
+	oauthURL := creds.URL() + oauthEndpoint
 
 	body, err := creds.Retrieve()
 	if err != nil {
@@ -76,7 +76,7 @@ func passwordSessionResponse(request *http.Request, client *http.Client) (*sessi
 		return nil, err
 	}
 
-	if response.StatusCode != 200 {
+	if response.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("session response error: %d %s", response.StatusCode, response.Status)
 	}
 	decoder := json.NewDecoder(response.Body)

@@ -63,8 +63,8 @@ func TestPasswordSessionRequest(t *testing.T) {
 					t.Errorf("%s HTTP request method needs to be POST not %s", scenario.desc, request.Method)
 				}
 
-				if request.URL.String() != scenario.creds.URL+oauthEndppoint {
-					t.Errorf("%s URL not matching %s :: %s", scenario.desc, scenario.creds.URL+oauthEndppoint, request.URL.String())
+				if request.URL.String() != scenario.creds.URL+oauthEndpoint {
+					t.Errorf("%s URL not matching %s :: %s", scenario.desc, scenario.creds.URL+oauthEndpoint, request.URL.String())
 				}
 
 				buf, err := ioutil.ReadAll(request.Body)
