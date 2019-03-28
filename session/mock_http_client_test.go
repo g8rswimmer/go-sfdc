@@ -1,4 +1,4 @@
-package goforce
+package session
 
 import "net/http"
 

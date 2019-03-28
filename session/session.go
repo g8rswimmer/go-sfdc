@@ -1,5 +1,5 @@
-// Package goforce provides structures and interfaces to work with Salesforce's APIs.
-package goforce
+// Package session provides handles creation of a Salesforce session
+package session
 
 import (
 	"encoding/json"
