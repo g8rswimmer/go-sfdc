@@ -1,5 +1,13 @@
 package sobject
 
+import (
+	"encoding/json"
+	"fmt"
+	"net/http"
+
+	"github.com/g8rswimmer/goforce/session"
+)
+
 type DesribeValue struct {
 	ActionOverrides      []ActionOverride    `json:"actionOverrides"`
 	Activateable         bool                `json:"activateable"`
@@ -143,4 +151,65 @@ type RecordTypeURL struct {
 type SupportedScope struct {
 	Label string `json:"label"`
 	Name  string `json:"name"`
+}
+
+const describeEndpoint = "/describe"
+
+type describe struct {
+	session session.Formatter
+}
+
+func (d *describe) Describe(sobject string) (DesribeValue, error) {
+
+	request, err := d.request(sobject)
+
+	if err != nil {
+		return DesribeValue{}, err
+	}
+
+	value, err := d.response(request)
+
+	if err != nil {
+		return DesribeValue{}, err
+	}
+
+	return value, nil
+}
+
+func (d *describe) request(sobject string) (*http.Request, error) {
+	url := d.session.ServiceURL() + objectEndpoint + sobject + describeEndpoint
+
+	request, err := http.NewRequest(http.MethodGet, url, nil)
+
+	if err != nil {
+		return nil, err
+	}
+
+	request.Header.Add("Accept", "application/json")
+	d.session.AuthorizationHeader(request)
+	return request, nil
+
+}
+
+func (d *describe) response(request *http.Request) (DesribeValue, error) {
+	response, err := d.session.Client().Do(request)
+
+	if err != nil {
+		return DesribeValue{}, err
+	}
+
+	if response.StatusCode != http.StatusOK {
+		return DesribeValue{}, fmt.Errorf("metadata response err: %d %s", response.StatusCode, response.Status)
+	}
+
+	decoder := json.NewDecoder(response.Body)
+	defer response.Body.Close()
+
+	var value DesribeValue
+	err = decoder.Decode(&value)
+	if err != nil {
+		return DesribeValue{}, err
+	}
+
+	return value, nil
 }
