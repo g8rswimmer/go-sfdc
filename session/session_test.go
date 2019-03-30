@@ -5,11 +5,11 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"reflect"
 	"strings"
 	"testing"
 
 	"github.com/g8rswimmer/goforce"
-
 	"github.com/g8rswimmer/goforce/credentials"
 )
 
@@ -345,5 +345,125 @@ func TestNewPasswordSession(t *testing.T) {
 			}
 		}
 
+	}
+}
+
+func TestSession_ServiceURL(t *testing.T) {
+	type fields struct {
+		response *sessionPasswordResponse
+		config   goforce.Configuration
+	}
+	tests := []struct {
+		name   string
+		fields fields
+		want   string
+	}{
+		// TODO: Add test cases.
+		{
+			name: "Passing URL",
+			fields: fields{
+				response: &sessionPasswordResponse{
+					InstanceURL: "https://www.my.salesforce.instance",
+				},
+				config: goforce.Configuration{
+					Version: 43,
+				},
+			},
+			want: "https://www.my.salesforce.instance/servies/data/v43.0",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			session := &Session{
+				response: tt.fields.response,
+				config:   tt.fields.config,
+			}
+			if got := session.ServiceURL(); got != tt.want {
+				t.Errorf("Session.ServiceURL() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestSession_AuthorizationHeader(t *testing.T) {
+	type fields struct {
+		response *sessionPasswordResponse
+		config   goforce.Configuration
+	}
+	type args struct {
+		request *http.Request
+	}
+	tests := []struct {
+		name   string
+		fields fields
+		args   args
+		want   string
+	}{
+		// TODO: Add test cases.
+		{
+			name: "Authorization Test",
+			fields: fields{
+				response: &sessionPasswordResponse{
+					TokenType:   "Type",
+					AccessToken: "Access",
+				},
+				config: goforce.Configuration{},
+			},
+			args: args{
+				request: &http.Request{
+					Header: make(http.Header),
+				},
+			},
+			want: "Type Access",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			session := &Session{
+				response: tt.fields.response,
+				config:   tt.fields.config,
+			}
+			session.AuthorizationHeader(tt.args.request)
+
+			if got := tt.args.request.Header.Get("Authorization"); got != tt.want {
+				t.Errorf("Session.AuthorizationHeader() = %v, want %v", got, tt.want)
+			}
+
+		})
+	}
+}
+
+func TestSession_Client(t *testing.T) {
+	type fields struct {
+		response *sessionPasswordResponse
+		config   goforce.Configuration
+	}
+	tests := []struct {
+		name   string
+		fields fields
+		want   *http.Client
+	}{
+		// TODO: Add test cases.
+		{
+			name: "Session Client",
+			fields: fields{
+				response: &sessionPasswordResponse{},
+				config: goforce.Configuration{
+					Client: http.DefaultClient,
+				},
+			},
+			want: http.DefaultClient,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			session := &Session{
+				response: tt.fields.response,
+				config:   tt.fields.config,
+			}
+			if got := session.Client(); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("Session.Client() = %v, want %v", got, tt.want)
+			}
+		})
 	}
 }
