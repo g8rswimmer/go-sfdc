@@ -43,7 +43,7 @@ type DesribeValue struct {
 	Triggerable          bool                `json:"triggerable"`
 	Undeletable          bool                `json:"undeletable"`
 	Updateable           bool                `json:"updateable"`
-	URLs                 []ObjectURLs        `json:"urls"`
+	URLs                 ObjectURLs          `json:"urls"`
 }
 
 type ActionOverride struct {
