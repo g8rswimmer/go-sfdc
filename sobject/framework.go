@@ -60,6 +60,7 @@ type ObjectURLs struct {
 
 type SObjectAPI struct {
 	metadata *metadata
+	describe *describe
 }
 
 func NewSObjectAPI(session session.Formatter) *SObjectAPI {
@@ -67,11 +68,18 @@ func NewSObjectAPI(session session.Formatter) *SObjectAPI {
 		metadata: &metadata{
 			session: session,
 		},
+		describe: &describe{
+			session: session,
+		},
 	}
 }
 
 func (api *SObjectAPI) Metadata(sobject string) (MetadataValue, error) {
 	return api.metadata.Metadata(sobject)
+}
+
+func (api *SObjectAPI) Describe(sobject string) (DesribeValue, error) {
+	return api.describe.Describe(sobject)
 }
 
 const objectEndpoint = "/sobjects/"
