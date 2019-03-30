@@ -8,7 +8,9 @@ import (
 	"github.com/g8rswimmer/goforce/session"
 )
 
-type DesribeValue struct {
+// DescribeValue is a structure that is returned from the from the Salesforce
+// API SObject describe.
+type DescribeValue struct {
 	ActionOverrides      []ActionOverride    `json:"actionOverrides"`
 	Activateable         bool                `json:"activateable"`
 	ChildRelationships   []ChildRelationship `json:"childRelationships"`
@@ -46,6 +48,7 @@ type DesribeValue struct {
 	URLs                 ObjectURLs          `json:"urls"`
 }
 
+// ActionOverride describes the objects overrides.
 type ActionOverride struct {
 	FormFactor         string `json:"formFactor"`
 	IsAvailableInTouch bool   `json:"isAvailableInTouch"`
@@ -54,6 +57,7 @@ type ActionOverride struct {
 	URL                string `json:"url"`
 }
 
+// ChildRelationship describes the child relationship of the SObject.
 type ChildRelationship struct {
 	CascadeDelete       bool     `json:"cascadeDelete"`
 	ChildSObject        string   `json:"childSObject"`
@@ -65,6 +69,7 @@ type ChildRelationship struct {
 	RestrictedDelete    bool     `json:"restrictedDelete"`
 }
 
+// PickListValue describes the SObject's field picklist values.
 type PickListValue struct {
 	Active       bool   `json:"active"`
 	DefaultValue bool   `json:"defaultValue"`
@@ -73,6 +78,7 @@ type PickListValue struct {
 	Value        string `json:"value"`
 }
 
+// Field describes the SOBject's fields.
 type Field struct {
 	Aggregatable                 bool            `json:"aggregatable"`
 	AIPredictionField            bool            `json:"aiPredictionField"`
@@ -107,7 +113,7 @@ type Field struct {
 	Label                        string          `json:"label"`
 	Length                       int             `json:"length"`
 	Mask                         interface{}     `json:"mask"`
-	MakeType                     interface{}     `json:"maskType"`
+	MaskType                     interface{}     `json:"maskType"`
 	Name                         string          `json:"name"`
 	NameField                    bool            `json:"nameField"`
 	NamePointing                 bool            `json:"namePointing"`
@@ -117,7 +123,7 @@ type Field struct {
 	PolymorphicForeignKey        bool            `json:"polymorphicForeignKey"`
 	Precision                    int             `json:"precision"`
 	QueryByDistance              bool            `json:"queryByDistance"`
-	ReferenceTargetField         bool            `json:"referenceTargetField"`
+	ReferenceTargetField         string          `json:"referenceTargetField"`
 	ReferenceTo                  []string        `json:"referenceTo"`
 	RelationshipName             string          `json:"relationshipName"`
 	RelationshipOrder            interface{}     `json:"relationshipOrder"`
@@ -133,6 +139,7 @@ type Field struct {
 	WriteRequiredMasterRead      bool            `json:"writeRequiresMasterRead"`
 }
 
+// RecordTypeInfo describes the SObjects record types assocaited with it.
 type RecordTypeInfo struct {
 	Active                   bool          `json:"active"`
 	Available                bool          `json:"available"`
@@ -144,10 +151,12 @@ type RecordTypeInfo struct {
 	URLs                     RecordTypeURL `json:"urls"`
 }
 
+// RecordTypeURL contains the record type's URLs.
 type RecordTypeURL struct {
 	Layout string `json:"layout"`
 }
 
+// SupportedScope describes the supported scope.
 type SupportedScope struct {
 	Label string `json:"label"`
 	Name  string `json:"name"`
@@ -159,18 +168,18 @@ type describe struct {
 	session session.Formatter
 }
 
-func (d *describe) Describe(sobject string) (DesribeValue, error) {
+func (d *describe) Describe(sobject string) (DescribeValue, error) {
 
 	request, err := d.request(sobject)
 
 	if err != nil {
-		return DesribeValue{}, err
+		return DescribeValue{}, err
 	}
 
 	value, err := d.response(request)
 
 	if err != nil {
-		return DesribeValue{}, err
+		return DescribeValue{}, err
 	}
 
 	return value, nil
@@ -191,24 +200,24 @@ func (d *describe) request(sobject string) (*http.Request, error) {
 
 }
 
-func (d *describe) response(request *http.Request) (DesribeValue, error) {
+func (d *describe) response(request *http.Request) (DescribeValue, error) {
 	response, err := d.session.Client().Do(request)
 
 	if err != nil {
-		return DesribeValue{}, err
+		return DescribeValue{}, err
 	}
 
 	if response.StatusCode != http.StatusOK {
-		return DesribeValue{}, fmt.Errorf("metadata response err: %d %s", response.StatusCode, response.Status)
+		return DescribeValue{}, fmt.Errorf("metadata response err: %d %s", response.StatusCode, response.Status)
 	}
 
 	decoder := json.NewDecoder(response.Body)
 	defer response.Body.Close()
 
-	var value DesribeValue
+	var value DescribeValue
 	err = decoder.Decode(&value)
 	if err != nil {
-		return DesribeValue{}, err
+		return DescribeValue{}, err
 	}
 
 	return value, nil

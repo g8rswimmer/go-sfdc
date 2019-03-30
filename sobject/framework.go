@@ -33,7 +33,7 @@ import (
 // UpdatedRecords will return the updated records from a date range.
 type Framework interface {
 	Metadata(string) (MetadataValue, error)
-	Describe(string) (DesribeValue, error)
+	Describe(string) (DescribeValue, error)
 	Insert(*goforce.Record) (InsertValue, error)
 	Update(*goforce.Record) (UpdateValue, error)
 	Upsert(*goforce.Record) (UpdateValue, error)
@@ -47,24 +47,31 @@ type Framework interface {
 
 // ObjectURLs is the URL for the SObject metadata.
 type ObjectURLs struct {
-	CompactLayouts  string `json:"compactLayouts"`
-	RowTemplate     string `json:"rowTemplate"`
-	ApprovalLayouts string `json:"approvalLayouts"`
-	DefaultValues   string `json:"defaultValues"`
-	ListViews       string `json:"listviews"`
-	Describe        string `json:"describe"`
-	QuickActions    string `json:"quickActions"`
-	Layouts         string `json:"layouts"`
-	SObject         string `json:"sobject"`
+	CompactLayouts   string `json:"compactLayouts"`
+	RowTemplate      string `json:"rowTemplate"`
+	ApprovalLayouts  string `json:"approvalLayouts"`
+	DefaultValues    string `json:"defaultValues"`
+	ListViews        string `json:"listviews"`
+	Describe         string `json:"describe"`
+	QuickActions     string `json:"quickActions"`
+	Layouts          string `json:"layouts"`
+	SObject          string `json:"sobject"`
+	UIDetailTemplate string `json:"uiDetailTemplate"`
+	UIEditTemplate   string `json:"uiEditTemplate"`
+	UINewRecord      string `json:"uiNewRecord"`
 }
 
-type SObjectAPI struct {
+// SalesforceAPI is the structure for the Salesforce APIs for SObjects.
+type SalesforceAPI struct {
 	metadata *metadata
 	describe *describe
 }
 
-func NewSObjectAPI(session session.Formatter) *SObjectAPI {
-	return &SObjectAPI{
+// NewSalesforceAPI forms the Salesforce SObject API structure.  The
+// session formatter is required to form the proper URLs and authorization
+// header.
+func NewSalesforceAPI(session session.Formatter) *SalesforceAPI {
+	return &SalesforceAPI{
 		metadata: &metadata{
 			session: session,
 		},
@@ -74,11 +81,13 @@ func NewSObjectAPI(session session.Formatter) *SObjectAPI {
 	}
 }
 
-func (api *SObjectAPI) Metadata(sobject string) (MetadataValue, error) {
+// Metadata retrieves the SObject's metadata.
+func (api *SalesforceAPI) Metadata(sobject string) (MetadataValue, error) {
 	return api.metadata.Metadata(sobject)
 }
 
-func (api *SObjectAPI) Describe(sobject string) (DesribeValue, error) {
+// Describe retrieves the SObject's describe.
+func (api *SalesforceAPI) Describe(sobject string) (DescribeValue, error) {
 	return api.describe.Describe(sobject)
 }
 
