@@ -8,11 +8,13 @@ import (
 	"github.com/g8rswimmer/goforce/session"
 )
 
+// MetadataValue is the response from the SObject metadata API.
 type MetadataValue struct {
 	ObjectDescribe ObjectDescribe           `json:"objectDescribe"`
 	RecentItems    []map[string]interface{} `json:"recentItems"`
 }
 
+// ObjectDescribe is the SObject metadata describe.
 type ObjectDescribe struct {
 	Activatable         bool       `json:"activateable"`
 	Creatable           bool       `json:"createable"`
@@ -40,6 +42,7 @@ type ObjectDescribe struct {
 	URLs                ObjectURLs `json:"urls"`
 }
 
+// ObjectURLs is the URL for the SObject metadata.
 type ObjectURLs struct {
 	CompactLayouts  string `json:"compactLayouts"`
 	RowTemplate     string `json:"rowTemplate"`
