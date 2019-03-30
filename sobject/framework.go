@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/g8rswimmer/goforce"
+	"github.com/g8rswimmer/goforce/session"
 )
 
 // Framework is the Salesforce SObject API framework.
@@ -44,11 +45,36 @@ type Framework interface {
 	UpdatedRecords(string, time.Time, time.Time) ([]UpdateValue, error)
 }
 
-type MetadataValue struct {
+// ObjectURLs is the URL for the SObject metadata.
+type ObjectURLs struct {
+	CompactLayouts  string `json:"compactLayouts"`
+	RowTemplate     string `json:"rowTemplate"`
+	ApprovalLayouts string `json:"approvalLayouts"`
+	DefaultValues   string `json:"defaultValues"`
+	ListViews       string `json:"listviews"`
+	Describe        string `json:"describe"`
+	QuickActions    string `json:"quickActions"`
+	Layouts         string `json:"layouts"`
+	SObject         string `json:"sobject"`
 }
 
-type DesribeValue struct {
+type SObjectAPI struct {
+	metadata *metadata
 }
+
+func NewSObjectAPI(session session.Formatter) *SObjectAPI {
+	return &SObjectAPI{
+		metadata: &metadata{
+			session: session,
+		},
+	}
+}
+
+func (api *SObjectAPI) Metadata(sobject string) (MetadataValue, error) {
+	return api.metadata.Metadata(sobject)
+}
+
+const objectEndpoint = "/sobjects/"
 
 type InsertValue struct {
 }

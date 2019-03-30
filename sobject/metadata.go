@@ -42,19 +42,6 @@ type ObjectDescribe struct {
 	URLs                ObjectURLs `json:"urls"`
 }
 
-// ObjectURLs is the URL for the SObject metadata.
-type ObjectURLs struct {
-	CompactLayouts  string `json:"compactLayouts"`
-	RowTemplate     string `json:"rowTemplate"`
-	ApprovalLayouts string `json:"approvalLayouts"`
-	DefaultValues   string `json:"defaultValues"`
-	ListViews       string `json:"listviews"`
-	Describe        string `json:"describe"`
-	QuickActions    string `json:"quickActions"`
-	Layouts         string `json:"layouts"`
-	SObject         string `json:"sobject"`
-}
-
 type metadata struct {
 	session session.Formatter
 }
