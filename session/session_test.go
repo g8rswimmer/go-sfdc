@@ -358,7 +358,6 @@ func TestSession_ServiceURL(t *testing.T) {
 		fields fields
 		want   string
 	}{
-		// TODO: Add test cases.
 		{
 			name: "Passing URL",
 			fields: fields{
@@ -399,7 +398,6 @@ func TestSession_AuthorizationHeader(t *testing.T) {
 		args   args
 		want   string
 	}{
-		// TODO: Add test cases.
 		{
 			name: "Authorization Test",
 			fields: fields{
@@ -443,7 +441,6 @@ func TestSession_Client(t *testing.T) {
 		fields fields
 		want   *http.Client
 	}{
-		// TODO: Add test cases.
 		{
 			name: "Session Client",
 			fields: fields{
