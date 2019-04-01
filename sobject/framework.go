@@ -1,6 +1,7 @@
 package sobject
 
 import (
+	"errors"
 	"fmt"
 	"regexp"
 	"time"
@@ -85,8 +86,12 @@ func NewSalesforceAPI(session session.Formatter) *SalesforceAPI {
 
 // Metadata retrieves the SObject's metadata.
 func (a *SalesforceAPI) Metadata(sobject string) (MetadataValue, error) {
-	if a == nil || a.metadata == nil {
+	if a == nil {
 		panic("salesforce api metadata has nil values")
+	}
+
+	if a.metadata == nil {
+		return MetadataValue{}, errors.New("salesforce api is not initialized properly")
 	}
 
 	matching, err := regexp.MatchString(`\w`, sobject)
@@ -103,8 +108,12 @@ func (a *SalesforceAPI) Metadata(sobject string) (MetadataValue, error) {
 
 // Describe retrieves the SObject's describe.
 func (a *SalesforceAPI) Describe(sobject string) (DescribeValue, error) {
-	if a == nil || a.describe == nil {
+	if a == nil {
 		panic("salesforce api metadata has nil values")
+	}
+
+	if a.describe == nil {
+		return DescribeValue{}, errors.New("salesforce api is not initialized properly")
 	}
 
 	matching, err := regexp.MatchString(`\w`, sobject)

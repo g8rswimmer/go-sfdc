@@ -38,7 +38,6 @@ func Test_metadata_Metadata(t *testing.T) {
 		want    MetadataValue
 		wantErr bool
 	}{
-		// TODO: Add test cases.
 		{
 			name: "Request Error",
 			fields: fields{

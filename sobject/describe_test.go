@@ -24,7 +24,6 @@ func Test_describe_Describe(t *testing.T) {
 		want    DescribeValue
 		wantErr bool
 	}{
-		// TODO: Add test cases.
 		{
 			name: "Request Error",
 			fields: fields{
