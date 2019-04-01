@@ -12,7 +12,7 @@ import (
 //
 // Client is the HTTP client that will be used.
 //
-// Version is the Salesforce version for the APIs
+// Version is the Salesforce version for the APIs.
 type Configuration struct {
 	Credentials *credentials.Credentials
 	Client      *http.Client

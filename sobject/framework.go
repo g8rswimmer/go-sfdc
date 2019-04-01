@@ -1,6 +1,8 @@
 package sobject
 
 import (
+	"fmt"
+	"regexp"
 	"time"
 
 	"github.com/g8rswimmer/goforce"
@@ -82,13 +84,39 @@ func NewSalesforceAPI(session session.Formatter) *SalesforceAPI {
 }
 
 // Metadata retrieves the SObject's metadata.
-func (api *SalesforceAPI) Metadata(sobject string) (MetadataValue, error) {
-	return api.metadata.Metadata(sobject)
+func (a *SalesforceAPI) Metadata(sobject string) (MetadataValue, error) {
+	if a == nil || a.metadata == nil {
+		panic("salesforce api metadata has nil values")
+	}
+
+	matching, err := regexp.MatchString(`\w`, sobject)
+	if err != nil {
+		return MetadataValue{}, err
+	}
+
+	if matching == false {
+		return MetadataValue{}, fmt.Errorf("sobject salesforce api: %s is not a valid sobject", sobject)
+	}
+
+	return a.metadata.Metadata(sobject)
 }
 
 // Describe retrieves the SObject's describe.
-func (api *SalesforceAPI) Describe(sobject string) (DescribeValue, error) {
-	return api.describe.Describe(sobject)
+func (a *SalesforceAPI) Describe(sobject string) (DescribeValue, error) {
+	if a == nil || a.describe == nil {
+		panic("salesforce api metadata has nil values")
+	}
+
+	matching, err := regexp.MatchString(`\w`, sobject)
+	if err != nil {
+		return DescribeValue{}, err
+	}
+
+	if matching == false {
+		return DescribeValue{}, fmt.Errorf("sobject salesforce api: %s is not a valid sobject", sobject)
+	}
+
+	return a.describe.Describe(sobject)
 }
 
 const objectEndpoint = "/sobjects/"
