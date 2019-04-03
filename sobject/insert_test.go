@@ -128,7 +128,7 @@ func Test_insert_Insert(t *testing.T) {
 						{`
 
 						return &http.Response{
-							StatusCode: 200,
+							StatusCode: http.StatusCreated,
 							Body:       ioutil.NopCloser(strings.NewReader(resp)),
 							Header:     make(http.Header),
 						}
@@ -161,7 +161,7 @@ func Test_insert_Insert(t *testing.T) {
 						}`
 
 						return &http.Response{
-							StatusCode: 200,
+							StatusCode: http.StatusCreated,
 							Body:       ioutil.NopCloser(strings.NewReader(resp)),
 							Header:     make(http.Header),
 						}

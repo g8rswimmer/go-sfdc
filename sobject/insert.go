@@ -85,7 +85,7 @@ func (i *insert) response(request *http.Request) (InsertValue, error) {
 	decoder := json.NewDecoder(response.Body)
 	defer response.Body.Close()
 
-	if response.StatusCode != http.StatusOK {
+	if response.StatusCode != http.StatusCreated {
 		var insertErrs []insertError
 		err = decoder.Decode(&insertErrs)
 		errMsg := fmt.Errorf("insert response err: %d %s", response.StatusCode, response.Status)
