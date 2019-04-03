@@ -37,7 +37,7 @@ import (
 type Framework interface {
 	Metadata(string) (MetadataValue, error)
 	Describe(string) (DescribeValue, error)
-	Insert(*goforce.Record) (InsertValue, error)
+	Insert(Inserter) (InsertValue, error)
 	Update(*goforce.Record) (UpdateValue, error)
 	Upsert(*goforce.Record) (UpdateValue, error)
 	Delete(*goforce.Record) (DeleteValue, error)
@@ -68,6 +68,7 @@ type ObjectURLs struct {
 type SalesforceAPI struct {
 	metadata *metadata
 	describe *describe
+	insert   *insert
 }
 
 // NewSalesforceAPI forms the Salesforce SObject API structure.  The
@@ -79,6 +80,9 @@ func NewSalesforceAPI(session session.Formatter) *SalesforceAPI {
 			session: session,
 		},
 		describe: &describe{
+			session: session,
+		},
+		insert: &insert{
 			session: session,
 		},
 	}
@@ -128,10 +132,24 @@ func (a *SalesforceAPI) Describe(sobject string) (DescribeValue, error) {
 	return a.describe.Describe(sobject)
 }
 
-const objectEndpoint = "/sobjects/"
+func (a *SalesforceAPI) Insert(inserter Inserter) (InsertValue, error) {
+	if a == nil {
+		panic("salesforce api metadata has nil values")
+	}
 
-type InsertValue struct {
+	if a.insert == nil {
+		return InsertValue{}, errors.New("salesforce api is not initialized properly")
+	}
+
+	if inserter == nil {
+		return InsertValue{}, errors.New("insert can not be nil")
+	}
+
+	return a.insert.Insert(inserter)
+
 }
+
+const objectEndpoint = "/sobjects/"
 
 type UpdateValue struct {
 }
