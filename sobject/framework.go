@@ -132,6 +132,7 @@ func (a *SalesforceAPI) Describe(sobject string) (DescribeValue, error) {
 	return a.describe.Describe(sobject)
 }
 
+// Insert will create a new Salesforce record.
 func (a *SalesforceAPI) Insert(inserter Inserter) (InsertValue, error) {
 	if a == nil {
 		panic("salesforce api metadata has nil values")

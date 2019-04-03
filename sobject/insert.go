@@ -9,6 +9,8 @@ import (
 	"github.com/g8rswimmer/goforce/session"
 )
 
+// InsertValue is the value that is returned when a
+// record is inserted into Salesforce.
 type InsertValue struct {
 	Success bool     `json:"success"`
 	ID      string   `json:"id"`
@@ -21,6 +23,12 @@ type insertError struct {
 	Fields    []string `json:"fields"`
 }
 
+// Inserter provides the parameters needed insert a record.
+//
+// SObject is the Salesforce table name.  An example would be Account or Custom__c.
+//
+// Fields are the fields of the record that are to be inserted.  It is the
+// callers responsbility to provide value fields and values.
 type Inserter interface {
 	SObject() string
 	Fields() map[string]interface{}
