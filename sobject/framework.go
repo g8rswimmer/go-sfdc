@@ -4,9 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"regexp"
-	"time"
 
-	"github.com/g8rswimmer/goforce"
 	"github.com/g8rswimmer/goforce/session"
 )
 
@@ -35,17 +33,17 @@ import (
 //
 // UpdatedRecords will return the updated records from a date range.
 type Framework interface {
-	Metadata(string) (MetadataValue, error)
-	Describe(string) (DescribeValue, error)
-	Insert(Inserter) (InsertValue, error)
-	Update(*goforce.Record) (UpdateValue, error)
-	Upsert(*goforce.Record) (UpdateValue, error)
-	Delete(*goforce.Record) (DeleteValue, error)
-	Get(*goforce.Record) error
-	AttachmentBody(string) (AttachmentBody, error)
-	DocumentBody(string) (DocumentBody, error)
-	DeletedRecords(string, time.Time, time.Time) ([]DeleteValue, error)
-	UpdatedRecords(string, time.Time, time.Time) ([]UpdateValue, error)
+	// Metadata(string) (MetadataValue, error)
+	// Describe(string) (DescribeValue, error)
+	// Insert(Inserter) (InsertValue, error)
+	// Update(*goforce.Record) error
+	// Upsert(*goforce.Record) (UpdateValue, error)
+	// Delete(*goforce.Record) (DeleteValue, error)
+	// Get(*goforce.Record) error
+	// AttachmentBody(string) (AttachmentBody, error)
+	// DocumentBody(string) (DocumentBody, error)
+	// DeletedRecords(string, time.Time, time.Time) ([]DeleteValue, error)
+	// UpdatedRecords(string, time.Time, time.Time) ([]UpdateValue, error)
 }
 
 // ObjectURLs is the URL for the SObject metadata.
@@ -170,10 +168,39 @@ func (a *SalesforceAPI) Update(updater Updater) error {
 
 }
 
-type UpdateValue struct {
+// Upsert will upsert an existing or new Salesforce record.
+func (a *SalesforceAPI) Upsert(upserter Upserter) (UpsertValue, error) {
+	if a == nil {
+		panic("salesforce api metadata has nil values")
+	}
+
+	if a.dml == nil {
+		return UpsertValue{}, errors.New("salesforce api is not initialized properly")
+	}
+
+	if upserter == nil {
+		return UpsertValue{}, errors.New("upserter can not be nil")
+	}
+
+	return a.dml.Upsert(upserter)
+
 }
 
-type DeleteValue struct {
+// Delete will delete an existing Salesforce record.
+func (a *SalesforceAPI) Delete(deleter Deleter) error {
+	if a == nil {
+		panic("salesforce api metadata has nil values")
+	}
+
+	if a.dml == nil {
+		return errors.New("salesforce api is not initialized properly")
+	}
+
+	if deleter == nil {
+		return errors.New("deleter can not be nil")
+	}
+
+	return a.dml.Delete(deleter)
 }
 
 type AttachmentBody struct {

@@ -23,6 +23,17 @@ type insertError struct {
 	Fields    []string `json:"fields"`
 }
 
+// UpsertValue is the value that is return when a
+// record as been upserted into Salesforce.
+//
+// Upsert will return two types of values, which
+// are indicated by Inserted.  If Inserted is true,
+// then the InsertValue is popluted.
+type UpsertValue struct {
+	Inserted bool
+	InsertValue
+}
+
 // Inserter provides the parameters needed insert a record.
 //
 // SObject is the Salesforce table name.  An example would be Account or Custom__c.
@@ -43,9 +54,33 @@ type Inserter interface {
 // Fields are the fields of the record that are to be inserted.  It is the
 // callers responsbility to provide value fields and values.
 type Updater interface {
+	Inserter
+	ID() string
+}
+
+// Upserter provieds the parameters needed to upsert a record.
+//
+// SObject is the Salesforce table name.  An example would be Account or Custom__c.
+//
+// ID is the External ID that will be updated.
+//
+// ExternalField is the external ID field.
+//
+// Fields are the fields of the record that are to be inserted.  It is the
+// callers responsbility to provide value fields and values.
+type Upserter interface {
+	Updater
+	ExternalField() string
+}
+
+// Deleter provides the parameters needed to delete a record.
+//
+// SObject is the Salesforce table name.  An example would be Account or Custom__c.
+//
+// ID is the Salesforce ID to be deleted.
+type Deleter interface {
 	SObject() string
 	ID() string
-	Fields() map[string]interface{}
 }
 
 type dml struct {
@@ -122,17 +157,17 @@ func (d *dml) insertResponse(request *http.Request) (InsertValue, error) {
 }
 
 func (d *dml) Update(updater Updater) error {
-	request, err := d.requestUpdate(updater)
+	request, err := d.updateRequest(updater)
 
 	if err != nil {
 		return err
 	}
 
-	return d.responseUpdate(request)
+	return d.updateResponse(request)
 
 }
 
-func (d *dml) requestUpdate(updater Updater) (*http.Request, error) {
+func (d *dml) updateRequest(updater Updater) (*http.Request, error) {
 
 	url := d.session.ServiceURL() + objectEndpoint + updater.SObject() + "/" + updater.ID()
 
@@ -153,7 +188,7 @@ func (d *dml) requestUpdate(updater Updater) (*http.Request, error) {
 
 }
 
-func (d *dml) responseUpdate(request *http.Request) error {
+func (d *dml) updateResponse(request *http.Request) error {
 	response, err := d.session.Client().Do(request)
 
 	if err != nil {
@@ -162,6 +197,120 @@ func (d *dml) responseUpdate(request *http.Request) error {
 
 	if response.StatusCode != http.StatusNoContent {
 		return fmt.Errorf("metadata response err: %d %s", response.StatusCode, response.Status)
+	}
+
+	return nil
+}
+func (d *dml) Upsert(upserter Upserter) (UpsertValue, error) {
+	request, err := d.upsertRequest(upserter)
+
+	if err != nil {
+		return UpsertValue{}, err
+	}
+
+	value, err := d.upsertResponse(request)
+
+	if err != nil {
+		return UpsertValue{}, err
+	}
+
+	return value, nil
+
+}
+func (d *dml) upsertRequest(upserter Upserter) (*http.Request, error) {
+
+	url := d.session.ServiceURL() + objectEndpoint + upserter.SObject() + "/" + upserter.ExternalField() + "/" + upserter.ID()
+
+	body, err := json.Marshal(upserter.Fields())
+	if err != nil {
+		return nil, err
+	}
+	request, err := http.NewRequest(http.MethodPatch, url, bytes.NewReader(body))
+
+	if err != nil {
+		return nil, err
+	}
+
+	request.Header.Add("Accept", "application/json")
+	request.Header.Add("Content-Type", "application/json")
+	d.session.AuthorizationHeader(request)
+	return request, nil
+
+}
+
+func (d *dml) upsertResponse(request *http.Request) (UpsertValue, error) {
+	response, err := d.session.Client().Do(request)
+
+	if err != nil {
+		return UpsertValue{}, err
+	}
+
+	decoder := json.NewDecoder(response.Body)
+
+	var isInsert bool
+	var value UpsertValue
+
+	switch response.StatusCode {
+	case http.StatusCreated:
+		defer response.Body.Close()
+		isInsert = true
+		err = decoder.Decode(&value)
+		if err != nil {
+			return UpsertValue{}, err
+		}
+	case http.StatusNoContent:
+		isInsert = false
+	default:
+		defer response.Body.Close()
+		var insertErrs []insertError
+		err = decoder.Decode(&insertErrs)
+		errMsg := fmt.Errorf("upsert response err: %d %s", response.StatusCode, response.Status)
+		if err == nil {
+			for _, insertErr := range insertErrs {
+				errMsg = fmt.Errorf("upsert response err: %s: %s", insertErr.ErrorCode, insertErr.Message)
+			}
+		}
+		return UpsertValue{}, errMsg
+	}
+
+	value.Inserted = isInsert
+
+	return value, nil
+}
+func (d *dml) Delete(deleter Deleter) error {
+
+	request, err := d.deleteRequest(deleter)
+
+	if err != nil {
+		return err
+	}
+
+	return d.deleteResponse(request)
+}
+func (d *dml) deleteRequest(deleter Deleter) (*http.Request, error) {
+
+	url := d.session.ServiceURL() + objectEndpoint + deleter.SObject() + "/" + deleter.ID()
+
+	request, err := http.NewRequest(http.MethodDelete, url, nil)
+
+	if err != nil {
+		return nil, err
+	}
+
+	d.session.AuthorizationHeader(request)
+	return request, nil
+
+}
+
+func (d *dml) deleteResponse(request *http.Request) error {
+	response, err := d.session.Client().Do(request)
+
+	if err != nil {
+		return err
+	}
+
+	if response.StatusCode != http.StatusNoContent {
+		return fmt.Errorf("delete has failed %d %s", response.StatusCode, response.Status)
 	}
 
 	return nil
