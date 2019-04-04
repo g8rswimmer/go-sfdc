@@ -58,7 +58,7 @@ type Updater interface {
 	ID() string
 }
 
-// Upserter provieds the parameters needed to upsert a record.
+// Upserter provides the parameters needed to upsert a record.
 //
 // SObject is the Salesforce table name.  An example would be Account or Custom__c.
 //
@@ -137,11 +137,13 @@ func (d *dml) insertResponse(request *http.Request) (InsertValue, error) {
 	if response.StatusCode != http.StatusCreated {
 		var insertErrs []insertError
 		err = decoder.Decode(&insertErrs)
-		errMsg := fmt.Errorf("insert response err: %d %s", response.StatusCode, response.Status)
+		var errMsg error
 		if err == nil {
 			for _, insertErr := range insertErrs {
 				errMsg = fmt.Errorf("insert response err: %s: %s", insertErr.ErrorCode, insertErr.Message)
 			}
+		} else {
+			errMsg = fmt.Errorf("insert response err: %d %s", response.StatusCode, response.Status)
 		}
 
 		return InsertValue{}, errMsg
