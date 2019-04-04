@@ -21,7 +21,8 @@ func (mock *mockInserter) SObject() string {
 func (mock *mockInserter) Fields() map[string]interface{} {
 	return mock.fields
 }
-func Test_insert_Insert(t *testing.T) {
+
+func Test_dml_Insert(t *testing.T) {
 	type fields struct {
 		session session.Formatter
 	}
@@ -187,16 +188,16 @@ func Test_insert_Insert(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			i := &insert{
+			d := &dml{
 				session: tt.fields.session,
 			}
-			got, err := i.Insert(tt.args.inserter)
+			got, err := d.Insert(tt.args.inserter)
 			if (err != nil) != tt.wantErr {
-				t.Errorf("insert.Insert() error = %v, wantErr %v", err, tt.wantErr)
+				t.Errorf("dml.Insert() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
 			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("insert.Insert() = %v, want %v", got, tt.want)
+				t.Errorf("dml.Insert() = %v, want %v", got, tt.want)
 			}
 		})
 	}

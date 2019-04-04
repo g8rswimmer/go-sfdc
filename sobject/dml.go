@@ -34,18 +34,18 @@ type Inserter interface {
 	Fields() map[string]interface{}
 }
 
-type insert struct {
+type dml struct {
 	session session.Formatter
 }
 
-func (i *insert) Insert(inserter Inserter) (InsertValue, error) {
-	request, err := i.request(inserter)
+func (d *dml) Insert(inserter Inserter) (InsertValue, error) {
+	request, err := d.insertRequest(inserter)
 
 	if err != nil {
 		return InsertValue{}, err
 	}
 
-	value, err := i.response(request)
+	value, err := d.insertResponse(request)
 
 	if err != nil {
 		return InsertValue{}, err
@@ -53,9 +53,9 @@ func (i *insert) Insert(inserter Inserter) (InsertValue, error) {
 
 	return value, nil
 }
-func (i *insert) request(inserter Inserter) (*http.Request, error) {
+func (d *dml) insertRequest(inserter Inserter) (*http.Request, error) {
 
-	url := i.session.ServiceURL() + objectEndpoint + inserter.SObject()
+	url := d.session.ServiceURL() + objectEndpoint + inserter.SObject()
 
 	body, err := json.Marshal(inserter.Fields())
 	if err != nil {
@@ -70,13 +70,13 @@ func (i *insert) request(inserter Inserter) (*http.Request, error) {
 
 	request.Header.Add("Accept", "application/json")
 	request.Header.Add("Content-Type", "application/json")
-	i.session.AuthorizationHeader(request)
+	d.session.AuthorizationHeader(request)
 	return request, nil
 
 }
 
-func (i *insert) response(request *http.Request) (InsertValue, error) {
-	response, err := i.session.Client().Do(request)
+func (d *dml) insertResponse(request *http.Request) (InsertValue, error) {
+	response, err := d.session.Client().Do(request)
 
 	if err != nil {
 		return InsertValue{}, err

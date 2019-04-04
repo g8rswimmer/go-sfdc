@@ -68,7 +68,7 @@ type ObjectURLs struct {
 type SalesforceAPI struct {
 	metadata *metadata
 	describe *describe
-	insert   *insert
+	dml      *dml
 }
 
 // NewSalesforceAPI forms the Salesforce SObject API structure.  The
@@ -82,7 +82,7 @@ func NewSalesforceAPI(session session.Formatter) *SalesforceAPI {
 		describe: &describe{
 			session: session,
 		},
-		insert: &insert{
+		dml: &dml{
 			session: session,
 		},
 	}
@@ -138,15 +138,15 @@ func (a *SalesforceAPI) Insert(inserter Inserter) (InsertValue, error) {
 		panic("salesforce api metadata has nil values")
 	}
 
-	if a.insert == nil {
+	if a.dml == nil {
 		return InsertValue{}, errors.New("salesforce api is not initialized properly")
 	}
 
 	if inserter == nil {
-		return InsertValue{}, errors.New("insert can not be nil")
+		return InsertValue{}, errors.New("inserter can not be nil")
 	}
 
-	return a.insert.Insert(inserter)
+	return a.dml.Insert(inserter)
 
 }
 
