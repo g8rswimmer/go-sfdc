@@ -71,6 +71,8 @@ type SalesforceAPI struct {
 	dml      *dml
 }
 
+const objectEndpoint = "/sobjects/"
+
 // NewSalesforceAPI forms the Salesforce SObject API structure.  The
 // session formatter is required to form the proper URLs and authorization
 // header.
@@ -150,7 +152,23 @@ func (a *SalesforceAPI) Insert(inserter Inserter) (InsertValue, error) {
 
 }
 
-const objectEndpoint = "/sobjects/"
+// Update will update an existing Salesforce record.
+func (a *SalesforceAPI) Update(updater Updater) error {
+	if a == nil {
+		panic("salesforce api metadata has nil values")
+	}
+
+	if a.dml == nil {
+		return errors.New("salesforce api is not initialized properly")
+	}
+
+	if updater == nil {
+		return errors.New("updater can not be nil")
+	}
+
+	return a.dml.Update(updater)
+
+}
 
 type UpdateValue struct {
 }
