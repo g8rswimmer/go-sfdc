@@ -16,6 +16,8 @@ type Record struct {
 	fields  map[string]interface{}
 }
 
+// UnmarshalJSON provides a custom unmarshaling of a
+// JSON byte array.
 func (r *Record) UnmarshalJSON(data []byte) error {
 	var jsonMap map[string]interface{}
 	err := json.Unmarshal(data, &jsonMap)
@@ -47,19 +49,24 @@ func (r *Record) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
+// SObject returns attribute's Salesforce object name.
 func (r *Record) SObject() string {
 	return r.sobject
 }
 
+// URL returns the record attribute's URL.
 func (r *Record) URL() string {
 	return r.url
 }
 
+// FieldValue returns the field's value.  If there is no field
+// for the field name, then false will be returned.
 func (r *Record) FieldValue(field string) (interface{}, bool) {
 	value, has := r.fields[field]
 	return value, has
 }
 
+// Fields returns the map of field name to value relationships.
 func (r *Record) Fields() map[string]interface{} {
 	fields := make(map[string]interface{})
 	for k, v := range r.fields {
