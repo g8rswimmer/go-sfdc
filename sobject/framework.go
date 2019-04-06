@@ -202,8 +202,3 @@ func (a *SalesforceAPI) Delete(deleter Deleter) error {
 
 	return a.dml.Delete(deleter)
 }
-
-type AttachmentBody struct {
-}
-type DocumentBody struct {
-}

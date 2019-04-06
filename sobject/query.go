@@ -3,6 +3,7 @@ package sobject
 import (
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"net/http"
 	"net/url"
 	"strings"
@@ -48,8 +49,16 @@ type UpdatedRecords struct {
 	LatestDate    time.Time `json:"-"`
 }
 
+type ContentType string
+
+const (
+	AttachmentType ContentType = "Attachment"
+	DocumentType   ContentType = "Document"
+)
+
 const deletedRecords = "deleted"
 const updatedRecords = "updated"
+const contentBody = "body"
 
 type query struct {
 	session session.Formatter
@@ -287,4 +296,44 @@ func (q *query) operationRequest(sobject, operation string, startDate, endDate t
 	q.session.AuthorizationHeader(request)
 	return request, nil
 
+}
+
+func (q *query) GetContent(id string, content ContentType) ([]byte, error) {
+	request, err := q.contentRequest(id, content)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return q.contentResponse(request)
+}
+func (q *query) contentRequest(id string, content ContentType) (*http.Request, error) {
+
+	queryURL := q.session.ServiceURL() + objectEndpoint + string(content) + "/" + id + "/" + contentBody
+
+	request, err := http.NewRequest(http.MethodGet, queryURL, nil)
+
+	if err != nil {
+		return nil, err
+	}
+
+	q.session.AuthorizationHeader(request)
+	return request, nil
+}
+
+func (q *query) contentResponse(request *http.Request) ([]byte, error) {
+	response, err := q.session.Client().Do(request)
+
+	if err != nil {
+		return nil, err
+	}
+
+	if response.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("deleted records response err: %d %s", response.StatusCode, response.Status)
+	}
+
+	body, err := ioutil.ReadAll(response.Body)
+	defer response.Body.Close()
+
+	return body, err
 }

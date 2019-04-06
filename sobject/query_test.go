@@ -840,3 +840,148 @@ func Test_query_UpdatedRecords(t *testing.T) {
 		})
 	}
 }
+
+func Test_query_GetContent(t *testing.T) {
+	type fields struct {
+		session session.Formatter
+	}
+	type args struct {
+		id      string
+		content ContentType
+	}
+	tests := []struct {
+		name    string
+		fields  fields
+		args    args
+		want    []byte
+		wantErr bool
+	}{
+		{
+			name: "Request Error",
+			fields: fields{
+				session: &mockMetadataSessionFormatter{
+					url: "123://wrong",
+				},
+			},
+			args: args{
+				id:      "001D000000INjVe",
+				content: AttachmentType,
+			},
+			want:    nil,
+			wantErr: true,
+		},
+		{
+			name: "Response HTTP Error No JSON",
+			fields: fields{
+				session: &mockMetadataSessionFormatter{
+					url: "https://test.salesforce.com",
+					client: mockHTTPClient(func(req *http.Request) *http.Response {
+
+						return &http.Response{
+							StatusCode: 500,
+							Status:     "Some Status",
+							Body:       ioutil.NopCloser(strings.NewReader("resp")),
+							Header:     make(http.Header),
+						}
+					}),
+				},
+			},
+			args: args{
+				id:      "001D000000INjVe",
+				content: AttachmentType,
+			},
+			want:    nil,
+			wantErr: true,
+		},
+		{
+			name: "Check Attachment URL",
+			fields: fields{
+				session: &mockMetadataSessionFormatter{
+					url: "https://test.salesforce.com",
+					client: mockHTTPClient(func(req *http.Request) *http.Response {
+
+						if strings.HasPrefix(req.URL.String(), "https://test.salesforce.com/sobjects/Attachment/001D000000INjVe/body") == false {
+							t.Errorf("Urls do not match %s", req.URL.String())
+						}
+						return &http.Response{
+							StatusCode: 500,
+							Status:     "Some Status",
+							Body:       ioutil.NopCloser(strings.NewReader("resp")),
+							Header:     make(http.Header),
+						}
+					}),
+				},
+			},
+			args: args{
+				id:      "001D000000INjVe",
+				content: AttachmentType,
+			},
+			want:    nil,
+			wantErr: true,
+		},
+		{
+			name: "Check Attachment URL",
+			fields: fields{
+				session: &mockMetadataSessionFormatter{
+					url: "https://test.salesforce.com",
+					client: mockHTTPClient(func(req *http.Request) *http.Response {
+
+						if strings.HasPrefix(req.URL.String(), "https://test.salesforce.com/sobjects/Document/001D000000INjVe/body") == false {
+							t.Errorf("Urls do not match %s", req.URL.String())
+						}
+						return &http.Response{
+							StatusCode: 500,
+							Status:     "Some Status",
+							Body:       ioutil.NopCloser(strings.NewReader("resp")),
+							Header:     make(http.Header),
+						}
+					}),
+				},
+			},
+			args: args{
+				id:      "001D000000INjVe",
+				content: DocumentType,
+			},
+			want:    nil,
+			wantErr: true,
+		},
+		{
+			name: "Response Passing",
+			fields: fields{
+				session: &mockMetadataSessionFormatter{
+					url: "https://test.salesforce.com",
+					client: mockHTTPClient(func(req *http.Request) *http.Response {
+						resp := "This is the content body"
+
+						return &http.Response{
+							StatusCode: http.StatusOK,
+							Body:       ioutil.NopCloser(strings.NewReader(resp)),
+							Header:     make(http.Header),
+						}
+					}),
+				},
+			},
+			args: args{
+				id:      "001D000000INjVe",
+				content: DocumentType,
+			},
+			want:    []byte("This is the content body"),
+			wantErr: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			q := &query{
+				session: tt.fields.session,
+			}
+			got, err := q.GetContent(tt.args.id, tt.args.content)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("query.GetContent() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("query.GetContent() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
