@@ -13,12 +13,32 @@ import (
 	"github.com/g8rswimmer/goforce/session"
 )
 
+// Querier is the interface used to query a SObject from
+// Salesforce.
+//
+// SObject is the table object in Salesforce, like Account.
+//
+// ID is the Salesforce ID of the table object to retrieve.
+//
+// Fields is the fields to be returned.  If the field array
+// is empty, the all of the fields will be returned.
 type Querier interface {
 	SObject() string
 	ID() string
 	Fields() []string
 }
 
+// ExternalQuerier is the interface used to query a SObject from
+// Salesforce using an external ID.
+//
+// SObject is the table object in Salesforce, like Account.
+//
+// ID is the external ID of the table object to retrieve.
+//
+// Fields is the fields to be returned.  If the field array
+// is empty, the all of the fields will be returned.
+//
+// ExternalField is the external field on the sobject.
 type ExternalQuerier interface {
 	Querier
 	ExternalField() string
@@ -35,6 +55,7 @@ type deletedRecord struct {
 	DeletedDate    time.Time `json:"-"`
 }
 
+// DeletedRecords is the return structure listing the deleted records.
 type DeletedRecords struct {
 	Records         []deletedRecord `json:"deletedRecords"`
 	EarliestDateStr string          `json:"earliestDateAvailable"`
@@ -43,17 +64,21 @@ type DeletedRecords struct {
 	LatestDate      time.Time       `json:"-"`
 }
 
+// UpdatedRecords is the return structure listing the updated records.
 type UpdatedRecords struct {
 	Records       []string  `json:"ids"`
 	LatestDateStr string    `json:"latestDateCovered"`
 	LatestDate    time.Time `json:"-"`
 }
 
+// ContentType is indicator of the content type in Salesforce blob.
 type ContentType string
 
 const (
+	// AttachmentType is the content blob from the Salesforce Attachment record.
 	AttachmentType ContentType = "Attachment"
-	DocumentType   ContentType = "Document"
+	// DocumentType is the content blob from the Salesforce Document record.
+	DocumentType ContentType = "Document"
 )
 
 const deletedRecords = "deleted"
