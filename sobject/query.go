@@ -29,19 +29,23 @@ type queryError struct {
 }
 
 type deletedRecord struct {
-	ID          string    `json:"id"`
-	DeletedDate time.Time `json:"deletedDate"`
+	ID             string    `json:"id"`
+	DeletedDateStr string    `json:"deletedDate"`
+	DeletedDate    time.Time `json:"-"`
 }
 
 type DeletedRecords struct {
-	Records      []deletedRecord `json:"deletedRecords"`
-	EarliestDate time.Time       `json:"earliestDateAvailable"`
-	LatestDate   time.Time       `json:"latestDateCovered"`
+	Records         []deletedRecord `json:"deletedRecords"`
+	EarliestDateStr string          `json:"earliestDateAvailable"`
+	LatestDateStr   string          `json:"latestDateCovered"`
+	EarliestDate    time.Time       `json:"-"`
+	LatestDate      time.Time       `json:"-"`
 }
 
 type UpdatedRecords struct {
-	Records    []string  `json:"ids"`
-	LatestDate time.Time `json:"latestDateCovered"`
+	Records       []string  `json:"ids"`
+	LatestDateStr string    `json:"latestDateCovered"`
+	LatestDate    time.Time `json:"-"`
 }
 
 const deletedRecords = "deleted"
@@ -197,6 +201,25 @@ func (q *query) deletedRecordsResponse(request *http.Request) (DeletedRecords, e
 		return DeletedRecords{}, err
 	}
 
+	for idx, record := range records.Records {
+		date, err := goforce.ParseTime(record.DeletedDateStr)
+		if err != nil {
+			return DeletedRecords{}, err
+		}
+		records.Records[idx].DeletedDate = date
+	}
+	var date time.Time
+	date, err = goforce.ParseTime(records.EarliestDateStr)
+	if err != nil {
+		return DeletedRecords{}, err
+	}
+	records.EarliestDate = date
+	date, err = goforce.ParseTime(records.LatestDateStr)
+	if err != nil {
+		return DeletedRecords{}, err
+	}
+	records.LatestDate = date
+
 	return records, nil
 }
 
@@ -235,6 +258,12 @@ func (q *query) updatedRecordsResponse(request *http.Request) (UpdatedRecords, e
 	if err != nil {
 		return UpdatedRecords{}, err
 	}
+
+	date, err := goforce.ParseTime(records.LatestDateStr)
+	if err != nil {
+		return UpdatedRecords{}, err
+	}
+	records.LatestDate = date
 
 	return records, nil
 }
