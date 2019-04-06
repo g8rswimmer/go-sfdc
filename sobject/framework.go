@@ -4,7 +4,9 @@ import (
 	"errors"
 	"fmt"
 	"regexp"
+	"time"
 
+	"github.com/g8rswimmer/goforce"
 	"github.com/g8rswimmer/goforce/session"
 )
 
@@ -67,6 +69,7 @@ type SalesforceAPI struct {
 	metadata *metadata
 	describe *describe
 	dml      *dml
+	query    *query
 }
 
 const objectEndpoint = "/sobjects/"
@@ -83,6 +86,9 @@ func NewSalesforceAPI(session session.Formatter) *SalesforceAPI {
 			session: session,
 		},
 		dml: &dml{
+			session: session,
+		},
+		query: &query{
 			session: session,
 		},
 	}
@@ -201,4 +207,106 @@ func (a *SalesforceAPI) Delete(deleter Deleter) error {
 	}
 
 	return a.dml.Delete(deleter)
+}
+
+// Query returns a SObject record using the Salesforce ID.
+func (a *SalesforceAPI) Query(querier Querier) (*goforce.Record, error) {
+	if a == nil {
+		panic("salesforce api metadata has nil values")
+	}
+
+	if a.query == nil {
+		return nil, errors.New("salesforce api is not initialized properly")
+	}
+
+	if querier == nil {
+		return nil, errors.New("querier can not be nil")
+	}
+
+	return a.query.Query(querier)
+}
+
+// ExternalQuery returns a SObject record using an external ID field.
+func (a *SalesforceAPI) ExternalQuery(querier ExternalQuerier) (*goforce.Record, error) {
+	if a == nil {
+		panic("salesforce api metadata has nil values")
+	}
+
+	if a.query == nil {
+		return nil, errors.New("salesforce api is not initialized properly")
+	}
+
+	if querier == nil {
+		return nil, errors.New("querier can not be nil")
+	}
+
+	return a.query.ExternalQuery(querier)
+}
+
+// DeletedRecords returns a list of records that have been deleted from a date range.
+func (a *SalesforceAPI) DeletedRecords(sobject string, startDate, endDate time.Time) (DeletedRecords, error) {
+	if a == nil {
+		panic("salesforce api metadata has nil values")
+	}
+
+	if a.query == nil {
+		return DeletedRecords{}, errors.New("salesforce api is not initialized properly")
+	}
+
+	matching, err := regexp.MatchString(`\w`, sobject)
+	if err != nil {
+		return DeletedRecords{}, err
+	}
+
+	if matching == false {
+		return DeletedRecords{}, fmt.Errorf("sobject salesforce api: %s is not a valid sobject", sobject)
+	}
+
+	return a.query.DeletedRecords(sobject, startDate, endDate)
+}
+
+// UpdatedRecords returns a list of records that have been updated from a date range.
+func (a *SalesforceAPI) UpdatedRecords(sobject string, startDate, endDate time.Time) (UpdatedRecords, error) {
+	if a == nil {
+		panic("salesforce api metadata has nil values")
+	}
+
+	if a.query == nil {
+		return UpdatedRecords{}, errors.New("salesforce api is not initialized properly")
+	}
+
+	matching, err := regexp.MatchString(`\w`, sobject)
+	if err != nil {
+		return UpdatedRecords{}, err
+	}
+
+	if matching == false {
+		return UpdatedRecords{}, fmt.Errorf("sobject salesforce api: %s is not a valid sobject", sobject)
+	}
+
+	return a.query.UpdatedRecords(sobject, startDate, endDate)
+}
+
+// GetContent returns the blob from a content SObject.
+func (a *SalesforceAPI) GetContent(id string, content ContentType) ([]byte, error) {
+	if a == nil {
+		panic("salesforce api metadata has nil values")
+	}
+
+	if a.query == nil {
+		return nil, errors.New("salesforce api is not initialized properly")
+	}
+
+	if id == "" {
+		return nil, fmt.Errorf("sobject salesforce api: %s can not be empty", id)
+	}
+
+	switch content {
+	case AttachmentType:
+	case DocumentType:
+	default:
+		return nil, fmt.Errorf("sobject salesforce: content type (%s) is not supported", string(content))
+	}
+
+	return a.query.GetContent(id, content)
 }

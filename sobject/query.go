@@ -96,7 +96,7 @@ func (q *query) Query(querier Querier) (*goforce.Record, error) {
 		return nil, err
 	}
 
-	value, err := q.response(request)
+	value, err := q.queryResponse(request)
 
 	if err != nil {
 		return nil, err
@@ -127,7 +127,7 @@ func (q *query) queryRequest(querier Querier) (*http.Request, error) {
 
 }
 
-func (q *query) response(request *http.Request) (*goforce.Record, error) {
+func (q *query) queryResponse(request *http.Request) (*goforce.Record, error) {
 	response, err := q.session.Client().Do(request)
 
 	if err != nil {
@@ -168,7 +168,7 @@ func (q *query) ExternalQuery(querier ExternalQuerier) (*goforce.Record, error) 
 		return nil, err
 	}
 
-	value, err := q.response(request)
+	value, err := q.queryResponse(request)
 
 	if err != nil {
 		return nil, err
