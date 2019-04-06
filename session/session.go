@@ -60,6 +60,7 @@ func NewPasswordSession(config goforce.Configuration) (*Session, error) {
 
 	session := &Session{
 		response: response,
+		config:   config,
 	}
 
 	return session, nil
@@ -109,7 +110,7 @@ func passwordSessionResponse(request *http.Request, client *http.Client) (*sessi
 // ServiceURL will return the Salesforce instance for the
 // service URL.
 func (session *Session) ServiceURL() string {
-	return fmt.Sprintf("%s/servies/data/v%d.0", session.response.InstanceURL, session.config.Version)
+	return fmt.Sprintf("%s/services/data/v%d.0", session.response.InstanceURL, session.config.Version)
 }
 
 // AuthorizationHeader will add the authorization to the

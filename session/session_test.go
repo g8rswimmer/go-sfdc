@@ -368,7 +368,7 @@ func TestSession_ServiceURL(t *testing.T) {
 					Version: 43,
 				},
 			},
-			want: "https://www.my.salesforce.instance/servies/data/v43.0",
+			want: "https://www.my.salesforce.instance/services/data/v43.0",
 		},
 	}
 	for _, tt := range tests {
