@@ -66,7 +66,7 @@ func Test_query_Query(t *testing.T) {
 		{
 			name: "Request Error",
 			fields: fields{
-				session: &mockMetadataSessionFormatter{
+				session: &mockSessionFormatter{
 					url: "123://wrong",
 				},
 			},
@@ -86,7 +86,7 @@ func Test_query_Query(t *testing.T) {
 		{
 			name: "Response HTTP Error No JSON",
 			fields: fields{
-				session: &mockMetadataSessionFormatter{
+				session: &mockSessionFormatter{
 					url: "https://test.salesforce.com",
 					client: mockHTTPClient(func(req *http.Request) *http.Response {
 
@@ -115,7 +115,7 @@ func Test_query_Query(t *testing.T) {
 		{
 			name: "Response HTTP Error JSON",
 			fields: fields{
-				session: &mockMetadataSessionFormatter{
+				session: &mockSessionFormatter{
 					url: "https://test.salesforce.com",
 					client: mockHTTPClient(func(req *http.Request) *http.Response {
 
@@ -151,7 +151,7 @@ func Test_query_Query(t *testing.T) {
 		{
 			name: "Response JSON Error",
 			fields: fields{
-				session: &mockMetadataSessionFormatter{
+				session: &mockSessionFormatter{
 					url: "https://test.salesforce.com",
 					client: mockHTTPClient(func(req *http.Request) *http.Response {
 						resp := `
@@ -181,7 +181,7 @@ func Test_query_Query(t *testing.T) {
 		{
 			name: "Response Passing",
 			fields: fields{
-				session: &mockMetadataSessionFormatter{
+				session: &mockSessionFormatter{
 					url: "https://test.salesforce.com",
 					client: mockHTTPClient(func(req *http.Request) *http.Response {
 						resp := `
@@ -269,7 +269,7 @@ func Test_query_ExternalQuery(t *testing.T) {
 		{
 			name: "Request Error",
 			fields: fields{
-				session: &mockMetadataSessionFormatter{
+				session: &mockSessionFormatter{
 					url: "123://wrong",
 				},
 			},
@@ -290,7 +290,7 @@ func Test_query_ExternalQuery(t *testing.T) {
 		{
 			name: "Response HTTP Error No JSON",
 			fields: fields{
-				session: &mockMetadataSessionFormatter{
+				session: &mockSessionFormatter{
 					url: "https://test.salesforce.com",
 					client: mockHTTPClient(func(req *http.Request) *http.Response {
 
@@ -320,7 +320,7 @@ func Test_query_ExternalQuery(t *testing.T) {
 		{
 			name: "Response HTTP Error JSON",
 			fields: fields{
-				session: &mockMetadataSessionFormatter{
+				session: &mockSessionFormatter{
 					url: "https://test.salesforce.com",
 					client: mockHTTPClient(func(req *http.Request) *http.Response {
 
@@ -357,7 +357,7 @@ func Test_query_ExternalQuery(t *testing.T) {
 		{
 			name: "Response JSON Error",
 			fields: fields{
-				session: &mockMetadataSessionFormatter{
+				session: &mockSessionFormatter{
 					url: "https://test.salesforce.com",
 					client: mockHTTPClient(func(req *http.Request) *http.Response {
 						resp := `
@@ -388,7 +388,7 @@ func Test_query_ExternalQuery(t *testing.T) {
 		{
 			name: "Response Passing",
 			fields: fields{
-				session: &mockMetadataSessionFormatter{
+				session: &mockSessionFormatter{
 					url: "https://test.salesforce.com",
 					client: mockHTTPClient(func(req *http.Request) *http.Response {
 						resp := `
@@ -460,7 +460,7 @@ func Test_query_DeletedRecords(t *testing.T) {
 		{
 			name: "Request Error",
 			fields: fields{
-				session: &mockMetadataSessionFormatter{
+				session: &mockSessionFormatter{
 					url: "123://wrong",
 				},
 			},
@@ -475,7 +475,7 @@ func Test_query_DeletedRecords(t *testing.T) {
 		{
 			name: "Response HTTP Error No JSON",
 			fields: fields{
-				session: &mockMetadataSessionFormatter{
+				session: &mockSessionFormatter{
 					url: "https://test.salesforce.com",
 					client: mockHTTPClient(func(req *http.Request) *http.Response {
 
@@ -499,7 +499,7 @@ func Test_query_DeletedRecords(t *testing.T) {
 		{
 			name: "Check URL",
 			fields: fields{
-				session: &mockMetadataSessionFormatter{
+				session: &mockSessionFormatter{
 					url: "https://test.salesforce.com",
 					client: mockHTTPClient(func(req *http.Request) *http.Response {
 
@@ -526,7 +526,7 @@ func Test_query_DeletedRecords(t *testing.T) {
 		{
 			name: "Response HTTP Error JSON",
 			fields: fields{
-				session: &mockMetadataSessionFormatter{
+				session: &mockSessionFormatter{
 					url: "https://test.salesforce.com",
 					client: mockHTTPClient(func(req *http.Request) *http.Response {
 
@@ -557,7 +557,7 @@ func Test_query_DeletedRecords(t *testing.T) {
 		{
 			name: "Response JSON Error",
 			fields: fields{
-				session: &mockMetadataSessionFormatter{
+				session: &mockSessionFormatter{
 					url: "https://test.salesforce.com",
 					client: mockHTTPClient(func(req *http.Request) *http.Response {
 						resp := `
@@ -582,7 +582,7 @@ func Test_query_DeletedRecords(t *testing.T) {
 		{
 			name: "Response Passing",
 			fields: fields{
-				session: &mockMetadataSessionFormatter{
+				session: &mockSessionFormatter{
 					url: "https://test.salesforce.com",
 					client: mockHTTPClient(func(req *http.Request) *http.Response {
 						resp := `
@@ -663,7 +663,7 @@ func Test_query_UpdatedRecords(t *testing.T) {
 		{
 			name: "Request Error",
 			fields: fields{
-				session: &mockMetadataSessionFormatter{
+				session: &mockSessionFormatter{
 					url: "123://wrong",
 				},
 			},
@@ -678,7 +678,7 @@ func Test_query_UpdatedRecords(t *testing.T) {
 		{
 			name: "Response HTTP Error No JSON",
 			fields: fields{
-				session: &mockMetadataSessionFormatter{
+				session: &mockSessionFormatter{
 					url: "https://test.salesforce.com",
 					client: mockHTTPClient(func(req *http.Request) *http.Response {
 
@@ -702,7 +702,7 @@ func Test_query_UpdatedRecords(t *testing.T) {
 		{
 			name: "Check URL",
 			fields: fields{
-				session: &mockMetadataSessionFormatter{
+				session: &mockSessionFormatter{
 					url: "https://test.salesforce.com",
 					client: mockHTTPClient(func(req *http.Request) *http.Response {
 
@@ -729,7 +729,7 @@ func Test_query_UpdatedRecords(t *testing.T) {
 		{
 			name: "Response HTTP Error JSON",
 			fields: fields{
-				session: &mockMetadataSessionFormatter{
+				session: &mockSessionFormatter{
 					url: "https://test.salesforce.com",
 					client: mockHTTPClient(func(req *http.Request) *http.Response {
 
@@ -760,7 +760,7 @@ func Test_query_UpdatedRecords(t *testing.T) {
 		{
 			name: "Response JSON Error",
 			fields: fields{
-				session: &mockMetadataSessionFormatter{
+				session: &mockSessionFormatter{
 					url: "https://test.salesforce.com",
 					client: mockHTTPClient(func(req *http.Request) *http.Response {
 						resp := `
@@ -785,7 +785,7 @@ func Test_query_UpdatedRecords(t *testing.T) {
 		{
 			name: "Response Passing",
 			fields: fields{
-				session: &mockMetadataSessionFormatter{
+				session: &mockSessionFormatter{
 					url: "https://test.salesforce.com",
 					client: mockHTTPClient(func(req *http.Request) *http.Response {
 						resp := `
@@ -859,7 +859,7 @@ func Test_query_GetContent(t *testing.T) {
 		{
 			name: "Request Error",
 			fields: fields{
-				session: &mockMetadataSessionFormatter{
+				session: &mockSessionFormatter{
 					url: "123://wrong",
 				},
 			},
@@ -873,7 +873,7 @@ func Test_query_GetContent(t *testing.T) {
 		{
 			name: "Response HTTP Error No JSON",
 			fields: fields{
-				session: &mockMetadataSessionFormatter{
+				session: &mockSessionFormatter{
 					url: "https://test.salesforce.com",
 					client: mockHTTPClient(func(req *http.Request) *http.Response {
 
@@ -896,7 +896,7 @@ func Test_query_GetContent(t *testing.T) {
 		{
 			name: "Check Attachment URL",
 			fields: fields{
-				session: &mockMetadataSessionFormatter{
+				session: &mockSessionFormatter{
 					url: "https://test.salesforce.com",
 					client: mockHTTPClient(func(req *http.Request) *http.Response {
 
@@ -922,7 +922,7 @@ func Test_query_GetContent(t *testing.T) {
 		{
 			name: "Check Attachment URL",
 			fields: fields{
-				session: &mockMetadataSessionFormatter{
+				session: &mockSessionFormatter{
 					url: "https://test.salesforce.com",
 					client: mockHTTPClient(func(req *http.Request) *http.Response {
 
@@ -948,7 +948,7 @@ func Test_query_GetContent(t *testing.T) {
 		{
 			name: "Response Passing",
 			fields: fields{
-				session: &mockMetadataSessionFormatter{
+				session: &mockSessionFormatter{
 					url: "https://test.salesforce.com",
 					client: mockHTTPClient(func(req *http.Request) *http.Response {
 						resp := "This is the content body"

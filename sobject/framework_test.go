@@ -34,7 +34,7 @@ func TestSalesforceAPI_Metadata(t *testing.T) {
 			name: "Invalid Args",
 			fields: fields{
 				metadata: &metadata{
-					session: &mockMetadataSessionFormatter{
+					session: &mockSessionFormatter{
 						url: "http://wwww.google.com",
 					},
 				},
@@ -89,7 +89,7 @@ func TestSalesforceAPI_Describe(t *testing.T) {
 			name: "Invalid Args",
 			fields: fields{
 				describe: &describe{
-					session: &mockMetadataSessionFormatter{
+					session: &mockSessionFormatter{
 						url: "http://wwww.google.com",
 					},
 				},
@@ -144,7 +144,7 @@ func TestSalesforceAPI_Insert(t *testing.T) {
 			name: "Invalid Args",
 			fields: fields{
 				dml: &dml{
-					session: &mockMetadataSessionFormatter{
+					session: &mockSessionFormatter{
 						url: "http://wwww.google.com",
 					},
 				},
@@ -197,7 +197,7 @@ func TestSalesforceAPI_Update(t *testing.T) {
 			name: "Invalid Args",
 			fields: fields{
 				dml: &dml{
-					session: &mockMetadataSessionFormatter{
+					session: &mockSessionFormatter{
 						url: "http://wwww.google.com",
 					},
 				},
@@ -246,7 +246,7 @@ func TestSalesforceAPI_Upsert(t *testing.T) {
 			name: "Invalid Args",
 			fields: fields{
 				dml: &dml{
-					session: &mockMetadataSessionFormatter{
+					session: &mockSessionFormatter{
 						url: "http://wwww.google.com",
 					},
 				},
@@ -299,7 +299,7 @@ func TestSalesforceAPI_Delete(t *testing.T) {
 			name: "Invalid Args",
 			fields: fields{
 				dml: &dml{
-					session: &mockMetadataSessionFormatter{
+					session: &mockSessionFormatter{
 						url: "http://wwww.google.com",
 					},
 				},
@@ -348,7 +348,7 @@ func TestSalesforceAPI_Query(t *testing.T) {
 			name: "Invalid Args",
 			fields: fields{
 				query: &query{
-					session: &mockMetadataSessionFormatter{
+					session: &mockSessionFormatter{
 						url: "http://wwww.google.com",
 					},
 				},
@@ -403,7 +403,7 @@ func TestSalesforceAPI_ExternalQuery(t *testing.T) {
 			name: "Invalid Args",
 			fields: fields{
 				query: &query{
-					session: &mockMetadataSessionFormatter{
+					session: &mockSessionFormatter{
 						url: "http://wwww.google.com",
 					},
 				},
@@ -460,7 +460,7 @@ func TestSalesforceAPI_DeletedRecords(t *testing.T) {
 			name: "Invalid Args",
 			fields: fields{
 				query: &query{
-					session: &mockMetadataSessionFormatter{
+					session: &mockSessionFormatter{
 						url: "http://wwww.google.com",
 					},
 				},
@@ -517,7 +517,7 @@ func TestSalesforceAPI_UpdatedRecords(t *testing.T) {
 			name: "Invalid Args",
 			fields: fields{
 				query: &query{
-					session: &mockMetadataSessionFormatter{
+					session: &mockSessionFormatter{
 						url: "http://wwww.google.com",
 					},
 				},
@@ -573,7 +573,7 @@ func TestSalesforceAPI_GetContent(t *testing.T) {
 			name: "Invalid Args",
 			fields: fields{
 				query: &query{
-					session: &mockMetadataSessionFormatter{
+					session: &mockSessionFormatter{
 						url: "http://wwww.google.com",
 					},
 				},
@@ -585,7 +585,7 @@ func TestSalesforceAPI_GetContent(t *testing.T) {
 			name: "Invalid Content",
 			fields: fields{
 				query: &query{
-					session: &mockMetadataSessionFormatter{
+					session: &mockSessionFormatter{
 						url: "http://wwww.google.com",
 					},
 				},
