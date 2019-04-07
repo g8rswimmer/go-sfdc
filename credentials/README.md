@@ -1,4 +1,6 @@
 # Credentials
+[back](../README.md)
+
 To access `Salesforce APIs`, there needs to be authentication between the client and the org.  `goforce` uses [OAuth 2.0](https://help.salesforce.com/articleView?id=remoteaccess_oauth_web_server_flow.htm&type=5) and this package provides the credentials needed to authenticate.
 
 The user is able to use the `Providers` that are part of this package, or implement one of their own.  This allows for extendability beyond what is currently supported.

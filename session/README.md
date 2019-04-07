@@ -1,4 +1,6 @@
 # Session
+[back](../README.md)
+
 The session is used to authenticate with `Salesforce` and retrieve the org's information.  The session will be used by the API packages to properly access the `Salesforce org`.  The [credentials](../credentials/README.md) will need to be will be used to properly create the session.
 
 ## Example
