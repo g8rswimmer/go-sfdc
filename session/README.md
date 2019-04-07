@@ -1,5 +1,5 @@
 # Session
-The session is used to authenticate with `Salesforce` and retrieve the org's information.  The session will be used by the API packages to properly access the `Salesforce org`.  The [credentials](../credenials/README.md) will need to be will be used to properly create the session.
+The session is used to authenticate with `Salesforce` and retrieve the org's information.  The session will be used by the API packages to properly access the `Salesforce org`.  The [credentials](../credentials/README.md) will need to be will be used to properly create the session.
 
 ## Example
 The following example demonstrates how to create a session.
