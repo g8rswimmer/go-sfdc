@@ -1,32 +1,10 @@
 # goforce
 This is a `golang` library for interfacing with `Salesforce` APIs.
 
-## Sessions
-Before calling a `Salesforce` API, a session will need to be created.  This can be done with `OAuth 2.0`.
-
-### Example
-```
-	
-    creds := credentials.PasswordCredentails{
-		URL:          "https://test.salesforce.com",
-		Username:     "user@somename.com",
-		Password:     "myfunpassword",
-		ClientID:     "Some ACSII stuff",
-		ClientSecret: "Some other numbers",
-	}
-
-	config := goforce.Configuration{
-        Credentials: crendentials.NewPasswordCredentials(creds),
-        Client: myHttpClient,
-    }
-
-    session, err := session.NewPasswordSession(config)
-
-	if err != nil {
-        // handle the session error...
-        return
-	}
-
-    // can start accessing Salesforce APIs
-
-```
+## Usage
+To use this library, the following will need to be done.
+* Create `Salesforce` [credentials](./credentials/README.md) to properly authenticate with the `Salesforce org`
+* Configure
+* Open a [session](./session/README.md)
+* Use the `APIs`
+  - [SObject APIs](./sobject/README.md) 
