@@ -10,12 +10,12 @@ To use this library, the following will need to be done.
   - [SObject APIs](./sobject/README.md)
 
 ## Configuration
-The configuration defines several parameters that can be used by the library.  The configuration is a defined per [session](./session/README.md).
-* `Credentails` - this is an implementation of the `credentials.Provider` interface
-* `Client` - the the HTTP client used by the `APIs`
-* `Version` - is the `Salesforce` version.  Please refer to `Salesforce` documentation to make sure that `APIs` are supported in the version that is specified.
+The configuration defines several parameters that can be used by the library.  The configuration is used per [session](./session/README.md).
+* `Credentials` - this is an implementation of the `credentials.Provider` interface
+* `Client` - the HTTP client used by the `APIs`
+* `Version` - is the `Salesforce` version.  Please refer to [`Salesforce` documentation](https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/intro_what_is_rest_api.htm) to make sure that `APIs` are supported in the version that is specified.
 ### Example
-```
+```go
 config := goforce.Configuration{
 	Credentials: credentials.NewPasswordCredentials(creds),
 	Client:      salesforceHTTPClient,

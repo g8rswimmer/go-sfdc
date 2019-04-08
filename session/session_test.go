@@ -306,7 +306,7 @@ func TestNewPasswordSession(t *testing.T) {
 
 	for _, scenario := range scenarios {
 
-		session, err := OpenSession(scenario.config)
+		session, err := Open(scenario.config)
 
 		if err != nil && scenario.err == nil {
 			t.Errorf("%s Error was not expected %s", scenario.desc, err.Error())

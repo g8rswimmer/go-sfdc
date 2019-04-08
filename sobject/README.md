@@ -22,7 +22,7 @@ As a reference, see `Salesforce API` [documentation](https://developer.salesforc
 ## Examples
 The following are examples to access the `APIs`.  It is assumed that a `goforce` [session](../session/README.md) has been created.
 ### Metadata
-```
+```go
 sobjectAPI := sobject.NewSalesforceAPI(session)
 
 metadata, err := sobjectAPI.Metadata("Account")
@@ -39,7 +39,7 @@ fmt.Printf("%+v\n", metadata)
 fmt.Println()
 ```
 ### Describe
-```
+```go
 sobjectAPI := sobject.NewSalesforceAPI(session)
 
 describe, err := sobjectAPI.Describe("Account")
@@ -56,7 +56,7 @@ fmt.Printf("%+v\n", describe)
 fmt.Println()
 ```
 ### DML Insert
-```
+```go
 type dml struct {
 	sobject       string
 	fields        map[string]interface{}
@@ -96,7 +96,7 @@ fmt.Printf("%+v\n", insertValue)
 fmt.Println()
 ```
 ### DML Update
-```
+```go
 type dml struct {
 	sobject       string
 	fields        map[string]interface{}
@@ -138,7 +138,7 @@ fmt.Println()
 
 ```
 ### DML Upsert
-```
+```go
 type dml struct {
 	sobject       string
 	fields        map[string]interface{}
@@ -182,7 +182,7 @@ fmt.Printf("%+v\n", upsertValue)
 fmt.Println()
 ```
 ### DML Delete
-```
+```go
 type dml struct {
 	sobject       string
 	id            string
@@ -215,7 +215,7 @@ fmt.Println("Account Deleted")
 ```
 ### Query: With Salesforce ID
 Return all `SObject` fields.
-```
+```go
 type query struct {
 	sobject string
 	id      string
@@ -253,7 +253,7 @@ fmt.Println()
 
 ```
 Return specific `SObject` fields.
-```
+```go
 type query struct {
 	sobject string
 	id      string
@@ -298,7 +298,7 @@ fmt.Println()
 ```
 ### Query: With External ID
 Return all `SObject` fields.
-```
+```go
 type query struct {
 	sobject  string
 	id       string
@@ -340,7 +340,7 @@ fmt.Printf("%+v", record)
 fmt.Println()
 ```
 Return specific `SObject` fields.
-```
+```go
 type query struct {
 	sobject  string
 	id       string
@@ -387,7 +387,7 @@ fmt.Printf("%+v", record)
 fmt.Println()
 ```
 ### List of Deleted Records
-```
+```go
 sobjectAPI := sobject.NewSalesforceAPI(session)
 
 deletedRecords, err := sobjectAPI.DeletedRecords("Account", time.Now().Add(time.Hour*-12), time.Now())
@@ -403,7 +403,7 @@ fmt.Printf("%+v", deletedRecords)
 fmt.Println()
 ```
 ### List of Updated Records
-```
+```go
 sobjectAPI := sobject.NewSalesforceAPI(session)
 
 updatedRecords, err := sobjectAPI.UpdatedRecords("Account", time.Now().Add(time.Hour*-12), time.Now())
@@ -420,7 +420,7 @@ fmt.Println()
 
 ```
 ### Get Attachment and Document Content
-```
+```go
 sobjectAPI := sobject.NewSalesforceAPI(session)
 
 attachment, err := sobjectAPI.GetContent("Attachment ID", sobject.AttachmentType)

@@ -81,8 +81,8 @@ const (
 	DocumentType ContentType = "Document"
 )
 
-const deletedRecords = "deleted"
-const updatedRecords = "updated"
+const deletedRoute = "deleted"
+const updatedRoute = "updated"
 const contentBody = "body"
 
 type query struct {
@@ -200,7 +200,7 @@ func (q *query) externalQueryRequest(querier ExternalQuerier) (*http.Request, er
 
 }
 func (q *query) DeletedRecords(sobject string, startDate, endDate time.Time) (DeletedRecords, error) {
-	request, err := q.operationRequest(sobject, deletedRecords, startDate, endDate)
+	request, err := q.operationRequest(sobject, deletedRoute, startDate, endDate)
 
 	if err != nil {
 		return DeletedRecords{}, err
@@ -258,7 +258,7 @@ func (q *query) deletedRecordsResponse(request *http.Request) (DeletedRecords, e
 }
 
 func (q *query) UpdatedRecords(sobject string, startDate, endDate time.Time) (UpdatedRecords, error) {
-	request, err := q.operationRequest(sobject, updatedRecords, startDate, endDate)
+	request, err := q.operationRequest(sobject, updatedRoute, startDate, endDate)
 
 	if err != nil {
 		return UpdatedRecords{}, err

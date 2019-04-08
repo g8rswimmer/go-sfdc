@@ -43,9 +43,9 @@ type sessionPasswordResponse struct {
 
 const oauthEndpoint = "/services/oauth2/token"
 
-// OpenSession is used to authenticate with Salesforce and open a session.  The user will need to
+// Open is used to authenticate with Salesforce and open a session.  The user will need to
 // supply the proper credentails and a HTTP client.
-func OpenSession(config goforce.Configuration) (*Session, error) {
+func Open(config goforce.Configuration) (*Session, error) {
 
 	request, err := passwordSessionRequest(config.Credentials)
 
