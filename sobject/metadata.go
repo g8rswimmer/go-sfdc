@@ -46,7 +46,7 @@ type metadata struct {
 	session session.Formatter
 }
 
-func (md *metadata) Metadata(sobject string) (MetadataValue, error) {
+func (md *metadata) callout(sobject string) (MetadataValue, error) {
 
 	request, err := md.request(sobject)
 

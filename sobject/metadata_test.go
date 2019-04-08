@@ -10,20 +10,6 @@ import (
 	"github.com/g8rswimmer/goforce/session"
 )
 
-type mockMetadataSessionFormatter struct {
-	url    string
-	client *http.Client
-}
-
-func (mock *mockMetadataSessionFormatter) ServiceURL() string {
-	return mock.url
-}
-func (mock *mockMetadataSessionFormatter) AuthorizationHeader(*http.Request) {}
-
-func (mock *mockMetadataSessionFormatter) Client() *http.Client {
-	return mock.client
-}
-
 func Test_metadata_Metadata(t *testing.T) {
 	type fields struct {
 		session session.Formatter
@@ -41,7 +27,7 @@ func Test_metadata_Metadata(t *testing.T) {
 		{
 			name: "Request Error",
 			fields: fields{
-				session: &mockMetadataSessionFormatter{
+				session: &mockSessionFormatter{
 					url: "123://wrong",
 				},
 			},
@@ -54,7 +40,7 @@ func Test_metadata_Metadata(t *testing.T) {
 		{
 			name: "Response HTTP Error",
 			fields: fields{
-				session: &mockMetadataSessionFormatter{
+				session: &mockSessionFormatter{
 					url: "https://test.salesforce.com",
 					client: mockHTTPClient(func(req *http.Request) *http.Response {
 
@@ -75,7 +61,7 @@ func Test_metadata_Metadata(t *testing.T) {
 		{
 			name: "Response JSON Error",
 			fields: fields{
-				session: &mockMetadataSessionFormatter{
+				session: &mockSessionFormatter{
 					url: "https://test.salesforce.com",
 					client: mockHTTPClient(func(req *http.Request) *http.Response {
 						resp := `
@@ -98,7 +84,7 @@ func Test_metadata_Metadata(t *testing.T) {
 		{
 			name: "Response Passing",
 			fields: fields{
-				session: &mockMetadataSessionFormatter{
+				session: &mockSessionFormatter{
 					url: "https://test.salesforce.com",
 					client: mockHTTPClient(func(req *http.Request) *http.Response {
 						resp := `
@@ -195,7 +181,7 @@ func Test_metadata_Metadata(t *testing.T) {
 			md := &metadata{
 				session: tt.fields.session,
 			}
-			got, err := md.Metadata(tt.args.sobject)
+			got, err := md.callout(tt.args.sobject)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("metadata.Metadata() error = %v, wantErr %v", err, tt.wantErr)
 				return

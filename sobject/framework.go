@@ -4,47 +4,11 @@ import (
 	"errors"
 	"fmt"
 	"regexp"
+	"time"
 
+	"github.com/g8rswimmer/goforce"
 	"github.com/g8rswimmer/goforce/session"
 )
-
-// Framework is the Salesforce SObject API framework.
-//
-// Metadata will return a SObject's metadata.
-//
-// Describe will return a SObject's descibe
-//
-// Insert will insert a record into the Salesforce org.
-//
-// Update will update a record into the Salesforce org.
-//
-// Upsert will upsert (update or insert) a record inot the Salesforce org.
-// The external id, defined in the record, can be used as an ID.
-//
-// Delete will remove the record into the Salesforce org.
-//
-// Get will retrieve an objects record from the id or external id.
-//
-// AttachmentBody will retrieve the attachment's blob.
-//
-// DocumentBody will retrieve the document's blob.
-//
-// DeletedRecords will return the delete records from a date range.
-//
-// UpdatedRecords will return the updated records from a date range.
-type Framework interface {
-	// Metadata(string) (MetadataValue, error)
-	// Describe(string) (DescribeValue, error)
-	// Insert(Inserter) (InsertValue, error)
-	// Update(*goforce.Record) error
-	// Upsert(*goforce.Record) (UpdateValue, error)
-	// Delete(*goforce.Record) (DeleteValue, error)
-	// Get(*goforce.Record) error
-	// AttachmentBody(string) (AttachmentBody, error)
-	// DocumentBody(string) (DocumentBody, error)
-	// DeletedRecords(string, time.Time, time.Time) ([]DeleteValue, error)
-	// UpdatedRecords(string, time.Time, time.Time) ([]UpdateValue, error)
-}
 
 // ObjectURLs is the URL for the SObject metadata.
 type ObjectURLs struct {
@@ -67,6 +31,7 @@ type SalesforceAPI struct {
 	metadata *metadata
 	describe *describe
 	dml      *dml
+	query    *query
 }
 
 const objectEndpoint = "/sobjects/"
@@ -83,6 +48,9 @@ func NewSalesforceAPI(session session.Formatter) *SalesforceAPI {
 			session: session,
 		},
 		dml: &dml{
+			session: session,
+		},
+		query: &query{
 			session: session,
 		},
 	}
@@ -107,7 +75,7 @@ func (a *SalesforceAPI) Metadata(sobject string) (MetadataValue, error) {
 		return MetadataValue{}, fmt.Errorf("sobject salesforce api: %s is not a valid sobject", sobject)
 	}
 
-	return a.metadata.Metadata(sobject)
+	return a.metadata.callout(sobject)
 }
 
 // Describe retrieves the SObject's describe.
@@ -129,7 +97,7 @@ func (a *SalesforceAPI) Describe(sobject string) (DescribeValue, error) {
 		return DescribeValue{}, fmt.Errorf("sobject salesforce api: %s is not a valid sobject", sobject)
 	}
 
-	return a.describe.Describe(sobject)
+	return a.describe.callout(sobject)
 }
 
 // Insert will create a new Salesforce record.
@@ -146,7 +114,7 @@ func (a *SalesforceAPI) Insert(inserter Inserter) (InsertValue, error) {
 		return InsertValue{}, errors.New("inserter can not be nil")
 	}
 
-	return a.dml.Insert(inserter)
+	return a.dml.insertCallout(inserter)
 
 }
 
@@ -164,7 +132,7 @@ func (a *SalesforceAPI) Update(updater Updater) error {
 		return errors.New("updater can not be nil")
 	}
 
-	return a.dml.Update(updater)
+	return a.dml.updateCallout(updater)
 
 }
 
@@ -182,7 +150,7 @@ func (a *SalesforceAPI) Upsert(upserter Upserter) (UpsertValue, error) {
 		return UpsertValue{}, errors.New("upserter can not be nil")
 	}
 
-	return a.dml.Upsert(upserter)
+	return a.dml.upsertCallout(upserter)
 
 }
 
@@ -200,10 +168,107 @@ func (a *SalesforceAPI) Delete(deleter Deleter) error {
 		return errors.New("deleter can not be nil")
 	}
 
-	return a.dml.Delete(deleter)
+	return a.dml.deleteCallout(deleter)
 }
 
-type AttachmentBody struct {
+// Query returns a SObject record using the Salesforce ID.
+func (a *SalesforceAPI) Query(querier Querier) (*goforce.Record, error) {
+	if a == nil {
+		panic("salesforce api metadata has nil values")
+	}
+
+	if a.query == nil {
+		return nil, errors.New("salesforce api is not initialized properly")
+	}
+
+	if querier == nil {
+		return nil, errors.New("querier can not be nil")
+	}
+
+	return a.query.callout(querier)
 }
-type DocumentBody struct {
+
+// ExternalQuery returns a SObject record using an external ID field.
+func (a *SalesforceAPI) ExternalQuery(querier ExternalQuerier) (*goforce.Record, error) {
+	if a == nil {
+		panic("salesforce api metadata has nil values")
+	}
+
+	if a.query == nil {
+		return nil, errors.New("salesforce api is not initialized properly")
+	}
+
+	if querier == nil {
+		return nil, errors.New("querier can not be nil")
+	}
+
+	return a.query.externalCallout(querier)
+}
+
+// DeletedRecords returns a list of records that have been deleted from a date range.
+func (a *SalesforceAPI) DeletedRecords(sobject string, startDate, endDate time.Time) (DeletedRecords, error) {
+	if a == nil {
+		panic("salesforce api metadata has nil values")
+	}
+
+	if a.query == nil {
+		return DeletedRecords{}, errors.New("salesforce api is not initialized properly")
+	}
+
+	matching, err := regexp.MatchString(`\w`, sobject)
+	if err != nil {
+		return DeletedRecords{}, err
+	}
+
+	if matching == false {
+		return DeletedRecords{}, fmt.Errorf("sobject salesforce api: %s is not a valid sobject", sobject)
+	}
+
+	return a.query.deletedRecordsCallout(sobject, startDate, endDate)
+}
+
+// UpdatedRecords returns a list of records that have been updated from a date range.
+func (a *SalesforceAPI) UpdatedRecords(sobject string, startDate, endDate time.Time) (UpdatedRecords, error) {
+	if a == nil {
+		panic("salesforce api metadata has nil values")
+	}
+
+	if a.query == nil {
+		return UpdatedRecords{}, errors.New("salesforce api is not initialized properly")
+	}
+
+	matching, err := regexp.MatchString(`\w`, sobject)
+	if err != nil {
+		return UpdatedRecords{}, err
+	}
+
+	if matching == false {
+		return UpdatedRecords{}, fmt.Errorf("sobject salesforce api: %s is not a valid sobject", sobject)
+	}
+
+	return a.query.updatedRecordsCallout(sobject, startDate, endDate)
+}
+
+// GetContent returns the blob from a content SObject.
+func (a *SalesforceAPI) GetContent(id string, content ContentType) ([]byte, error) {
+	if a == nil {
+		panic("salesforce api metadata has nil values")
+	}
+
+	if a.query == nil {
+		return nil, errors.New("salesforce api is not initialized properly")
+	}
+
+	if id == "" {
+		return nil, fmt.Errorf("sobject salesforce api: %s can not be empty", id)
+	}
+
+	switch content {
+	case AttachmentType:
+	case DocumentType:
+	default:
+		return nil, fmt.Errorf("sobject salesforce: content type (%s) is not supported", string(content))
+	}
+
+	return a.query.contentCallout(id, content)
 }

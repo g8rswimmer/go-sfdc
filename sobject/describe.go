@@ -168,7 +168,7 @@ type describe struct {
 	session session.Formatter
 }
 
-func (d *describe) Describe(sobject string) (DescribeValue, error) {
+func (d *describe) callout(sobject string) (DescribeValue, error) {
 
 	request, err := d.request(sobject)
 

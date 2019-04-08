@@ -39,7 +39,7 @@ func Test_dml_Insert(t *testing.T) {
 		{
 			name: "Request Error",
 			fields: fields{
-				session: &mockMetadataSessionFormatter{
+				session: &mockSessionFormatter{
 					url: "123://wrong",
 				},
 			},
@@ -58,7 +58,7 @@ func Test_dml_Insert(t *testing.T) {
 		{
 			name: "Response HTTP Error No JSON",
 			fields: fields{
-				session: &mockMetadataSessionFormatter{
+				session: &mockSessionFormatter{
 					url: "https://test.salesforce.com",
 					client: mockHTTPClient(func(req *http.Request) *http.Response {
 
@@ -86,7 +86,7 @@ func Test_dml_Insert(t *testing.T) {
 		{
 			name: "Response HTTP Error JSON",
 			fields: fields{
-				session: &mockMetadataSessionFormatter{
+				session: &mockSessionFormatter{
 					url: "https://test.salesforce.com",
 					client: mockHTTPClient(func(req *http.Request) *http.Response {
 
@@ -122,7 +122,7 @@ func Test_dml_Insert(t *testing.T) {
 		{
 			name: "Response JSON Error",
 			fields: fields{
-				session: &mockMetadataSessionFormatter{
+				session: &mockSessionFormatter{
 					url: "https://test.salesforce.com",
 					client: mockHTTPClient(func(req *http.Request) *http.Response {
 						resp := `
@@ -151,7 +151,7 @@ func Test_dml_Insert(t *testing.T) {
 		{
 			name: "Response Passing",
 			fields: fields{
-				session: &mockMetadataSessionFormatter{
+				session: &mockSessionFormatter{
 					url: "https://test.salesforce.com",
 					client: mockHTTPClient(func(req *http.Request) *http.Response {
 						resp := `
@@ -191,7 +191,7 @@ func Test_dml_Insert(t *testing.T) {
 			d := &dml{
 				session: tt.fields.session,
 			}
-			got, err := d.Insert(tt.args.inserter)
+			got, err := d.insertCallout(tt.args.inserter)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("dml.Insert() error = %v, wantErr %v", err, tt.wantErr)
 				return
@@ -235,7 +235,7 @@ func Test_dml_Update(t *testing.T) {
 		{
 			name: "Request Error",
 			fields: fields{
-				session: &mockMetadataSessionFormatter{
+				session: &mockSessionFormatter{
 					url: "123://wrong",
 				},
 			},
@@ -254,7 +254,7 @@ func Test_dml_Update(t *testing.T) {
 		{
 			name: "Response HTTP Error",
 			fields: fields{
-				session: &mockMetadataSessionFormatter{
+				session: &mockSessionFormatter{
 					url: "https://test.salesforce.com",
 					client: mockHTTPClient(func(req *http.Request) *http.Response {
 
@@ -281,7 +281,7 @@ func Test_dml_Update(t *testing.T) {
 		{
 			name: "Response Passing",
 			fields: fields{
-				session: &mockMetadataSessionFormatter{
+				session: &mockSessionFormatter{
 					url: "https://test.salesforce.com",
 					client: mockHTTPClient(func(req *http.Request) *http.Response {
 						return &http.Response{
@@ -309,7 +309,7 @@ func Test_dml_Update(t *testing.T) {
 			d := &dml{
 				session: tt.fields.session,
 			}
-			if err := d.Update(tt.args.updater); (err != nil) != tt.wantErr {
+			if err := d.updateCallout(tt.args.updater); (err != nil) != tt.wantErr {
 				t.Errorf("dml.Update() error = %v, wantErr %v", err, tt.wantErr)
 			}
 		})
@@ -352,7 +352,7 @@ func Test_dml_Upsert(t *testing.T) {
 		{
 			name: "Request Error",
 			fields: fields{
-				session: &mockMetadataSessionFormatter{
+				session: &mockSessionFormatter{
 					url: "123://wrong",
 				},
 			},
@@ -373,7 +373,7 @@ func Test_dml_Upsert(t *testing.T) {
 		{
 			name: "Response HTTP Error No JSON",
 			fields: fields{
-				session: &mockMetadataSessionFormatter{
+				session: &mockSessionFormatter{
 					url: "https://test.salesforce.com",
 					client: mockHTTPClient(func(req *http.Request) *http.Response {
 
@@ -403,7 +403,7 @@ func Test_dml_Upsert(t *testing.T) {
 		{
 			name: "Response HTTP Error JSON",
 			fields: fields{
-				session: &mockMetadataSessionFormatter{
+				session: &mockSessionFormatter{
 					url: "https://test.salesforce.com",
 					client: mockHTTPClient(func(req *http.Request) *http.Response {
 
@@ -441,7 +441,7 @@ func Test_dml_Upsert(t *testing.T) {
 		{
 			name: "Response JSON Error",
 			fields: fields{
-				session: &mockMetadataSessionFormatter{
+				session: &mockSessionFormatter{
 					url: "https://test.salesforce.com",
 					client: mockHTTPClient(func(req *http.Request) *http.Response {
 						resp := `
@@ -472,7 +472,7 @@ func Test_dml_Upsert(t *testing.T) {
 		{
 			name: "Insert Response Passing",
 			fields: fields{
-				session: &mockMetadataSessionFormatter{
+				session: &mockSessionFormatter{
 					url: "https://test.salesforce.com",
 					client: mockHTTPClient(func(req *http.Request) *http.Response {
 						resp := `
@@ -514,7 +514,7 @@ func Test_dml_Upsert(t *testing.T) {
 		{
 			name: "Upsert Response Passing",
 			fields: fields{
-				session: &mockMetadataSessionFormatter{
+				session: &mockSessionFormatter{
 					url: "https://test.salesforce.com",
 					client: mockHTTPClient(func(req *http.Request) *http.Response {
 
@@ -547,7 +547,7 @@ func Test_dml_Upsert(t *testing.T) {
 			d := &dml{
 				session: tt.fields.session,
 			}
-			got, err := d.Upsert(tt.args.upserter)
+			got, err := d.upsertCallout(tt.args.upserter)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("dml.Upsert() error = %v, wantErr %v", err, tt.wantErr)
 				return
@@ -587,7 +587,7 @@ func Test_dml_Delete(t *testing.T) {
 		{
 			name: "Request Error",
 			fields: fields{
-				session: &mockMetadataSessionFormatter{
+				session: &mockSessionFormatter{
 					url: "123://wrong",
 				},
 			},
@@ -602,7 +602,7 @@ func Test_dml_Delete(t *testing.T) {
 		{
 			name: "Response HTTP Error JSON",
 			fields: fields{
-				session: &mockMetadataSessionFormatter{
+				session: &mockSessionFormatter{
 					url: "https://test.salesforce.com",
 					client: mockHTTPClient(func(req *http.Request) *http.Response {
 
@@ -625,7 +625,7 @@ func Test_dml_Delete(t *testing.T) {
 		{
 			name: "Passing",
 			fields: fields{
-				session: &mockMetadataSessionFormatter{
+				session: &mockSessionFormatter{
 					url: "https://test.salesforce.com",
 					client: mockHTTPClient(func(req *http.Request) *http.Response {
 
@@ -650,7 +650,7 @@ func Test_dml_Delete(t *testing.T) {
 			d := &dml{
 				session: tt.fields.session,
 			}
-			if err := d.Delete(tt.args.deleter); (err != nil) != tt.wantErr {
+			if err := d.deleteCallout(tt.args.deleter); (err != nil) != tt.wantErr {
 				t.Errorf("dml.Delete() error = %v, wantErr %v", err, tt.wantErr)
 			}
 		})

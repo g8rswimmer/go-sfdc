@@ -306,7 +306,7 @@ func TestNewPasswordSession(t *testing.T) {
 
 	for _, scenario := range scenarios {
 
-		session, err := NewPasswordSession(scenario.config)
+		session, err := Open(scenario.config)
 
 		if err != nil && scenario.err == nil {
 			t.Errorf("%s Error was not expected %s", scenario.desc, err.Error())
@@ -368,7 +368,7 @@ func TestSession_ServiceURL(t *testing.T) {
 					Version: 43,
 				},
 			},
-			want: "https://www.my.salesforce.instance/servies/data/v43.0",
+			want: "https://www.my.salesforce.instance/services/data/v43.0",
 		},
 	}
 	for _, tt := range tests {

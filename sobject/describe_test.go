@@ -27,7 +27,7 @@ func Test_describe_Describe(t *testing.T) {
 		{
 			name: "Request Error",
 			fields: fields{
-				session: &mockMetadataSessionFormatter{
+				session: &mockSessionFormatter{
 					url: "123://wrong",
 				},
 			},
@@ -40,7 +40,7 @@ func Test_describe_Describe(t *testing.T) {
 		{
 			name: "Response HTTP Error",
 			fields: fields{
-				session: &mockMetadataSessionFormatter{
+				session: &mockSessionFormatter{
 					url: "https://test.salesforce.com",
 					client: mockHTTPClient(func(req *http.Request) *http.Response {
 
@@ -61,7 +61,7 @@ func Test_describe_Describe(t *testing.T) {
 		{
 			name: "Response JSON Error",
 			fields: fields{
-				session: &mockMetadataSessionFormatter{
+				session: &mockSessionFormatter{
 					url: "https://test.salesforce.com",
 					client: mockHTTPClient(func(req *http.Request) *http.Response {
 						resp := `
@@ -84,7 +84,7 @@ func Test_describe_Describe(t *testing.T) {
 		{
 			name: "Response Passing",
 			fields: fields{
-				session: &mockMetadataSessionFormatter{
+				session: &mockSessionFormatter{
 					url: "https://test.salesforce.com",
 					client: mockHTTPClient(func(req *http.Request) *http.Response {
 						resp := `
@@ -380,7 +380,7 @@ func Test_describe_Describe(t *testing.T) {
 			d := &describe{
 				session: tt.fields.session,
 			}
-			got, err := d.Describe(tt.args.sobject)
+			got, err := d.callout(tt.args.sobject)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("describe.Describe() error = %v, wantErr %v", err, tt.wantErr)
 				return

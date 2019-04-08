@@ -87,7 +87,7 @@ type dml struct {
 	session session.Formatter
 }
 
-func (d *dml) Insert(inserter Inserter) (InsertValue, error) {
+func (d *dml) insertCallout(inserter Inserter) (InsertValue, error) {
 	request, err := d.insertRequest(inserter)
 
 	if err != nil {
@@ -158,7 +158,7 @@ func (d *dml) insertResponse(request *http.Request) (InsertValue, error) {
 	return value, nil
 }
 
-func (d *dml) Update(updater Updater) error {
+func (d *dml) updateCallout(updater Updater) error {
 	request, err := d.updateRequest(updater)
 
 	if err != nil {
@@ -203,7 +203,7 @@ func (d *dml) updateResponse(request *http.Request) error {
 
 	return nil
 }
-func (d *dml) Upsert(upserter Upserter) (UpsertValue, error) {
+func (d *dml) upsertCallout(upserter Upserter) (UpsertValue, error) {
 	request, err := d.upsertRequest(upserter)
 
 	if err != nil {
@@ -279,7 +279,7 @@ func (d *dml) upsertResponse(request *http.Request) (UpsertValue, error) {
 
 	return value, nil
 }
-func (d *dml) Delete(deleter Deleter) error {
+func (d *dml) deleteCallout(deleter Deleter) error {
 
 	request, err := d.deleteRequest(deleter)
 
