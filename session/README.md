@@ -20,7 +20,7 @@ config := goforce.Configuration{
   Version:     44,
 }
 
-session, err := session.OpenSession(config)
+session, err := session.Open(config)
 
 if err != nil {
   fmt.Printf("Error %s", err.Error())
