@@ -75,7 +75,7 @@ func (a *SalesforceAPI) Metadata(sobject string) (MetadataValue, error) {
 		return MetadataValue{}, fmt.Errorf("sobject salesforce api: %s is not a valid sobject", sobject)
 	}
 
-	return a.metadata.Metadata(sobject)
+	return a.metadata.callout(sobject)
 }
 
 // Describe retrieves the SObject's describe.
@@ -97,7 +97,7 @@ func (a *SalesforceAPI) Describe(sobject string) (DescribeValue, error) {
 		return DescribeValue{}, fmt.Errorf("sobject salesforce api: %s is not a valid sobject", sobject)
 	}
 
-	return a.describe.Describe(sobject)
+	return a.describe.callout(sobject)
 }
 
 // Insert will create a new Salesforce record.
@@ -114,7 +114,7 @@ func (a *SalesforceAPI) Insert(inserter Inserter) (InsertValue, error) {
 		return InsertValue{}, errors.New("inserter can not be nil")
 	}
 
-	return a.dml.Insert(inserter)
+	return a.dml.insertCallout(inserter)
 
 }
 
@@ -132,7 +132,7 @@ func (a *SalesforceAPI) Update(updater Updater) error {
 		return errors.New("updater can not be nil")
 	}
 
-	return a.dml.Update(updater)
+	return a.dml.updateCallout(updater)
 
 }
 
@@ -150,7 +150,7 @@ func (a *SalesforceAPI) Upsert(upserter Upserter) (UpsertValue, error) {
 		return UpsertValue{}, errors.New("upserter can not be nil")
 	}
 
-	return a.dml.Upsert(upserter)
+	return a.dml.upsertCallout(upserter)
 
 }
 
@@ -168,7 +168,7 @@ func (a *SalesforceAPI) Delete(deleter Deleter) error {
 		return errors.New("deleter can not be nil")
 	}
 
-	return a.dml.Delete(deleter)
+	return a.dml.deleteCallout(deleter)
 }
 
 // Query returns a SObject record using the Salesforce ID.
@@ -185,7 +185,7 @@ func (a *SalesforceAPI) Query(querier Querier) (*goforce.Record, error) {
 		return nil, errors.New("querier can not be nil")
 	}
 
-	return a.query.Query(querier)
+	return a.query.callout(querier)
 }
 
 // ExternalQuery returns a SObject record using an external ID field.
@@ -202,7 +202,7 @@ func (a *SalesforceAPI) ExternalQuery(querier ExternalQuerier) (*goforce.Record,
 		return nil, errors.New("querier can not be nil")
 	}
 
-	return a.query.ExternalQuery(querier)
+	return a.query.externalCallout(querier)
 }
 
 // DeletedRecords returns a list of records that have been deleted from a date range.
@@ -224,7 +224,7 @@ func (a *SalesforceAPI) DeletedRecords(sobject string, startDate, endDate time.T
 		return DeletedRecords{}, fmt.Errorf("sobject salesforce api: %s is not a valid sobject", sobject)
 	}
 
-	return a.query.DeletedRecords(sobject, startDate, endDate)
+	return a.query.deletedRecordsCallout(sobject, startDate, endDate)
 }
 
 // UpdatedRecords returns a list of records that have been updated from a date range.
@@ -246,7 +246,7 @@ func (a *SalesforceAPI) UpdatedRecords(sobject string, startDate, endDate time.T
 		return UpdatedRecords{}, fmt.Errorf("sobject salesforce api: %s is not a valid sobject", sobject)
 	}
 
-	return a.query.UpdatedRecords(sobject, startDate, endDate)
+	return a.query.updatedRecordsCallout(sobject, startDate, endDate)
 }
 
 // GetContent returns the blob from a content SObject.
@@ -270,5 +270,5 @@ func (a *SalesforceAPI) GetContent(id string, content ContentType) ([]byte, erro
 		return nil, fmt.Errorf("sobject salesforce: content type (%s) is not supported", string(content))
 	}
 
-	return a.query.GetContent(id, content)
+	return a.query.contentCallout(id, content)
 }

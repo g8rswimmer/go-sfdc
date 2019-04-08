@@ -181,7 +181,7 @@ func Test_metadata_Metadata(t *testing.T) {
 			md := &metadata{
 				session: tt.fields.session,
 			}
-			got, err := md.Metadata(tt.args.sobject)
+			got, err := md.callout(tt.args.sobject)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("metadata.Metadata() error = %v, wantErr %v", err, tt.wantErr)
 				return

@@ -221,7 +221,7 @@ func Test_query_Query(t *testing.T) {
 			q := &query{
 				session: tt.fields.session,
 			}
-			got, err := q.Query(tt.args.querier)
+			got, err := q.callout(tt.args.querier)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("query.Query() error = %v, wantErr %v", err, tt.wantErr)
 				return
@@ -429,7 +429,7 @@ func Test_query_ExternalQuery(t *testing.T) {
 			q := &query{
 				session: tt.fields.session,
 			}
-			got, err := q.ExternalQuery(tt.args.querier)
+			got, err := q.externalCallout(tt.args.querier)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("query.ExternalQuery() error = %v, wantErr %v", err, tt.wantErr)
 				return
@@ -632,7 +632,7 @@ func Test_query_DeletedRecords(t *testing.T) {
 			q := &query{
 				session: tt.fields.session,
 			}
-			got, err := q.DeletedRecords(tt.args.sobject, tt.args.startDate, tt.args.endDate)
+			got, err := q.deletedRecordsCallout(tt.args.sobject, tt.args.startDate, tt.args.endDate)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("query.DeletedRecords() error = %v, wantErr %v", err, tt.wantErr)
 				return
@@ -829,7 +829,7 @@ func Test_query_UpdatedRecords(t *testing.T) {
 			q := &query{
 				session: tt.fields.session,
 			}
-			got, err := q.UpdatedRecords(tt.args.sobject, tt.args.startDate, tt.args.endDate)
+			got, err := q.updatedRecordsCallout(tt.args.sobject, tt.args.startDate, tt.args.endDate)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("query.UpdatedRecords() error = %v, wantErr %v", err, tt.wantErr)
 				return
@@ -974,7 +974,7 @@ func Test_query_GetContent(t *testing.T) {
 			q := &query{
 				session: tt.fields.session,
 			}
-			got, err := q.GetContent(tt.args.id, tt.args.content)
+			got, err := q.contentCallout(tt.args.id, tt.args.content)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("query.GetContent() error = %v, wantErr %v", err, tt.wantErr)
 				return

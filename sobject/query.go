@@ -89,7 +89,7 @@ type query struct {
 	session session.Formatter
 }
 
-func (q *query) Query(querier Querier) (*goforce.Record, error) {
+func (q *query) callout(querier Querier) (*goforce.Record, error) {
 	request, err := q.queryRequest(querier)
 
 	if err != nil {
@@ -161,7 +161,7 @@ func (q *query) queryResponse(request *http.Request) (*goforce.Record, error) {
 	return &record, nil
 }
 
-func (q *query) ExternalQuery(querier ExternalQuerier) (*goforce.Record, error) {
+func (q *query) externalCallout(querier ExternalQuerier) (*goforce.Record, error) {
 	request, err := q.externalQueryRequest(querier)
 
 	if err != nil {
@@ -199,7 +199,7 @@ func (q *query) externalQueryRequest(querier ExternalQuerier) (*http.Request, er
 	return request, nil
 
 }
-func (q *query) DeletedRecords(sobject string, startDate, endDate time.Time) (DeletedRecords, error) {
+func (q *query) deletedRecordsCallout(sobject string, startDate, endDate time.Time) (DeletedRecords, error) {
 	request, err := q.operationRequest(sobject, deletedRoute, startDate, endDate)
 
 	if err != nil {
@@ -257,7 +257,7 @@ func (q *query) deletedRecordsResponse(request *http.Request) (DeletedRecords, e
 	return records, nil
 }
 
-func (q *query) UpdatedRecords(sobject string, startDate, endDate time.Time) (UpdatedRecords, error) {
+func (q *query) updatedRecordsCallout(sobject string, startDate, endDate time.Time) (UpdatedRecords, error) {
 	request, err := q.operationRequest(sobject, updatedRoute, startDate, endDate)
 
 	if err != nil {
@@ -323,7 +323,7 @@ func (q *query) operationRequest(sobject, operation string, startDate, endDate t
 
 }
 
-func (q *query) GetContent(id string, content ContentType) ([]byte, error) {
+func (q *query) contentCallout(id string, content ContentType) ([]byte, error) {
 	request, err := q.contentRequest(id, content)
 
 	if err != nil {
