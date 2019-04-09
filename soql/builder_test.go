@@ -180,10 +180,21 @@ func TestOrderBy_Order(t *testing.T) {
 		nulls      OrderNulls
 	}
 	tests := []struct {
-		name   string
-		fields fields
-		want   string
+		name    string
+		fields  fields
+		want    string
+		wantErr bool
 	}{
+		{
+			name: "Error",
+			fields: fields{
+				fieldOrder: []string{
+					"Name",
+				},
+			},
+			want:    "",
+			wantErr: true,
+		},
 		{
 			name: "Basic Ascending",
 			fields: fields{
@@ -192,7 +203,8 @@ func TestOrderBy_Order(t *testing.T) {
 				},
 				result: OrderAsc,
 			},
-			want: "ORDER BY Name ASC",
+			want:    "ORDER BY Name ASC",
+			wantErr: false,
 		},
 		{
 			name: "Basic Descending",
@@ -202,7 +214,8 @@ func TestOrderBy_Order(t *testing.T) {
 				},
 				result: OrderDesc,
 			},
-			want: "ORDER BY Name DESC",
+			want:    "ORDER BY Name DESC",
+			wantErr: false,
 		},
 		{
 			name: "Multiple Ascending",
@@ -213,7 +226,8 @@ func TestOrderBy_Order(t *testing.T) {
 				},
 				result: OrderAsc,
 			},
-			want: "ORDER BY Name,Date ASC",
+			want:    "ORDER BY Name,Date ASC",
+			wantErr: false,
 		},
 		{
 			name: "Nulls Last",
@@ -224,7 +238,8 @@ func TestOrderBy_Order(t *testing.T) {
 				result: OrderDesc,
 				nulls:  OrderNullsLast,
 			},
-			want: "ORDER BY Name DESC NULLS LAST",
+			want:    "ORDER BY Name DESC NULLS LAST",
+			wantErr: false,
 		},
 		{
 			name: "Nulls First",
@@ -235,7 +250,8 @@ func TestOrderBy_Order(t *testing.T) {
 				result: OrderDesc,
 				nulls:  OrderNullsFirst,
 			},
-			want: "ORDER BY Name DESC NULLS FIRST",
+			want:    "ORDER BY Name DESC NULLS FIRST",
+			wantErr: false,
 		},
 	}
 	for _, tt := range tests {
@@ -245,7 +261,11 @@ func TestOrderBy_Order(t *testing.T) {
 				result:     tt.fields.result,
 				nulls:      tt.fields.nulls,
 			}
-			if got := o.Order(); got != tt.want {
+			got, err := o.Order()
+			if (err != nil) != tt.wantErr {
+				t.Errorf("OrderBy.NullOrdering() error = %v, wantErr %v", err, tt.wantErr)
+			}
+			if got != tt.want {
 				t.Errorf("OrderBy.Order() = %v, want %v", got, tt.want)
 			}
 		})
