@@ -23,7 +23,7 @@ As a reference, see `Salesforce API` [documentation](https://developer.salesforc
 The following are examples to access the `APIs`.  It is assumed that a `goforce` [session](../session/README.md) has been created.
 ### Metadata
 ```go
-sobjectAPI := sobject.NewSalesforceAPI(session)
+sobjectAPI := sobject.NewRecordAPI(session)
 
 metadata, err := sobjectAPI.Metadata("Account")
 
@@ -40,7 +40,7 @@ fmt.Println()
 ```
 ### Describe
 ```go
-sobjectAPI := sobject.NewSalesforceAPI(session)
+sobjectAPI := sobject.NewRecordAPI(session)
 
 describe, err := sobjectAPI.Describe("Account")
 
@@ -70,7 +70,7 @@ func (d *dml) Fields() map[string]interface{} {
 }
 
 
-sobjectAPI := sobject.NewSalesforceAPI(session)
+sobjectAPI := sobject.NewRecordAPI(session)
 
 dml := &dml{
   sobject: "Account",
@@ -114,7 +114,7 @@ func (d *dml) ID() string {
 }
 
 
-sobjectAPI := sobject.NewSalesforceAPI(session)
+sobjectAPI := sobject.NewRecordAPI(session)
 
 dml := &dml{
   sobject: "Account",
@@ -159,7 +159,7 @@ func (d *dml) ExternalField() string {
 	return d.externalField
 }
 
-sobjectAPI := sobject.NewSalesforceAPI(session)
+sobjectAPI := sobject.NewRecordAPI(session)
 
 dml := &dml{
   sobject: "Account",
@@ -195,7 +195,7 @@ func (d *dml) ID() string {
 	return d.id
 }
 
-sobjectAPI := sobject.NewSalesforceAPI(session)
+sobjectAPI := sobject.NewRecordAPI(session)
 
 dml := &dml{
   sobject: "Account",
@@ -232,7 +232,7 @@ func (q *query) Fields() []string {
 	return q.fields
 }
 
-sobjectAPI := sobject.NewSalesforceAPI(session)
+sobjectAPI := sobject.NewRecordAPI(session)
 
 query := &query{
   sobject: "Account",
@@ -270,7 +270,7 @@ func (q *query) Fields() []string {
 	return q.fields
 }
 
-sobjectAPI := sobject.NewSalesforceAPI(session)
+sobjectAPI := sobject.NewRecordAPI(session)
 
 query := &query{
   sobject: "Account",
@@ -319,7 +319,7 @@ func (q *query) ExternalField() string {
 	return q.external
 }
 
-sobjectAPI := sobject.NewSalesforceAPI(session)
+sobjectAPI := sobject.NewRecordAPI(session)
 
 query := &query{
   sobject:  "Account",
@@ -361,7 +361,7 @@ func (q *query) ExternalField() string {
 	return q.external
 }
 
-sobjectAPI := sobject.NewSalesforceAPI(session)
+sobjectAPI := sobject.NewRecordAPI(session)
 
 query := &query{
   sobject:  "Account",
@@ -388,7 +388,7 @@ fmt.Println()
 ```
 ### List of Deleted Records
 ```go
-sobjectAPI := sobject.NewSalesforceAPI(session)
+sobjectAPI := sobject.NewRecordAPI(session)
 
 deletedRecords, err := sobjectAPI.DeletedRecords("Account", time.Now().Add(time.Hour*-12), time.Now())
 if err != nil {
@@ -404,7 +404,7 @@ fmt.Println()
 ```
 ### List of Updated Records
 ```go
-sobjectAPI := sobject.NewSalesforceAPI(session)
+sobjectAPI := sobject.NewRecordAPI(session)
 
 updatedRecords, err := sobjectAPI.UpdatedRecords("Account", time.Now().Add(time.Hour*-12), time.Now())
 if err != nil {
@@ -421,7 +421,7 @@ fmt.Println()
 ```
 ### Get Attachment and Document Content
 ```go
-sobjectAPI := sobject.NewSalesforceAPI(session)
+sobjectAPI := sobject.NewRecordAPI(session)
 
 attachment, err := sobjectAPI.GetContent("Attachment ID", sobject.AttachmentType)
 if err != nil {

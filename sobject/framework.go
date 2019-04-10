@@ -26,8 +26,8 @@ type ObjectURLs struct {
 	UINewRecord      string `json:"uiNewRecord"`
 }
 
-// SalesforceAPI is the structure for the Salesforce APIs for SObjects.
-type SalesforceAPI struct {
+// RecordAPI is the structure for the Salesforce APIs for SObjects.
+type RecordAPI struct {
 	metadata *metadata
 	describe *describe
 	dml      *dml
@@ -36,11 +36,11 @@ type SalesforceAPI struct {
 
 const objectEndpoint = "/sobjects/"
 
-// NewSalesforceAPI forms the Salesforce SObject API structure.  The
+// NewRecordAPI forms the Salesforce SObject API structure.  The
 // session formatter is required to form the proper URLs and authorization
 // header.
-func NewSalesforceAPI(session session.Formatter) *SalesforceAPI {
-	return &SalesforceAPI{
+func NewRecordAPI(session session.Formatter) *RecordAPI {
+	return &RecordAPI{
 		metadata: &metadata{
 			session: session,
 		},
@@ -57,7 +57,7 @@ func NewSalesforceAPI(session session.Formatter) *SalesforceAPI {
 }
 
 // Metadata retrieves the SObject's metadata.
-func (a *SalesforceAPI) Metadata(sobject string) (MetadataValue, error) {
+func (a *RecordAPI) Metadata(sobject string) (MetadataValue, error) {
 	if a == nil {
 		panic("salesforce api metadata has nil values")
 	}
@@ -79,7 +79,7 @@ func (a *SalesforceAPI) Metadata(sobject string) (MetadataValue, error) {
 }
 
 // Describe retrieves the SObject's describe.
-func (a *SalesforceAPI) Describe(sobject string) (DescribeValue, error) {
+func (a *RecordAPI) Describe(sobject string) (DescribeValue, error) {
 	if a == nil {
 		panic("salesforce api metadata has nil values")
 	}
@@ -101,7 +101,7 @@ func (a *SalesforceAPI) Describe(sobject string) (DescribeValue, error) {
 }
 
 // Insert will create a new Salesforce record.
-func (a *SalesforceAPI) Insert(inserter Inserter) (InsertValue, error) {
+func (a *RecordAPI) Insert(inserter Inserter) (InsertValue, error) {
 	if a == nil {
 		panic("salesforce api metadata has nil values")
 	}
@@ -119,7 +119,7 @@ func (a *SalesforceAPI) Insert(inserter Inserter) (InsertValue, error) {
 }
 
 // Update will update an existing Salesforce record.
-func (a *SalesforceAPI) Update(updater Updater) error {
+func (a *RecordAPI) Update(updater Updater) error {
 	if a == nil {
 		panic("salesforce api metadata has nil values")
 	}
@@ -137,7 +137,7 @@ func (a *SalesforceAPI) Update(updater Updater) error {
 }
 
 // Upsert will upsert an existing or new Salesforce record.
-func (a *SalesforceAPI) Upsert(upserter Upserter) (UpsertValue, error) {
+func (a *RecordAPI) Upsert(upserter Upserter) (UpsertValue, error) {
 	if a == nil {
 		panic("salesforce api metadata has nil values")
 	}
@@ -155,7 +155,7 @@ func (a *SalesforceAPI) Upsert(upserter Upserter) (UpsertValue, error) {
 }
 
 // Delete will delete an existing Salesforce record.
-func (a *SalesforceAPI) Delete(deleter Deleter) error {
+func (a *RecordAPI) Delete(deleter Deleter) error {
 	if a == nil {
 		panic("salesforce api metadata has nil values")
 	}
@@ -172,7 +172,7 @@ func (a *SalesforceAPI) Delete(deleter Deleter) error {
 }
 
 // Query returns a SObject record using the Salesforce ID.
-func (a *SalesforceAPI) Query(querier Querier) (*goforce.Record, error) {
+func (a *RecordAPI) Query(querier Querier) (*goforce.Record, error) {
 	if a == nil {
 		panic("salesforce api metadata has nil values")
 	}
@@ -189,7 +189,7 @@ func (a *SalesforceAPI) Query(querier Querier) (*goforce.Record, error) {
 }
 
 // ExternalQuery returns a SObject record using an external ID field.
-func (a *SalesforceAPI) ExternalQuery(querier ExternalQuerier) (*goforce.Record, error) {
+func (a *RecordAPI) ExternalQuery(querier ExternalQuerier) (*goforce.Record, error) {
 	if a == nil {
 		panic("salesforce api metadata has nil values")
 	}
@@ -206,7 +206,7 @@ func (a *SalesforceAPI) ExternalQuery(querier ExternalQuerier) (*goforce.Record,
 }
 
 // DeletedRecords returns a list of records that have been deleted from a date range.
-func (a *SalesforceAPI) DeletedRecords(sobject string, startDate, endDate time.Time) (DeletedRecords, error) {
+func (a *RecordAPI) DeletedRecords(sobject string, startDate, endDate time.Time) (DeletedRecords, error) {
 	if a == nil {
 		panic("salesforce api metadata has nil values")
 	}
@@ -228,7 +228,7 @@ func (a *SalesforceAPI) DeletedRecords(sobject string, startDate, endDate time.T
 }
 
 // UpdatedRecords returns a list of records that have been updated from a date range.
-func (a *SalesforceAPI) UpdatedRecords(sobject string, startDate, endDate time.Time) (UpdatedRecords, error) {
+func (a *RecordAPI) UpdatedRecords(sobject string, startDate, endDate time.Time) (UpdatedRecords, error) {
 	if a == nil {
 		panic("salesforce api metadata has nil values")
 	}
@@ -250,7 +250,7 @@ func (a *SalesforceAPI) UpdatedRecords(sobject string, startDate, endDate time.T
 }
 
 // GetContent returns the blob from a content SObject.
-func (a *SalesforceAPI) GetContent(id string, content ContentType) ([]byte, error) {
+func (a *RecordAPI) GetContent(id string, content ContentType) ([]byte, error) {
 	if a == nil {
 		panic("salesforce api metadata has nil values")
 	}

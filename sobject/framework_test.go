@@ -45,7 +45,7 @@ func TestSalesforceAPI_Metadata(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			a := &SalesforceAPI{
+			a := &RecordAPI{
 				metadata: tt.fields.metadata,
 				describe: tt.fields.describe,
 				dml:      tt.fields.dml,
@@ -100,7 +100,7 @@ func TestSalesforceAPI_Describe(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			a := &SalesforceAPI{
+			a := &RecordAPI{
 				metadata: tt.fields.metadata,
 				describe: tt.fields.describe,
 				dml:      tt.fields.dml,
@@ -155,7 +155,7 @@ func TestSalesforceAPI_Insert(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			a := &SalesforceAPI{
+			a := &RecordAPI{
 				metadata: tt.fields.metadata,
 				describe: tt.fields.describe,
 				dml:      tt.fields.dml,
@@ -207,7 +207,7 @@ func TestSalesforceAPI_Update(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			a := &SalesforceAPI{
+			a := &RecordAPI{
 				metadata: tt.fields.metadata,
 				describe: tt.fields.describe,
 				dml:      tt.fields.dml,
@@ -257,7 +257,7 @@ func TestSalesforceAPI_Upsert(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			a := &SalesforceAPI{
+			a := &RecordAPI{
 				metadata: tt.fields.metadata,
 				describe: tt.fields.describe,
 				dml:      tt.fields.dml,
@@ -309,7 +309,7 @@ func TestSalesforceAPI_Delete(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			a := &SalesforceAPI{
+			a := &RecordAPI{
 				metadata: tt.fields.metadata,
 				describe: tt.fields.describe,
 				dml:      tt.fields.dml,
@@ -359,7 +359,7 @@ func TestSalesforceAPI_Query(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			a := &SalesforceAPI{
+			a := &RecordAPI{
 				metadata: tt.fields.metadata,
 				describe: tt.fields.describe,
 				dml:      tt.fields.dml,
@@ -414,7 +414,7 @@ func TestSalesforceAPI_ExternalQuery(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			a := &SalesforceAPI{
+			a := &RecordAPI{
 				metadata: tt.fields.metadata,
 				describe: tt.fields.describe,
 				dml:      tt.fields.dml,
@@ -471,7 +471,7 @@ func TestSalesforceAPI_DeletedRecords(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			a := &SalesforceAPI{
+			a := &RecordAPI{
 				metadata: tt.fields.metadata,
 				describe: tt.fields.describe,
 				dml:      tt.fields.dml,
@@ -528,7 +528,7 @@ func TestSalesforceAPI_UpdatedRecords(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			a := &SalesforceAPI{
+			a := &RecordAPI{
 				metadata: tt.fields.metadata,
 				describe: tt.fields.describe,
 				dml:      tt.fields.dml,
@@ -600,7 +600,7 @@ func TestSalesforceAPI_GetContent(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			a := &SalesforceAPI{
+			a := &RecordAPI{
 				metadata: tt.fields.metadata,
 				describe: tt.fields.describe,
 				dml:      tt.fields.dml,
