@@ -7,83 +7,8 @@ import (
 	"net/http"
 	"net/url"
 
-	"github.com/g8rswimmer/goforce"
 	"github.com/g8rswimmer/goforce/session"
 )
-
-
-type QueryResult struct {
-	response queryResponse
-	records  []*QueryRecord
-}
-
-type QueryRecord struct {
-	record     *goforce.Record
-	subresults map[string]*QueryResult
-}
-
-func newQueryResult(response queryResponse) (*QueryResult, error) {
-	result := &QueryResult{
-		response: response,
-		records:  make([]*QueryRecord, len(response.Records)),
-	}
-
-	for idx, record := range response.Records {
-		qr, err := newQueryRecord(record)
-		if err != nil {
-			return nil, err
-		}
-		result.records[idx] = qr
-	}
-	return result, nil
-}
-func (result *QueryResult) Done() bool {
-	return result.response.Done
-}
-func (result *QueryResult) TotalSize() int {
-	return result.response.TotalSize
-}
-func (result *QueryResult) MoreRecords() bool {
-	return result.response.NextRecordsURL != ""
-}
-func (result *QueryResult) Records() []*QueryRecord {
-	return result.records
-}
-
-func newQueryRecord(jsonMap map[string]interface{}) (*QueryRecord, error) {
-	rec, err := goforce.RecordFromJSONMap(jsonMap)
-	if err != nil {
-		return nil, err
-	}
-	subresults := make(map[string]*QueryResult)
-	for k, v := range jsonMap {
-		if sub, has := v.(map[string]interface{}); has {
-			if k != goforce.RecordAttributes {
-				resp, err := newQueryResponseJSON(sub)
-				if err != nil {
-					return nil, err
-				}
-				result, err := newQueryResult(resp)
-				if err != nil {
-					return nil, err
-				}
-				subresults[k] = result
-			}
-		}
-	}
-	qr := &QueryRecord{
-		record:     rec,
-		subresults: subresults,
-	}
-	return qr, nil
-}
-func (rec *QueryRecord) Record() *goforce.Record {
-	return rec.record
-}
-func (rec *QueryRecord) Subresults(sub string) (*QueryResult, bool) {
-	result, has := rec.subresults[sub]
-	return result, has
-}
 
 type Resource struct {
 	session session.Formatter
