@@ -23,9 +23,9 @@ As a reference, see `Salesforce API` [documentation](https://developer.salesforc
 The following are examples to access the `APIs`.  It is assumed that a `goforce` [session](../session/README.md) has been created.
 ### Metadata
 ```go
-sobjectAPI := sobject.NewRecordAPI(session)
+sobjResources := sobject.NewResources(session)
 
-metadata, err := sobjectAPI.Metadata("Account")
+metadata, err := sobjResources.Metadata("Account")
 
 if err != nil {
   fmt.Printf("Error %s", err.Error())
@@ -40,9 +40,9 @@ fmt.Println()
 ```
 ### Describe
 ```go
-sobjectAPI := sobject.NewRecordAPI(session)
+sobjResources := sobject.NewResources(session)
 
-describe, err := sobjectAPI.Describe("Account")
+describe, err := sobjResources.Describe("Account")
 
 if err != nil {
   fmt.Printf("Error %s", err.Error())
@@ -70,7 +70,7 @@ func (d *dml) Fields() map[string]interface{} {
 }
 
 
-sobjectAPI := sobject.NewRecordAPI(session)
+sobjResources := sobject.NewResources(session)
 
 dml := &dml{
   sobject: "Account",
@@ -82,7 +82,7 @@ dml := &dml{
   },
 }
 
-insertValue, err := sobjectAPI.Insert(dml)
+insertValue, err := sobjResources.Insert(dml)
 
 if err != nil {
   fmt.Printf("Insert Error %s", err.Error())
@@ -114,7 +114,7 @@ func (d *dml) ID() string {
 }
 
 
-sobjectAPI := sobject.NewRecordAPI(session)
+sobjResources := sobject.NewResources(session)
 
 dml := &dml{
   sobject: "Account",
@@ -124,7 +124,7 @@ dml.id = "Account Salesforce ID"
 dml.fields["Phone"] = "6065551212"
 dml.fields["MyCustomText__c"] = "updated text"
 
-err = sobjectAPI.Update(dml)
+err = sobjResources.Update(dml)
 
 if err != nil {
   fmt.Printf("Update Error %s", err.Error())
@@ -159,7 +159,7 @@ func (d *dml) ExternalField() string {
 	return d.externalField
 }
 
-sobjectAPI := sobject.NewRecordAPI(session)
+sobjResources := sobject.NewResources(session)
 
 dml := &dml{
   sobject: "Account",
@@ -168,7 +168,7 @@ dml.id = "AccExID345"
 dml.externalField = "MyUID__c"
 dml.fields["Name"] = "Upsert Update"
 
-upsertValue, err := sobjectAPI.Upsert(dml)
+upsertValue, err := sobjResources.Upsert(dml)
 
 if err != nil {
   fmt.Printf("Upsert Error %s", err.Error())
@@ -195,14 +195,14 @@ func (d *dml) ID() string {
 	return d.id
 }
 
-sobjectAPI := sobject.NewRecordAPI(session)
+sobjResources := sobject.NewResources(session)
 
 dml := &dml{
   sobject: "Account",
   id:      "0012E00001oHQDNQA4",
 }
 
-err = sobjectAPI.Delete(dml)
+err = sobjResources.Delete(dml)
 
 if err != nil {
   fmt.Printf("Upsert Error %s", err.Error())
@@ -232,14 +232,14 @@ func (q *query) Fields() []string {
 	return q.fields
 }
 
-sobjectAPI := sobject.NewRecordAPI(session)
+sobjResources := sobject.NewResources(session)
 
 query := &query{
   sobject: "Account",
   id:      "Account Salesforce ID",
 }
 
-record, err := sobjectAPI.Query(query)
+record, err := sobjResources.Query(query)
 if err != nil {
   fmt.Printf("Query Error %s", err.Error())
   fmt.Println()
@@ -270,7 +270,7 @@ func (q *query) Fields() []string {
 	return q.fields
 }
 
-sobjectAPI := sobject.NewRecordAPI(session)
+sobjResources := sobject.NewResources(session)
 
 query := &query{
   sobject: "Account",
@@ -283,7 +283,7 @@ query := &query{
   },
 }
 
-record, err := sobjectAPI.Query(query)
+record, err := sobjResources.Query(query)
 if err != nil {
   fmt.Printf("Query Error %s", err.Error())
   fmt.Println()
@@ -319,7 +319,7 @@ func (q *query) ExternalField() string {
 	return q.external
 }
 
-sobjectAPI := sobject.NewRecordAPI(session)
+sobjResources := sobject.NewResources(session)
 
 query := &query{
   sobject:  "Account",
@@ -327,7 +327,7 @@ query := &query{
   external: "MyUID__c",
 }
 
-record, err := sobjectAPI.ExternalQuery(query)
+record, err := sobjResources.ExternalQuery(query)
 if err != nil {
   fmt.Printf("Query Error %s", err.Error())
   fmt.Println()
@@ -361,7 +361,7 @@ func (q *query) ExternalField() string {
 	return q.external
 }
 
-sobjectAPI := sobject.NewRecordAPI(session)
+sobjResources := sobject.NewResources(session)
 
 query := &query{
   sobject:  "Account",
@@ -374,7 +374,7 @@ query := &query{
   },
 }
 
-record, err := sobjectAPI.ExternalQuery(query)
+record, err := sobjResources.ExternalQuery(query)
 if err != nil {
   fmt.Printf("Query Error %s", err.Error())
   fmt.Println()
@@ -388,9 +388,9 @@ fmt.Println()
 ```
 ### List of Deleted Records
 ```go
-sobjectAPI := sobject.NewRecordAPI(session)
+sobjResources := sobject.NewResources(session)
 
-deletedRecords, err := sobjectAPI.DeletedRecords("Account", time.Now().Add(time.Hour*-12), time.Now())
+deletedRecords, err := sobjResources.DeletedRecords("Account", time.Now().Add(time.Hour*-12), time.Now())
 if err != nil {
   fmt.Printf("Deleted Records Error %s", err.Error())
   fmt.Println()
@@ -404,9 +404,9 @@ fmt.Println()
 ```
 ### List of Updated Records
 ```go
-sobjectAPI := sobject.NewRecordAPI(session)
+sobjResources := sobject.NewResources(session)
 
-updatedRecords, err := sobjectAPI.UpdatedRecords("Account", time.Now().Add(time.Hour*-12), time.Now())
+updatedRecords, err := sobjResources.UpdatedRecords("Account", time.Now().Add(time.Hour*-12), time.Now())
 if err != nil {
   fmt.Printf("Deleted Records Error %s", err.Error())
   fmt.Println()
@@ -421,16 +421,16 @@ fmt.Println()
 ```
 ### Get Attachment and Document Content
 ```go
-sobjectAPI := sobject.NewRecordAPI(session)
+sobjResources := sobject.NewResources(session)
 
-attachment, err := sobjectAPI.GetContent("Attachment ID", sobject.AttachmentType)
+attachment, err := sobjResources.GetContent("Attachment ID", sobject.AttachmentType)
 if err != nil {
   fmt.Printf("Error %s", err.Error())
   fmt.Println()
   return
 }
 
-document, err := sobjectAPI.GetContent("Document ID", sobject.DocumentType)
+document, err := sobjResources.GetContent("Document ID", sobject.DocumentType)
 if err != nil {
   fmt.Printf("Error %s", err.Error())
   fmt.Println()
