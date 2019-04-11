@@ -57,12 +57,12 @@ func NewResources(session session.Formatter) *Resources {
 }
 
 // Metadata retrieves the SObject's metadata.
-func (a *Resources) Metadata(sobject string) (MetadataValue, error) {
-	if a == nil {
+func (r *Resources) Metadata(sobject string) (MetadataValue, error) {
+	if r == nil {
 		panic("salesforce api metadata has nil values")
 	}
 
-	if a.metadata == nil {
+	if r.metadata == nil {
 		return MetadataValue{}, errors.New("salesforce api is not initialized properly")
 	}
 
@@ -75,16 +75,16 @@ func (a *Resources) Metadata(sobject string) (MetadataValue, error) {
 		return MetadataValue{}, fmt.Errorf("sobject salesforce api: %s is not a valid sobject", sobject)
 	}
 
-	return a.metadata.callout(sobject)
+	return r.metadata.callout(sobject)
 }
 
 // Describe retrieves the SObject's describe.
-func (a *Resources) Describe(sobject string) (DescribeValue, error) {
-	if a == nil {
+func (r *Resources) Describe(sobject string) (DescribeValue, error) {
+	if r == nil {
 		panic("salesforce api metadata has nil values")
 	}
 
-	if a.describe == nil {
+	if r.describe == nil {
 		return DescribeValue{}, errors.New("salesforce api is not initialized properly")
 	}
 
@@ -97,16 +97,16 @@ func (a *Resources) Describe(sobject string) (DescribeValue, error) {
 		return DescribeValue{}, fmt.Errorf("sobject salesforce api: %s is not a valid sobject", sobject)
 	}
 
-	return a.describe.callout(sobject)
+	return r.describe.callout(sobject)
 }
 
 // Insert will create a new Salesforce record.
-func (a *Resources) Insert(inserter Inserter) (InsertValue, error) {
-	if a == nil {
+func (r *Resources) Insert(inserter Inserter) (InsertValue, error) {
+	if r == nil {
 		panic("salesforce api metadata has nil values")
 	}
 
-	if a.dml == nil {
+	if r.dml == nil {
 		return InsertValue{}, errors.New("salesforce api is not initialized properly")
 	}
 
@@ -114,17 +114,17 @@ func (a *Resources) Insert(inserter Inserter) (InsertValue, error) {
 		return InsertValue{}, errors.New("inserter can not be nil")
 	}
 
-	return a.dml.insertCallout(inserter)
+	return r.dml.insertCallout(inserter)
 
 }
 
 // Update will update an existing Salesforce record.
-func (a *Resources) Update(updater Updater) error {
-	if a == nil {
+func (r *Resources) Update(updater Updater) error {
+	if r == nil {
 		panic("salesforce api metadata has nil values")
 	}
 
-	if a.dml == nil {
+	if r.dml == nil {
 		return errors.New("salesforce api is not initialized properly")
 	}
 
@@ -132,17 +132,17 @@ func (a *Resources) Update(updater Updater) error {
 		return errors.New("updater can not be nil")
 	}
 
-	return a.dml.updateCallout(updater)
+	return r.dml.updateCallout(updater)
 
 }
 
 // Upsert will upsert an existing or new Salesforce record.
-func (a *Resources) Upsert(upserter Upserter) (UpsertValue, error) {
-	if a == nil {
+func (r *Resources) Upsert(upserter Upserter) (UpsertValue, error) {
+	if r == nil {
 		panic("salesforce api metadata has nil values")
 	}
 
-	if a.dml == nil {
+	if r.dml == nil {
 		return UpsertValue{}, errors.New("salesforce api is not initialized properly")
 	}
 
@@ -150,17 +150,17 @@ func (a *Resources) Upsert(upserter Upserter) (UpsertValue, error) {
 		return UpsertValue{}, errors.New("upserter can not be nil")
 	}
 
-	return a.dml.upsertCallout(upserter)
+	return r.dml.upsertCallout(upserter)
 
 }
 
 // Delete will delete an existing Salesforce record.
-func (a *Resources) Delete(deleter Deleter) error {
-	if a == nil {
+func (r *Resources) Delete(deleter Deleter) error {
+	if r == nil {
 		panic("salesforce api metadata has nil values")
 	}
 
-	if a.dml == nil {
+	if r.dml == nil {
 		return errors.New("salesforce api is not initialized properly")
 	}
 
@@ -168,16 +168,16 @@ func (a *Resources) Delete(deleter Deleter) error {
 		return errors.New("deleter can not be nil")
 	}
 
-	return a.dml.deleteCallout(deleter)
+	return r.dml.deleteCallout(deleter)
 }
 
 // Query returns a SObject record using the Salesforce ID.
-func (a *Resources) Query(querier Querier) (*goforce.Record, error) {
-	if a == nil {
+func (r *Resources) Query(querier Querier) (*goforce.Record, error) {
+	if r == nil {
 		panic("salesforce api metadata has nil values")
 	}
 
-	if a.query == nil {
+	if r.query == nil {
 		return nil, errors.New("salesforce api is not initialized properly")
 	}
 
@@ -185,16 +185,16 @@ func (a *Resources) Query(querier Querier) (*goforce.Record, error) {
 		return nil, errors.New("querier can not be nil")
 	}
 
-	return a.query.callout(querier)
+	return r.query.callout(querier)
 }
 
 // ExternalQuery returns a SObject record using an external ID field.
-func (a *Resources) ExternalQuery(querier ExternalQuerier) (*goforce.Record, error) {
-	if a == nil {
+func (r *Resources) ExternalQuery(querier ExternalQuerier) (*goforce.Record, error) {
+	if r == nil {
 		panic("salesforce api metadata has nil values")
 	}
 
-	if a.query == nil {
+	if r.query == nil {
 		return nil, errors.New("salesforce api is not initialized properly")
 	}
 
@@ -202,16 +202,16 @@ func (a *Resources) ExternalQuery(querier ExternalQuerier) (*goforce.Record, err
 		return nil, errors.New("querier can not be nil")
 	}
 
-	return a.query.externalCallout(querier)
+	return r.query.externalCallout(querier)
 }
 
 // DeletedRecords returns a list of records that have been deleted from a date range.
-func (a *Resources) DeletedRecords(sobject string, startDate, endDate time.Time) (DeletedRecords, error) {
-	if a == nil {
+func (r *Resources) DeletedRecords(sobject string, startDate, endDate time.Time) (DeletedRecords, error) {
+	if r == nil {
 		panic("salesforce api metadata has nil values")
 	}
 
-	if a.query == nil {
+	if r.query == nil {
 		return DeletedRecords{}, errors.New("salesforce api is not initialized properly")
 	}
 
@@ -224,16 +224,16 @@ func (a *Resources) DeletedRecords(sobject string, startDate, endDate time.Time)
 		return DeletedRecords{}, fmt.Errorf("sobject salesforce api: %s is not a valid sobject", sobject)
 	}
 
-	return a.query.deletedRecordsCallout(sobject, startDate, endDate)
+	return r.query.deletedRecordsCallout(sobject, startDate, endDate)
 }
 
 // UpdatedRecords returns a list of records that have been updated from a date range.
-func (a *Resources) UpdatedRecords(sobject string, startDate, endDate time.Time) (UpdatedRecords, error) {
-	if a == nil {
+func (r *Resources) UpdatedRecords(sobject string, startDate, endDate time.Time) (UpdatedRecords, error) {
+	if r == nil {
 		panic("salesforce api metadata has nil values")
 	}
 
-	if a.query == nil {
+	if r.query == nil {
 		return UpdatedRecords{}, errors.New("salesforce api is not initialized properly")
 	}
 
@@ -246,16 +246,16 @@ func (a *Resources) UpdatedRecords(sobject string, startDate, endDate time.Time)
 		return UpdatedRecords{}, fmt.Errorf("sobject salesforce api: %s is not a valid sobject", sobject)
 	}
 
-	return a.query.updatedRecordsCallout(sobject, startDate, endDate)
+	return r.query.updatedRecordsCallout(sobject, startDate, endDate)
 }
 
 // GetContent returns the blob from a content SObject.
-func (a *Resources) GetContent(id string, content ContentType) ([]byte, error) {
-	if a == nil {
+func (r *Resources) GetContent(id string, content ContentType) ([]byte, error) {
+	if r == nil {
 		panic("salesforce api metadata has nil values")
 	}
 
-	if a.query == nil {
+	if r.query == nil {
 		return nil, errors.New("salesforce api is not initialized properly")
 	}
 
@@ -270,5 +270,5 @@ func (a *Resources) GetContent(id string, content ContentType) ([]byte, error) {
 		return nil, fmt.Errorf("sobject salesforce: content type (%s) is not supported", string(content))
 	}
 
-	return a.query.contentCallout(id, content)
+	return r.query.contentCallout(id, content)
 }
