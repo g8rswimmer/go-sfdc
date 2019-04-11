@@ -23,12 +23,15 @@ type Session struct {
 // ServiceURL will return the Salesforce instance for the
 // service URL.
 //
+// InstanceURL will return the Salesforce instance.
+//
 // AuthorizationHeader will add the authorization to the
 // HTTP request's header.
 //
 // Client returns the HTTP client to be used in APIs calls.
 type Formatter interface {
 	ServiceURL() string
+	InstanceURL() string
 	AuthorizationHeader(*http.Request)
 	Client() *http.Client
 }
@@ -105,6 +108,10 @@ func passwordSessionResponse(request *http.Request, client *http.Client) (*sessi
 	}
 
 	return &sessionResponse, nil
+}
+
+func (session *Session) InstanceURL() string {
+	return session.response.InstanceURL
 }
 
 // ServiceURL will return the Salesforce instance for the
