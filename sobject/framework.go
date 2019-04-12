@@ -36,7 +36,7 @@ type Resources struct {
 
 const objectEndpoint = "/sobjects/"
 
-// NewResources forms the Salesforce SObject API structure.  The
+// NewResources forms the Salesforce SObject resource structure.  The
 // session formatter is required to form the proper URLs and authorization
 // header.
 func NewResources(session session.Formatter) *Resources {
