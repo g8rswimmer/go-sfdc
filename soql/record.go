@@ -7,7 +7,7 @@ type QueryRecord struct {
 	subresults map[string]*QueryResult
 }
 
-func newQueryRecord(jsonMap map[string]interface{}) (*QueryRecord, error) {
+func newQueryRecord(jsonMap map[string]interface{}, resource *Resource) (*QueryRecord, error) {
 	rec, err := goforce.RecordFromJSONMap(jsonMap)
 	if err != nil {
 		return nil, err
@@ -20,7 +20,7 @@ func newQueryRecord(jsonMap map[string]interface{}) (*QueryRecord, error) {
 				if err != nil {
 					return nil, err
 				}
-				result, err := newQueryResult(resp)
+				result, err := newQueryResult(resp, resource)
 				if err != nil {
 					return nil, err
 				}

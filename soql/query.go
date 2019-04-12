@@ -38,7 +38,7 @@ func (r *Resource) Query(querier Querier, all bool) (*QueryResult, error) {
 		return nil, err
 	}
 
-	result, err := newQueryResult(response)
+	result, err := newQueryResult(response, r)
 	if err != nil {
 		return nil, err
 	}
@@ -46,6 +46,29 @@ func (r *Resource) Query(querier Querier, all bool) (*QueryResult, error) {
 	return result, nil
 }
 
+func (r *Resource) next(recordURL string) (*QueryResult, error) {
+	queryURL := r.session.InstanceURL() + recordURL
+	request, err := http.NewRequest(http.MethodGet, queryURL, nil)
+
+	if err != nil {
+		return nil, err
+	}
+
+	request.Header.Add("Accept", "application/json")
+	r.session.AuthorizationHeader(request)
+
+	response, err := r.queryResponse(request)
+	if err != nil {
+		return nil, err
+	}
+
+	result, err := newQueryResult(response, r)
+	if err != nil {
+		return nil, err
+	}
+
+	return result, nil
+}
 func (r *Resource) queryRequest(querier Querier, all bool) (*http.Request, error) {
 	query, err := querier.Query()
 	if err != nil {
