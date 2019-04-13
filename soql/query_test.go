@@ -21,7 +21,7 @@ func (mock *mockQuerier) Query() (string, error) {
 
 func TestNewResource(t *testing.T) {
 	type args struct {
-		session session.Formatter
+		session session.ServiceFormatter
 	}
 	tests := []struct {
 		name string
@@ -53,7 +53,7 @@ func TestNewResource(t *testing.T) {
 
 func TestResource_Query(t *testing.T) {
 	type fields struct {
-		session session.Formatter
+		session session.ServiceFormatter
 	}
 	type args struct {
 		querier Querier
@@ -239,7 +239,7 @@ func TestResource_Query(t *testing.T) {
 
 func TestResource_next(t *testing.T) {
 	type fields struct {
-		session session.Formatter
+		session session.ServiceFormatter
 	}
 	type args struct {
 		recordURL string

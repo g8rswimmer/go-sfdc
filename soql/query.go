@@ -13,13 +13,13 @@ import (
 // Resource is the structure for the Salesforce
 // SOQL API resource.
 type Resource struct {
-	session session.Formatter
+	session session.ServiceFormatter
 }
 
 // NewResource forms the Salesforce SOQL resource. The
 // session formatter is required to form the proper URLs and authorization
 // header.
-func NewResource(session session.Formatter) *Resource {
+func NewResource(session session.ServiceFormatter) *Resource {
 	return &Resource{
 		session: session,
 	}

@@ -39,7 +39,7 @@ const objectEndpoint = "/sobjects/"
 // NewResources forms the Salesforce SObject resource structure.  The
 // session formatter is required to form the proper URLs and authorization
 // header.
-func NewResources(session session.Formatter) *Resources {
+func NewResources(session session.ServiceFormatter) *Resources {
 	return &Resources{
 		metadata: &metadata{
 			session: session,

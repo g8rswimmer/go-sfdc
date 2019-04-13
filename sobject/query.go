@@ -86,7 +86,7 @@ const updatedRoute = "updated"
 const contentBody = "body"
 
 type query struct {
-	session session.Formatter
+	session session.ServiceFormatter
 }
 
 func (q *query) callout(querier Querier) (*goforce.Record, error) {

@@ -5,10 +5,12 @@ import (
 	"errors"
 )
 
-// RecordAttributes is the attribute map from the record JSON
-const RecordAttributes = "attributes"
-const recordAttrType = "type"
-const recordAttrURL = "url"
+const (
+	// RecordAttributes is the attribute map from the record JSON
+	RecordAttributes = "attributes"
+	recordAttrType   = "type"
+	recordAttrURL    = "url"
+)
 
 // Record is a representation of a Salesforce
 // record.
