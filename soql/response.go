@@ -1,6 +1,8 @@
 package soql
 
-import "errors"
+import (
+	"errors"
+)
 
 type queryError struct {
 	Message   string `json:"message"`
@@ -42,7 +44,15 @@ func newQueryResponseJSON(jsonMap map[string]interface{}) (queryResponse, error)
 		}
 	}
 	if r, has := jsonMap["records"]; has {
-		if records, ok := r.([]map[string]interface{}); ok {
+		if array, ok := r.([]interface{}); ok {
+			records := make([]map[string]interface{}, len(array))
+			for idx, element := range array {
+				if rec, ok := element.(map[string]interface{}); ok {
+					records[idx] = rec
+				} else {
+					return queryResponse{}, errors.New("query response: record element is not a map")
+				}
+			}
 			response.Records = records
 		} else {
 			return queryResponse{}, errors.New("query response: records is not an array")

@@ -58,15 +58,15 @@ func Test_newQueryRecord(t *testing.T) {
 					"Contacts": map[string]interface{}{
 						"done":      true,
 						"totalSize": float64(2),
-						"records": []map[string]interface{}{
-							{
+						"records": []interface{}{
+							map[string]interface{}{
 								"attributes": map[string]interface{}{
 									"type": "Contact",
 									"url":  "/services/data/v20.0/sobjects/Account/001D000000IRFmaIAH",
 								},
 								"LastName": "Test 1",
 							},
-							{
+							map[string]interface{}{
 								"attributes": map[string]interface{}{
 									"type": "Contact",
 									"url":  "/services/data/v20.0/sobjects/Account/001D000000IomazIAB",
