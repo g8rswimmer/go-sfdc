@@ -43,7 +43,7 @@ type ObjectDescribe struct {
 }
 
 type metadata struct {
-	session session.Formatter
+	session session.ServiceFormatter
 }
 
 func (md *metadata) callout(sobject string) (MetadataValue, error) {

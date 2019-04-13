@@ -12,7 +12,7 @@ import (
 
 func Test_describe_Describe(t *testing.T) {
 	type fields struct {
-		session session.Formatter
+		session session.ServiceFormatter
 	}
 	type args struct {
 		sobject string

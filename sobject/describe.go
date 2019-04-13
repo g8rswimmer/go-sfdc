@@ -165,7 +165,7 @@ type SupportedScope struct {
 const describeEndpoint = "/describe"
 
 type describe struct {
-	session session.Formatter
+	session session.ServiceFormatter
 }
 
 func (d *describe) callout(sobject string) (DescribeValue, error) {

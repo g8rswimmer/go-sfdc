@@ -24,7 +24,7 @@ func (mock *mockInserter) Fields() map[string]interface{} {
 
 func Test_dml_Insert(t *testing.T) {
 	type fields struct {
-		session session.Formatter
+		session session.ServiceFormatter
 	}
 	type args struct {
 		inserter Inserter
@@ -221,7 +221,7 @@ func (mock *mockUpdate) Fields() map[string]interface{} {
 
 func Test_dml_Update(t *testing.T) {
 	type fields struct {
-		session session.Formatter
+		session session.ServiceFormatter
 	}
 	type args struct {
 		updater Updater
@@ -337,7 +337,7 @@ func (mock *mockUpsert) ExternalField() string {
 }
 func Test_dml_Upsert(t *testing.T) {
 	type fields struct {
-		session session.Formatter
+		session session.ServiceFormatter
 	}
 	type args struct {
 		upserter Upserter
@@ -573,7 +573,7 @@ func (mock *mockDelete) ID() string {
 
 func Test_dml_Delete(t *testing.T) {
 	type fields struct {
-		session session.Formatter
+		session session.ServiceFormatter
 	}
 	type args struct {
 		deleter Deleter

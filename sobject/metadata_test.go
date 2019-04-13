@@ -12,7 +12,7 @@ import (
 
 func Test_metadata_Metadata(t *testing.T) {
 	type fields struct {
-		session session.Formatter
+		session session.ServiceFormatter
 	}
 	type args struct {
 		sobject string

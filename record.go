@@ -5,9 +5,12 @@ import (
 	"errors"
 )
 
-const recordAttributes = "attributes"
-const recordAttrType = "type"
-const recordAttrURL = "url"
+const (
+	// RecordAttributes is the attribute map from the record JSON
+	RecordAttributes = "attributes"
+	recordAttrType   = "type"
+	recordAttrURL    = "url"
+)
 
 // Record is a representation of a Salesforce
 // record.
@@ -15,6 +18,16 @@ type Record struct {
 	sobject string
 	url     string
 	fields  map[string]interface{}
+}
+
+// RecordFromJSONMap creates a recrod from a JSON map.
+func RecordFromJSONMap(jsonMap map[string]interface{}) (*Record, error) {
+	if jsonMap == nil {
+		return nil, errors.New("record: map can not be nil")
+	}
+	r := &Record{}
+	r.fromJSONMap(jsonMap)
+	return r, nil
 }
 
 // UnmarshalJSON provides a custom unmarshaling of a
@@ -30,10 +43,15 @@ func (r *Record) UnmarshalJSON(data []byte) error {
 		return err
 	}
 
+	r.fromJSONMap(jsonMap)
+	return nil
+}
+
+func (r *Record) fromJSONMap(jsonMap map[string]interface{}) {
 	r.fields = make(map[string]interface{})
 
 	for k, v := range jsonMap {
-		if k == recordAttributes {
+		if k == RecordAttributes {
 			if attr, ok := v.(map[string]interface{}); ok {
 				if obj, ok := attr[recordAttrType]; ok {
 					if sobj, ok := obj.(string); ok {
@@ -47,11 +65,14 @@ func (r *Record) UnmarshalJSON(data []byte) error {
 				}
 			}
 		} else {
-			r.fields[k] = v
+			if v != nil {
+				if _, is := v.(map[string]interface{}); is == false {
+					r.fields[k] = v
+
+				}
+			}
 		}
 	}
-
-	return nil
 }
 
 // SObject returns attribute's Salesforce object name.

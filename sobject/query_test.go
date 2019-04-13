@@ -51,7 +51,7 @@ func testSalesforceParseTime(salesforceTime string) time.Time {
 
 func Test_query_Query(t *testing.T) {
 	type fields struct {
-		session session.Formatter
+		session session.ServiceFormatter
 	}
 	type args struct {
 		querier Querier
@@ -254,7 +254,7 @@ func (mock *mockExternalQuery) ExternalField() string {
 }
 func Test_query_ExternalQuery(t *testing.T) {
 	type fields struct {
-		session session.Formatter
+		session session.ServiceFormatter
 	}
 	type args struct {
 		querier ExternalQuerier
@@ -443,7 +443,7 @@ func Test_query_ExternalQuery(t *testing.T) {
 
 func Test_query_DeletedRecords(t *testing.T) {
 	type fields struct {
-		session session.Formatter
+		session session.ServiceFormatter
 	}
 	type args struct {
 		sobject   string
@@ -646,7 +646,7 @@ func Test_query_DeletedRecords(t *testing.T) {
 
 func Test_query_UpdatedRecords(t *testing.T) {
 	type fields struct {
-		session session.Formatter
+		session session.ServiceFormatter
 	}
 	type args struct {
 		sobject   string
@@ -843,7 +843,7 @@ func Test_query_UpdatedRecords(t *testing.T) {
 
 func Test_query_GetContent(t *testing.T) {
 	type fields struct {
-		session session.Formatter
+		session session.ServiceFormatter
 	}
 	type args struct {
 		id      string

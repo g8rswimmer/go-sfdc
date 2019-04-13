@@ -84,7 +84,7 @@ type Deleter interface {
 }
 
 type dml struct {
-	session session.Formatter
+	session session.ServiceFormatter
 }
 
 func (d *dml) insertCallout(inserter Inserter) (InsertValue, error) {

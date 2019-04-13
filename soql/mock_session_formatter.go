@@ -1,4 +1,4 @@
-package sobject
+package soql
 
 import "net/http"
 
@@ -15,7 +15,6 @@ func (mock *mockSessionFormatter) AuthorizationHeader(*http.Request) {}
 func (mock *mockSessionFormatter) Client() *http.Client {
 	return mock.client
 }
-
 func (mock *mockSessionFormatter) InstanceURL() string {
 	return mock.url
 }

@@ -464,3 +464,39 @@ func TestSession_Client(t *testing.T) {
 		})
 	}
 }
+
+func TestSession_InstanceURL(t *testing.T) {
+	type fields struct {
+		response *sessionPasswordResponse
+		config   goforce.Configuration
+	}
+	tests := []struct {
+		name   string
+		fields fields
+		want   string
+	}{
+		{
+			name: "Passing URL",
+			fields: fields{
+				response: &sessionPasswordResponse{
+					InstanceURL: "https://www.my.salesforce.instance",
+				},
+				config: goforce.Configuration{
+					Version: 43,
+				},
+			},
+			want: "https://www.my.salesforce.instance",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			session := &Session{
+				response: tt.fields.response,
+				config:   tt.fields.config,
+			}
+			if got := session.InstanceURL(); got != tt.want {
+				t.Errorf("Session.InstanceURL() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}

@@ -263,3 +263,69 @@ func TestRecord_Fields(t *testing.T) {
 		})
 	}
 }
+
+func TestRecordFromJSONMap(t *testing.T) {
+	type args struct {
+		jsonMap map[string]interface{}
+	}
+	tests := []struct {
+		name    string
+		args    args
+		want    *Record
+		wantErr bool
+	}{
+		{
+			name: "JSON map",
+			args: args{
+				jsonMap: map[string]interface{}{
+					"attributes": map[string]interface{}{
+						"type": "Account",
+						"url":  "/services/data/v20.0/sobjects/Account/001D000000IRFmaIAH",
+					},
+					"Name": "Test 1",
+					"Contacts": map[string]interface{}{
+						"done":      "true",
+						"totalSize": 14,
+						"records": []map[string]interface{}{
+							{
+								"attributes": map[string]interface{}{
+									"type": "Contact",
+									"url":  "/services/data/v20.0/sobjects/Contact/001D000000IRFmaIAH",
+								},
+								"LastName": "Test 1",
+							},
+						},
+					},
+				},
+			},
+			want: &Record{
+				sobject: "Account",
+				url:     "/services/data/v20.0/sobjects/Account/001D000000IRFmaIAH",
+				fields: map[string]interface{}{
+					"Name": "Test 1",
+				},
+			},
+			wantErr: false,
+		},
+		{
+			name: "JSON Map error",
+			args: args{
+				jsonMap: nil,
+			},
+			want:    nil,
+			wantErr: true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := RecordFromJSONMap(tt.args.jsonMap)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("RecordFromJSONMap() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("RecordFromJSONMap() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}

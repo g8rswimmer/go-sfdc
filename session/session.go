@@ -17,21 +17,36 @@ type Session struct {
 	config   goforce.Configuration
 }
 
-// Formatter is the session interface that formats the
-// session information for use in the APIs.
+// Clienter interface provides the HTTP client used by the
+// the resources.
+type Clienter interface {
+	Client() *http.Client
+}
+
+// InstanceFormatter is the session interface that
+// formaters the session instance information used
+// by the resources.
 //
-// ServiceURL will return the Salesforce instance for the
-// service URL.
+// InstanceURL will return the Salesforce instance.
 //
 // AuthorizationHeader will add the authorization to the
 // HTTP request's header.
-//
-// Client returns the HTTP client to be used in APIs calls.
-type Formatter interface {
-	ServiceURL() string
+type InstanceFormatter interface {
+	InstanceURL() string
 	AuthorizationHeader(*http.Request)
-	Client() *http.Client
+	Clienter
 }
+
+// ServiceFormatter is the session interface that
+// formats the session for service resources.
+//
+// ServiceURL provides the service URL for resources to
+// user.
+type ServiceFormatter interface {
+	InstanceFormatter
+	ServiceURL() string
+}
+
 type sessionPasswordResponse struct {
 	AccessToken string `json:"access_token"`
 	InstanceURL string `json:"instance_url"`
@@ -105,6 +120,12 @@ func passwordSessionResponse(request *http.Request, client *http.Client) (*sessi
 	}
 
 	return &sessionResponse, nil
+}
+
+// InstanceURL will retuern the Salesforce instance
+// from the session authentication.
+func (session *Session) InstanceURL() string {
+	return session.response.InstanceURL
 }
 
 // ServiceURL will return the Salesforce instance for the
