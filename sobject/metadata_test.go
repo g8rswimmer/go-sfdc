@@ -44,9 +44,18 @@ func Test_metadata_Metadata(t *testing.T) {
 					url: "https://test.salesforce.com",
 					client: mockHTTPClient(func(req *http.Request) *http.Response {
 
+						resp := `
+							[ 
+								{
+									"message" : "Email: invalid email address: Not a real email address",
+									"errorCode" : "INVALID_EMAIL_ADDRESS",
+									"fields" : [ "Email" ]
+							  	} 
+							]`
 						return &http.Response{
 							StatusCode: 500,
 							Status:     "Some Status",
+							Body:       ioutil.NopCloser(strings.NewReader(resp)),
 							Header:     make(http.Header),
 						}
 					}),

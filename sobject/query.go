@@ -44,11 +44,6 @@ type ExternalQuerier interface {
 	ExternalField() string
 }
 
-type queryError struct {
-	Message   string `json:"message"`
-	ErrorCode string `json:"errorCode"`
-}
-
 type deletedRecord struct {
 	ID             string    `json:"id"`
 	DeletedDateStr string    `json:"deletedDate"`
@@ -138,7 +133,7 @@ func (q *query) queryResponse(request *http.Request) (*goforce.Record, error) {
 	defer response.Body.Close()
 
 	if response.StatusCode != http.StatusOK {
-		var queryErrs []queryError
+		var queryErrs []goforce.Error
 		err = decoder.Decode(&queryErrs)
 		var errMsg error
 		if err == nil {

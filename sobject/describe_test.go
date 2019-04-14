@@ -44,9 +44,17 @@ func Test_describe_Describe(t *testing.T) {
 					url: "https://test.salesforce.com",
 					client: mockHTTPClient(func(req *http.Request) *http.Response {
 
+						resp := `[
+							{
+								"message" : "The requested resource does not exist",
+								"errorCode" : "NOT_FOUND"
+							}							
+						]
+						`
 						return &http.Response{
 							StatusCode: 500,
 							Status:     "Some Status",
+							Body:       ioutil.NopCloser(strings.NewReader(resp)),
 							Header:     make(http.Header),
 						}
 					}),
