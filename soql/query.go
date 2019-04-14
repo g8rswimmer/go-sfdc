@@ -7,6 +7,8 @@ import (
 	"net/http"
 	"net/url"
 
+	"github.com/g8rswimmer/goforce"
+
 	"github.com/g8rswimmer/goforce/session"
 )
 
@@ -116,7 +118,7 @@ func (r *Resource) queryResponse(request *http.Request) (queryResponse, error) {
 	defer response.Body.Close()
 
 	if response.StatusCode != http.StatusOK {
-		var queryErrs []queryError
+		var queryErrs []goforce.Error
 		err = decoder.Decode(&queryErrs)
 		var errMsg error
 		if err == nil {
