@@ -1,7 +1,7 @@
 # SObject APIs
 [back](../README.md)
 
-The `sobject` package is an implementation of `Salesforce APIs` centered on `SObject` operations.  This operations include:
+The `sobject` package is an implementation of `Salesforce APIs` centered on `SObject` operations.  These operations include:
 * Metadata
 * Describe
 * DML
