@@ -21,15 +21,15 @@ func Test_newQueryResponseJSON(t *testing.T) {
 				jsonMap: map[string]interface{}{
 					"done":      true,
 					"totalSize": float64(2),
-					"records": []map[string]interface{}{
-						{
+					"records": []interface{}{
+						map[string]interface{}{
 							"attributes": map[string]interface{}{
 								"type": "Account",
 								"url":  "/services/data/v20.0/sobjects/Account/001D000000IRFmaIAH",
 							},
 							"Name": "Test 1",
 						},
-						{
+						map[string]interface{}{
 							"attributes": map[string]interface{}{
 								"type": "Account",
 								"url":  "/services/data/v20.0/sobjects/Account/001D000000IomazIAB",
@@ -68,15 +68,15 @@ func Test_newQueryResponseJSON(t *testing.T) {
 					"done":           true,
 					"totalSize":      float64(2),
 					"nextRecordsUrl": "/services/data/v20.0/query/01gD0000002HU6KIAW-2000",
-					"records": []map[string]interface{}{
-						{
+					"records": []interface{}{
+						map[string]interface{}{
 							"attributes": map[string]interface{}{
 								"type": "Account",
 								"url":  "/services/data/v20.0/sobjects/Account/001D000000IRFmaIAH",
 							},
 							"Name": "Test 1",
 						},
-						{
+						map[string]interface{}{
 							"attributes": map[string]interface{}{
 								"type": "Account",
 								"url":  "/services/data/v20.0/sobjects/Account/001D000000IomazIAB",
