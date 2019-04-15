@@ -33,29 +33,8 @@ func (cq *CollectionQuery) Query() ([]*goforce.Record, error) {
 		body:     payload,
 		endpoint: cq.session.ServiceURL() + endpoint + "/" + cq.sobject,
 	}
-	response, err := c.send(cq.session)
-	if err != nil {
-		return nil, err
-	}
-
-	decoder := json.NewDecoder(response.Body)
-	defer response.Body.Close()
-
-	if response.StatusCode != http.StatusOK {
-		var insertErrs []goforce.Error
-		err = decoder.Decode(&insertErrs)
-		var errMsg error
-		if err == nil {
-			for _, insertErr := range insertErrs {
-				errMsg = fmt.Errorf("insert response err: %s: %s", insertErr.ErrorCode, insertErr.Message)
-			}
-		} else {
-			errMsg = fmt.Errorf("insert response err: %d %s", response.StatusCode, response.Status)
-		}
-		return nil, errMsg
-	}
 	var values []*goforce.Record
-	err = decoder.Decode(&values)
+	err = c.send(cq.session, &values)
 	if err != nil {
 		return nil, err
 	}

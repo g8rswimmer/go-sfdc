@@ -1,13 +1,11 @@
 package collections
 
 import (
-	"encoding/json"
 	"fmt"
 	"net/http"
 	"net/url"
 	"strings"
 
-	"github.com/g8rswimmer/goforce"
 	"github.com/g8rswimmer/goforce/session"
 	"github.com/g8rswimmer/goforce/sobject"
 )
@@ -27,29 +25,8 @@ func (cd *CollectionDelete) Delete(allOrNone bool) ([]DeleteValue, error) {
 		endpoint: cd.session.ServiceURL() + endpoint,
 		values:   cd.values(allOrNone),
 	}
-	response, err := c.send(cd.session)
-	if err != nil {
-		return nil, err
-	}
-
-	decoder := json.NewDecoder(response.Body)
-	defer response.Body.Close()
-
-	if response.StatusCode != http.StatusOK {
-		var insertErrs []goforce.Error
-		err = decoder.Decode(&insertErrs)
-		var errMsg error
-		if err == nil {
-			for _, insertErr := range insertErrs {
-				errMsg = fmt.Errorf("insert response err: %s: %s", insertErr.ErrorCode, insertErr.Message)
-			}
-		} else {
-			errMsg = fmt.Errorf("insert response err: %d %s", response.StatusCode, response.Status)
-		}
-		return nil, errMsg
-	}
 	var values []DeleteValue
-	err = decoder.Decode(&values)
+	err := c.send(cd.session, &values)
 	if err != nil {
 		return nil, err
 	}
