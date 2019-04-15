@@ -3,10 +3,11 @@ package collections
 import (
 	"bytes"
 	"encoding/json"
-	"errors"
+	"fmt"
 	"io"
 	"net/http"
 
+	"github.com/g8rswimmer/goforce"
 	"github.com/g8rswimmer/goforce/session"
 	"github.com/g8rswimmer/goforce/sobject"
 )
@@ -40,7 +41,17 @@ func (ci *CollectionInsert) Insert(allOrNone bool) ([]sobject.InsertValue, error
 	defer response.Body.Close()
 
 	if response.StatusCode != http.StatusOK {
-		return nil, errors.New("Place holder error here")
+		var insertErrs []goforce.Error
+		err = decoder.Decode(&insertErrs)
+		var errMsg error
+		if err == nil {
+			for _, insertErr := range insertErrs {
+				errMsg = fmt.Errorf("insert response err: %s: %s", insertErr.ErrorCode, insertErr.Message)
+			}
+		} else {
+			errMsg = fmt.Errorf("insert response err: %d %s", response.StatusCode, response.Status)
+		}
+		return nil, errMsg
 	}
 	var values []sobject.InsertValue
 	err = decoder.Decode(&values)
