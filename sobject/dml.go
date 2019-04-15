@@ -6,21 +6,16 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/g8rswimmer/goforce"
 	"github.com/g8rswimmer/goforce/session"
 )
 
 // InsertValue is the value that is returned when a
 // record is inserted into Salesforce.
 type InsertValue struct {
-	Success bool     `json:"success"`
-	ID      string   `json:"id"`
-	Errors  []string `json:"errors"`
-}
-
-type insertError struct {
-	Message   string   `json:"message"`
-	ErrorCode string   `json:"errorCode"`
-	Fields    []string `json:"fields"`
+	Success bool            `json:"success"`
+	ID      string          `json:"id"`
+	Errors  []goforce.Error `json:"errors"`
 }
 
 // UpsertValue is the value that is return when a
@@ -135,7 +130,7 @@ func (d *dml) insertResponse(request *http.Request) (InsertValue, error) {
 	defer response.Body.Close()
 
 	if response.StatusCode != http.StatusCreated {
-		var insertErrs []insertError
+		var insertErrs []goforce.Error
 		err = decoder.Decode(&insertErrs)
 		var errMsg error
 		if err == nil {
@@ -198,7 +193,21 @@ func (d *dml) updateResponse(request *http.Request) error {
 	}
 
 	if response.StatusCode != http.StatusNoContent {
-		return fmt.Errorf("metadata response err: %d %s", response.StatusCode, response.Status)
+		decoder := json.NewDecoder(response.Body)
+		defer response.Body.Close()
+
+		var updateErrs []goforce.Error
+		err = decoder.Decode(&updateErrs)
+		var errMsg error
+		if err == nil {
+			for _, updateErr := range updateErrs {
+				errMsg = fmt.Errorf("insert response err: %s: %s", updateErr.ErrorCode, updateErr.Message)
+			}
+		} else {
+			errMsg = fmt.Errorf("insert response err: %d %s", response.StatusCode, response.Status)
+		}
+
+		return errMsg
 	}
 
 	return nil
@@ -264,12 +273,12 @@ func (d *dml) upsertResponse(request *http.Request) (UpsertValue, error) {
 		isInsert = false
 	default:
 		defer response.Body.Close()
-		var insertErrs []insertError
-		err = decoder.Decode(&insertErrs)
+		var upsetErrs []goforce.Error
+		err = decoder.Decode(&upsetErrs)
 		errMsg := fmt.Errorf("upsert response err: %d %s", response.StatusCode, response.Status)
 		if err == nil {
-			for _, insertErr := range insertErrs {
-				errMsg = fmt.Errorf("upsert response err: %s: %s", insertErr.ErrorCode, insertErr.Message)
+			for _, updateErr := range upsetErrs {
+				errMsg = fmt.Errorf("upsert response err: %s: %s", updateErr.ErrorCode, updateErr.Message)
 			}
 		}
 		return UpsertValue{}, errMsg

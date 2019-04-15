@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/g8rswimmer/goforce"
 	"github.com/g8rswimmer/goforce/session"
 )
 
@@ -207,12 +208,23 @@ func (d *describe) response(request *http.Request) (DescribeValue, error) {
 		return DescribeValue{}, err
 	}
 
-	if response.StatusCode != http.StatusOK {
-		return DescribeValue{}, fmt.Errorf("metadata response err: %d %s", response.StatusCode, response.Status)
-	}
-
 	decoder := json.NewDecoder(response.Body)
 	defer response.Body.Close()
+
+	if response.StatusCode != http.StatusOK {
+		var respErrs []goforce.Error
+		err = decoder.Decode(&respErrs)
+		var errMsg error
+		if err == nil {
+			for _, respErr := range respErrs {
+				errMsg = fmt.Errorf("metadata response err: %s: %s", respErr.ErrorCode, respErr.Message)
+			}
+		} else {
+			errMsg = fmt.Errorf("metadata response err: %d %s", response.StatusCode, response.Status)
+		}
+
+		return DescribeValue{}, errMsg
+	}
 
 	var value DescribeValue
 	err = decoder.Decode(&value)

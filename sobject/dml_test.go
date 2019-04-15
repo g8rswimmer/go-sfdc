@@ -7,6 +7,8 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/g8rswimmer/goforce"
+
 	"github.com/g8rswimmer/goforce/session"
 )
 
@@ -180,7 +182,7 @@ func Test_dml_Insert(t *testing.T) {
 			},
 			want: InsertValue{
 				Success: true,
-				Errors:  make([]string, 0),
+				Errors:  make([]goforce.Error, 0),
 				ID:      "001D000000IqhSLIAZ",
 			},
 			wantErr: false,
@@ -258,9 +260,17 @@ func Test_dml_Update(t *testing.T) {
 					url: "https://test.salesforce.com",
 					client: mockHTTPClient(func(req *http.Request) *http.Response {
 
+						resp := `[
+							{
+								"message" : "The requested resource does not exist",
+								"errorCode" : "NOT_FOUND"
+							}							
+						]
+						`
 						return &http.Response{
 							StatusCode: 500,
 							Status:     "Some Status",
+							Body:       ioutil.NopCloser(strings.NewReader(resp)),
 							Header:     make(http.Header),
 						}
 					}),
@@ -377,10 +387,17 @@ func Test_dml_Upsert(t *testing.T) {
 					url: "https://test.salesforce.com",
 					client: mockHTTPClient(func(req *http.Request) *http.Response {
 
+						resp := `[
+							{
+								"message" : "The requested resource does not exist",
+								"errorCode" : "NOT_FOUND"
+							}							
+						]
+						`
 						return &http.Response{
 							StatusCode: 500,
 							Status:     "Some Status",
-							Body:       ioutil.NopCloser(strings.NewReader("resp")),
+							Body:       ioutil.NopCloser(strings.NewReader(resp)),
 							Header:     make(http.Header),
 						}
 					}),
@@ -505,7 +522,7 @@ func Test_dml_Upsert(t *testing.T) {
 				Inserted: true,
 				InsertValue: InsertValue{
 					Success: true,
-					Errors:  make([]string, 0),
+					Errors:  make([]goforce.Error, 0),
 					ID:      "001D000000IqhSLIAZ",
 				},
 			},

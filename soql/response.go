@@ -2,11 +2,6 @@ package soql
 
 import "errors"
 
-type queryError struct {
-	Message   string `json:"message"`
-	ErrorCode string `json:"errorCode"`
-}
-
 type queryResponse struct {
 	Done           bool                     `json:"done"`
 	TotalSize      int                      `json:"totalSize"`
