@@ -17,44 +17,47 @@ type collectionQueryPayload struct {
 	Fields []string `json:"fields"`
 }
 
-type CollectionQuery struct {
+type Query struct {
 	session session.ServiceFormatter
 	records []sobject.Querier
 	sobject string
 }
 
-func (cq *CollectionQuery) Query() ([]*goforce.Record, error) {
-	payload, err := cq.payload()
+func (q *Query) Callout() ([]*goforce.Record, error) {
+	if q == nil {
+		panic("collections: Collection Query can not be nil")
+	}
+	payload, err := q.payload()
 	if err != nil {
 		return nil, err
 	}
 	c := &collection{
 		method:   http.MethodPost,
 		body:     payload,
-		endpoint: cq.session.ServiceURL() + endpoint + "/" + cq.sobject,
+		endpoint: endpoint + "/" + q.sobject,
 	}
 	var values []*goforce.Record
-	err = c.send(cq.session, &values)
+	err = c.send(q.session, &values)
 	if err != nil {
 		return nil, err
 	}
 	return values, nil
 }
-func (cq *CollectionQuery) Records(records ...sobject.Querier) {
-	if cq == nil {
+func (q *Query) Records(records ...sobject.Querier) {
+	if q == nil {
 		panic("collections: Collection Query can not be nil")
 	}
-	cq.records = append(cq.records, records...)
+	q.records = append(q.records, records...)
 }
-func (cq *CollectionQuery) payload() (io.Reader, error) {
+func (q *Query) payload() (io.Reader, error) {
 	fields := make(map[string]interface{})
 	ids := make(map[string]interface{})
-	for _, querier := range cq.records {
-		if cq.sobject == "" {
-			cq.sobject = querier.SObject()
+	for _, querier := range q.records {
+		if q.sobject == "" {
+			q.sobject = querier.SObject()
 		} else {
-			if cq.sobject != querier.SObject() {
-				return nil, fmt.Errorf("sobject collections: sobjects do not match got %s want %s", querier.SObject(), cq.sobject)
+			if q.sobject != querier.SObject() {
+				return nil, fmt.Errorf("sobject collections: sobjects do not match got %s want %s", querier.SObject(), q.sobject)
 			}
 		}
 		ids[querier.ID()] = nil
@@ -63,8 +66,8 @@ func (cq *CollectionQuery) payload() (io.Reader, error) {
 		}
 	}
 	queryPayload := collectionQueryPayload{
-		IDs:    cq.keyArray(ids),
-		Fields: cq.keyArray(fields),
+		IDs:    q.keyArray(ids),
+		Fields: q.keyArray(fields),
 	}
 	payload, err := json.Marshal(queryPayload)
 	if err != nil {
@@ -72,7 +75,7 @@ func (cq *CollectionQuery) payload() (io.Reader, error) {
 	}
 	return bytes.NewReader(payload), nil
 }
-func (cq *CollectionQuery) keyArray(m map[string]interface{}) []string {
+func (q *Query) keyArray(m map[string]interface{}) []string {
 	array := make([]string, len(m))
 	idx := 0
 	for k := range m {

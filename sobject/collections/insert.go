@@ -8,37 +8,37 @@ import (
 	"github.com/g8rswimmer/goforce/sobject"
 )
 
-type CollectionInsert struct {
+type Insert struct {
 	session session.ServiceFormatter
 	records []sobject.Inserter
 }
 
-func (ci *CollectionInsert) Insert(allOrNone bool) ([]sobject.InsertValue, error) {
-	payload, err := ci.payload(allOrNone)
+func (i *Insert) Callout(allOrNone bool) ([]sobject.InsertValue, error) {
+	payload, err := i.payload(allOrNone)
 	if err != nil {
 		return nil, err
 	}
 	c := &collection{
 		method:   http.MethodPost,
 		body:     payload,
-		endpoint: ci.session.ServiceURL() + endpoint,
+		endpoint: endpoint,
 	}
 	var values []sobject.InsertValue
-	err = c.send(ci.session, &values)
+	err = c.send(i.session, &values)
 	if err != nil {
 		return nil, err
 	}
 	return values, nil
 }
-func (ci *CollectionInsert) Records(records ...sobject.Inserter) {
-	if ci == nil {
+func (i *Insert) Records(records ...sobject.Inserter) {
+	if i == nil {
 		panic("collections: Collection Insert can not be nil")
 	}
-	ci.records = append(ci.records, records...)
+	i.records = append(i.records, records...)
 }
-func (ci *CollectionInsert) payload(allOrNone bool) (io.Reader, error) {
-	records := make([]interface{}, len(ci.records))
-	for idx, inserter := range ci.records {
+func (i *Insert) payload(allOrNone bool) (io.Reader, error) {
+	records := make([]interface{}, len(i.records))
+	for idx, inserter := range i.records {
 		rec := map[string]interface{}{
 			"attributes": map[string]string{
 				"type": inserter.SObject(),
