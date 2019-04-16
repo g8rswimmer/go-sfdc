@@ -54,6 +54,5 @@ func (cu *CollectionUpdate) payload(allOrNone bool) (io.Reader, error) {
 		rec["id"] = updater.ID()
 		records[idx] = rec
 	}
-	dmlPayload := &collectionDmlPayload{}
-	return dmlPayload.payload(allOrNone, records)
+	return dmlpayload(allOrNone, records)
 }

@@ -49,7 +49,7 @@ func (c *collection) send(session session.ServiceFormatter, value interface{}) e
 		var errMsg error
 		if err == nil {
 			for _, insertErr := range insertErrs {
-				errMsg = fmt.Errorf("insert response err: %s: %s", insertErr.ErrorCode, insertErr.Message)
+				errMsg = fmt.Errorf("insert response err: %s: %s", insertErr.StatusCode, insertErr.Message)
 			}
 		} else {
 			errMsg = fmt.Errorf("insert response err: %d %s", response.StatusCode, response.Status)
@@ -63,7 +63,7 @@ func (c *collection) send(session session.ServiceFormatter, value interface{}) e
 	return nil
 }
 
-func (dml *collectionDmlPayload) payload(allOrNone bool, records []interface{}) (io.Reader, error) {
+func dmlpayload(allOrNone bool, records []interface{}) (io.Reader, error) {
 	dmlPayload := collectionDmlPayload{
 		AllOrNone: allOrNone,
 		Records:   records,

@@ -49,6 +49,5 @@ func (ci *CollectionInsert) payload(allOrNone bool) (io.Reader, error) {
 		}
 		records[idx] = rec
 	}
-	dmlPayload := &collectionDmlPayload{}
-	return dmlPayload.payload(allOrNone, records)
+	return dmlpayload(allOrNone, records)
 }

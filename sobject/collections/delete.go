@@ -14,33 +14,36 @@ type DeleteValue struct {
 	sobject.InsertValue
 }
 
-type CollectionDelete struct {
+type Delete struct {
 	session session.ServiceFormatter
 	records []string
 }
 
-func (cd *CollectionDelete) Delete(allOrNone bool) ([]DeleteValue, error) {
+func (d *Delete) Callout(allOrNone bool) ([]DeleteValue, error) {
+	if d == nil {
+		panic("collections: Collection Delete can not be nil")
+	}
 	c := &collection{
 		method:   http.MethodDelete,
-		endpoint: cd.session.ServiceURL() + endpoint,
-		values:   cd.values(allOrNone),
+		endpoint: endpoint,
+		values:   d.values(allOrNone),
 	}
 	var values []DeleteValue
-	err := c.send(cd.session, &values)
+	err := c.send(d.session, &values)
 	if err != nil {
 		return nil, err
 	}
 	return values, nil
 }
-func (cd *CollectionDelete) Records(records ...string) {
-	if cd == nil {
+func (d *Delete) Records(records ...string) {
+	if d == nil {
 		panic("collections: Collection Delete can not be nil")
 	}
-	cd.records = append(cd.records, records...)
+	d.records = append(d.records, records...)
 }
-func (cd *CollectionDelete) values(allOrNone bool) *url.Values {
+func (d *Delete) values(allOrNone bool) *url.Values {
 	values := &url.Values{}
-	values.Add("ids", strings.Join(cd.records, ","))
+	values.Add("ids", strings.Join(d.records, ","))
 	values.Add("allOrNone", fmt.Sprintf("%t", allOrNone))
 	return values
 }
