@@ -12,22 +12,26 @@ import (
 	"github.com/g8rswimmer/goforce/sobject"
 )
 
-type mockInserter struct {
+type mockUpdater struct {
 	sobject string
 	fields  map[string]interface{}
+	id      string
 }
 
-func (mock *mockInserter) SObject() string {
+func (mock *mockUpdater) SObject() string {
 	return mock.sobject
 }
-func (mock *mockInserter) Fields() map[string]interface{} {
+func (mock *mockUpdater) Fields() map[string]interface{} {
 	return mock.fields
 }
+func (mock *mockUpdater) ID() string {
+	return mock.id
+}
 
-func TestInsert_payload(t *testing.T) {
+func TestUpdate_payload(t *testing.T) {
 	type fields struct {
 		session session.ServiceFormatter
-		records []sobject.Inserter
+		records []sobject.Updater
 	}
 	type args struct {
 		allOrNone bool
@@ -39,22 +43,22 @@ func TestInsert_payload(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name: "payload",
+			name: "payloading",
 			fields: fields{
-				records: []sobject.Inserter{
-					&mockInserter{
+				records: []sobject.Updater{
+					&mockUpdater{
 						sobject: "Account",
 						fields: map[string]interface{}{
-							"Name":        "example.com",
-							"BillingCity": "San Francisco",
+							"NumberOfEmployees": 27000,
 						},
+						id: "001xx000003DGb2AAG",
 					},
-					&mockInserter{
+					&mockUpdater{
 						sobject: "Contact",
 						fields: map[string]interface{}{
-							"LastName":  "Johnson",
-							"FirstName": "Erica",
+							"Title": "Lead Engineer",
 						},
+						id: "003xx000004TmiQAAS",
 					},
 				},
 			},
@@ -66,69 +70,72 @@ func TestInsert_payload(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			i := &Insert{
+			u := &Update{
 				session: tt.fields.session,
 				records: tt.fields.records,
 			}
-			_, err := i.payload(tt.args.allOrNone)
+			_, err := u.payload(tt.args.allOrNone)
 			if (err != nil) != tt.wantErr {
-				t.Errorf("Insert.payload() error = %v, wantErr %v", err, tt.wantErr)
+				t.Errorf("Update.payload() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
 		})
 	}
 }
 
-func TestInsert_Records(t *testing.T) {
+func TestUpdate_Records(t *testing.T) {
 	type fields struct {
 		session session.ServiceFormatter
-		records []sobject.Inserter
+		records []sobject.Updater
 	}
 	type args struct {
-		records []sobject.Inserter
+		records []sobject.Updater
 	}
 	tests := []struct {
 		name   string
 		fields fields
 		args   args
-		want   *Insert
+		want   *Update
 	}{
 		{
-			name:   "add records",
-			fields: fields{},
-			args: args{
-				records: []sobject.Inserter{
-					&mockInserter{
+			name: "records",
+			fields: fields{
+				records: []sobject.Updater{
+					&mockUpdater{
 						sobject: "Account",
 						fields: map[string]interface{}{
-							"Name":        "example.com",
-							"BillingCity": "San Francisco",
+							"NumberOfEmployees": 27000,
 						},
-					},
-					&mockInserter{
-						sobject: "Contact",
-						fields: map[string]interface{}{
-							"LastName":  "Johnson",
-							"FirstName": "Erica",
-						},
+						id: "001xx000003DGb2AAG",
 					},
 				},
 			},
-			want: &Insert{
-				records: []sobject.Inserter{
-					&mockInserter{
-						sobject: "Account",
-						fields: map[string]interface{}{
-							"Name":        "example.com",
-							"BillingCity": "San Francisco",
-						},
-					},
-					&mockInserter{
+			args: args{
+				records: []sobject.Updater{
+					&mockUpdater{
 						sobject: "Contact",
 						fields: map[string]interface{}{
-							"LastName":  "Johnson",
-							"FirstName": "Erica",
+							"Title": "Lead Engineer",
 						},
+						id: "003xx000004TmiQAAS",
+					},
+				},
+			},
+			want: &Update{
+				records: []sobject.Updater{
+					&mockUpdater{
+						sobject: "Account",
+						fields: map[string]interface{}{
+							"NumberOfEmployees": 27000,
+						},
+						id: "001xx000003DGb2AAG",
+					},
+					&mockUpdater{
+						sobject: "Contact",
+						fields: map[string]interface{}{
+							"Title": "Lead Engineer",
+						},
+						id: "003xx000004TmiQAAS",
 					},
 				},
 			},
@@ -136,22 +143,22 @@ func TestInsert_Records(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			i := &Insert{
+			u := &Update{
 				session: tt.fields.session,
 				records: tt.fields.records,
 			}
-			i.Records(tt.args.records...)
-			if !reflect.DeepEqual(i, tt.want) {
-				t.Errorf("Insert.Records() = %v, want %v", i, tt.want)
+			u.Records(tt.args.records...)
+			if !reflect.DeepEqual(u, tt.want) {
+				t.Errorf("Update.Records() = %v, want %v", u, tt.want)
 			}
 		})
 	}
 }
 
-func TestInsert_Callout(t *testing.T) {
+func TestUpdate_Callout(t *testing.T) {
 	type fields struct {
 		session session.ServiceFormatter
-		records []sobject.Inserter
+		records []sobject.Updater
 	}
 	type args struct {
 		allOrNone bool
@@ -160,26 +167,26 @@ func TestInsert_Callout(t *testing.T) {
 		name    string
 		fields  fields
 		args    args
-		want    []sobject.InsertValue
+		want    []UpdateValue
 		wantErr bool
 	}{
 		{
 			name: "success",
 			fields: fields{
-				records: []sobject.Inserter{
-					&mockInserter{
+				records: []sobject.Updater{
+					&mockUpdater{
 						sobject: "Account",
 						fields: map[string]interface{}{
-							"Name":        "example.com",
-							"BillingCity": "San Francisco",
+							"NumberOfEmployees": 27000,
 						},
+						id: "001xx000003DGb2AAG",
 					},
-					&mockInserter{
+					&mockUpdater{
 						sobject: "Contact",
 						fields: map[string]interface{}{
-							"LastName":  "Johnson",
-							"FirstName": "Erica",
+							"Title": "Lead Engineer",
 						},
+						id: "003xx000004TmiQAAS",
 					},
 				},
 				session: &mockSessionFormatter{
@@ -195,7 +202,7 @@ func TestInsert_Callout(t *testing.T) {
 							}
 						}
 
-						if req.Method != http.MethodPost {
+						if req.Method != http.MethodPatch {
 							return &http.Response{
 								StatusCode: 500,
 								Status:     "Bad Method",
@@ -210,9 +217,9 @@ func TestInsert_Callout(t *testing.T) {
 							   "success" : false,
 							   "errors" : [
 								  {
-									 "statusCode" : "DUPLICATES_DETECTED",
+									 "statusCode" : "MALFORMED_ID",
 									 "message" : "Use one of these records?",
-									 "fields" : [ ]
+									 "fields" : [ "Id" ]
 								  }
 							   ]
 							},
@@ -235,21 +242,25 @@ func TestInsert_Callout(t *testing.T) {
 			args: args{
 				allOrNone: true,
 			},
-			want: []sobject.InsertValue{
-				{
-					Success: false,
-					Errors: []goforce.Error{
-						{
-							ErrorCode: "DUPLICATES_DETECTED",
-							Message:    "Use one of these records?",
-							Fields:     make([]string, 0),
+			want: []UpdateValue{
+				UpdateValue{
+					InsertValue: sobject.InsertValue{
+						Success: false,
+						Errors: []goforce.Error{
+							{
+								ErrorCode: "MALFORMED_ID",
+								Message:   "Use one of these records?",
+								Fields:    []string{"Id"},
+							},
 						},
 					},
 				},
-				{
-					Success: true,
-					ID:      "003RM0000068xVCYAY",
-					Errors:  make([]goforce.Error, 0),
+				UpdateValue{
+					InsertValue: sobject.InsertValue{
+						Success: true,
+						ID:      "003RM0000068xVCYAY",
+						Errors:  make([]goforce.Error, 0),
+					},
 				},
 			},
 			wantErr: false,
@@ -257,17 +268,17 @@ func TestInsert_Callout(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			i := &Insert{
+			u := &Update{
 				session: tt.fields.session,
 				records: tt.fields.records,
 			}
-			got, err := i.Callout(tt.args.allOrNone)
+			got, err := u.Callout(tt.args.allOrNone)
 			if (err != nil) != tt.wantErr {
-				t.Errorf("Insert.Callout() error = %v, wantErr %v", err, tt.wantErr)
+				t.Errorf("Update.Callout() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
 			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("Insert.Callout() = %v, want %v", got, tt.want)
+				t.Errorf("Update.Callout() = %v, want %v", got, tt.want)
 			}
 		})
 	}

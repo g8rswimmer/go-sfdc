@@ -5,6 +5,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/url"
+	"reflect"
 	"strings"
 	"testing"
 
@@ -186,6 +187,219 @@ func Test_collection_send(t *testing.T) {
 			}
 			if err := c.send(tt.args.session, tt.args.value); (err != nil) != tt.wantErr {
 				t.Errorf("collection.send() error = %v, wantErr %v", err, tt.wantErr)
+			}
+		})
+	}
+}
+
+func TestNewResource(t *testing.T) {
+	type args struct {
+		session session.ServiceFormatter
+	}
+	tests := []struct {
+		name string
+		args args
+		want *Resource
+	}{
+		{
+			name: "get resource",
+			args: args{
+				session: &mockSessionFormatter{
+					url: "some.url.com",
+				},
+			},
+			want: &Resource{
+				session: &mockSessionFormatter{
+					url: "some.url.com",
+				},
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := NewResource(tt.args.session); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("NewResource() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestResource_NewInsert(t *testing.T) {
+	type fields struct {
+		session session.ServiceFormatter
+	}
+	tests := []struct {
+		name   string
+		fields fields
+		want   *Insert
+	}{
+		{
+			name: "get resource",
+			fields: fields{
+				session: &mockSessionFormatter{
+					url: "some.url.com",
+				},
+			},
+			want: &Insert{
+				session: &mockSessionFormatter{
+					url: "some.url.com",
+				},
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			r := &Resource{
+				session: tt.fields.session,
+			}
+			if got := r.NewInsert(); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("Resource.NewInsert() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestResource_NewDelete(t *testing.T) {
+	type fields struct {
+		session session.ServiceFormatter
+	}
+	tests := []struct {
+		name   string
+		fields fields
+		want   *Delete
+	}{
+		{
+			name: "get resource",
+			fields: fields{
+				session: &mockSessionFormatter{
+					url: "some.url.com",
+				},
+			},
+			want: &Delete{
+				session: &mockSessionFormatter{
+					url: "some.url.com",
+				},
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			r := &Resource{
+				session: tt.fields.session,
+			}
+			if got := r.NewDelete(); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("Resource.NewDelete() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestResource_NewUpdate(t *testing.T) {
+	type fields struct {
+		session session.ServiceFormatter
+	}
+	tests := []struct {
+		name   string
+		fields fields
+		want   *Update
+	}{
+		{
+			name: "get resource",
+			fields: fields{
+				session: &mockSessionFormatter{
+					url: "some.url.com",
+				},
+			},
+			want: &Update{
+				session: &mockSessionFormatter{
+					url: "some.url.com",
+				},
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			r := &Resource{
+				session: tt.fields.session,
+			}
+			if got := r.NewUpdate(); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("Resource.NewUpdate() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestResource_NewQuery(t *testing.T) {
+	type fields struct {
+		session session.ServiceFormatter
+	}
+	type args struct {
+		sobject string
+	}
+	tests := []struct {
+		name    string
+		fields  fields
+		args    args
+		want    *Query
+		wantErr bool
+	}{
+		{
+			name: "get resource",
+			fields: fields{
+				session: &mockSessionFormatter{
+					url: "some.url.com",
+				},
+			},
+			args: args{
+				sobject: "Account",
+			},
+			want: &Query{
+				session: &mockSessionFormatter{
+					url: "some.url.com",
+				},
+				sobject: "Account",
+			},
+			wantErr: false,
+		},
+		{
+			name: "invalid sobject",
+			fields: fields{
+				session: &mockSessionFormatter{
+					url: "some.url.com",
+				},
+			},
+			args: args{
+				sobject: "",
+			},
+			want:    nil,
+			wantErr: true,
+		},
+		{
+			name: "invalid sobject again",
+			fields: fields{
+				session: &mockSessionFormatter{
+					url: "some.url.com",
+				},
+			},
+			args: args{
+				sobject: " ",
+			},
+			want:    nil,
+			wantErr: true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			r := &Resource{
+				session: tt.fields.session,
+			}
+			got, err := r.NewQuery(tt.args.sobject)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("Resource.NewQuery() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("Resource.NewQuery() = %v, want %v", got, tt.want)
 			}
 		})
 	}

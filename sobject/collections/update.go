@@ -12,37 +12,37 @@ type UpdateValue struct {
 	sobject.InsertValue
 }
 
-type CollectionUpdate struct {
+type Update struct {
 	session session.ServiceFormatter
 	records []sobject.Updater
 }
 
-func (cu *CollectionUpdate) Update(allOrNone bool) ([]UpdateValue, error) {
-	payload, err := cu.payload(allOrNone)
+func (u *Update) Callout(allOrNone bool) ([]UpdateValue, error) {
+	payload, err := u.payload(allOrNone)
 	if err != nil {
 		return nil, err
 	}
 	c := &collection{
 		method:   http.MethodPatch,
 		body:     payload,
-		endpoint: cu.session.ServiceURL() + endpoint,
+		endpoint: endpoint,
 	}
 	var values []UpdateValue
-	err = c.send(cu.session, &values)
+	err = c.send(u.session, &values)
 	if err != nil {
 		return nil, err
 	}
 	return values, nil
 }
-func (cu *CollectionUpdate) Records(records ...sobject.Updater) {
-	if cu == nil {
+func (u *Update) Records(records ...sobject.Updater) {
+	if u == nil {
 		panic("collections: Collection Update can not be nil")
 	}
-	cu.records = append(cu.records, records...)
+	u.records = append(u.records, records...)
 }
-func (cu *CollectionUpdate) payload(allOrNone bool) (io.Reader, error) {
-	records := make([]interface{}, len(cu.records))
-	for idx, updater := range cu.records {
+func (u *Update) payload(allOrNone bool) (io.Reader, error) {
+	records := make([]interface{}, len(u.records))
+	for idx, updater := range u.records {
 		rec := map[string]interface{}{
 			"attributes": map[string]string{
 				"type": updater.SObject(),

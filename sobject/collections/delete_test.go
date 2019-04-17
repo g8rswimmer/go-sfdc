@@ -196,9 +196,9 @@ func TestDelete_Callout(t *testing.T) {
 						Success: false,
 						Errors: []goforce.Error{
 							{
-								StatusCode: "MALFORMED_ID",
-								Message:    "malformed id 001RM000003oLrB000",
-								Fields:     make([]string, 0),
+								ErrorCode: "MALFORMED_ID",
+								Message:   "malformed id 001RM000003oLrB000",
+								Fields:    make([]string, 0),
 							},
 						},
 					},

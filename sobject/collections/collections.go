@@ -7,6 +7,7 @@ import (
 	"io"
 	"net/http"
 	"net/url"
+	"regexp"
 
 	"github.com/g8rswimmer/goforce"
 	"github.com/g8rswimmer/goforce/session"
@@ -24,6 +25,61 @@ type collection struct {
 	endpoint string
 	values   *url.Values
 	body     io.Reader
+}
+
+type Resource struct {
+	session session.ServiceFormatter
+}
+
+func NewResource(session session.ServiceFormatter) *Resource {
+	return &Resource{
+		session: session,
+	}
+}
+
+func (r *Resource) NewInsert() *Insert {
+	if r == nil {
+		panic("collections resource: Resource can not be nil")
+	}
+	return &Insert{
+		session: r.session,
+	}
+}
+
+func (r *Resource) NewDelete() *Delete {
+	if r == nil {
+		panic("collections resource: Resource can not be nil")
+	}
+	return &Delete{
+		session: r.session,
+	}
+}
+func (r *Resource) NewUpdate() *Update {
+	if r == nil {
+		panic("collections resource: Resource can not be nil")
+	}
+	return &Update{
+		session: r.session,
+	}
+}
+func (r *Resource) NewQuery(sobject string) (*Query, error) {
+	if r == nil {
+		panic("collections resource: Resource can not be nil")
+	}
+
+	matching, err := regexp.MatchString(`\w`, sobject)
+	if err != nil {
+		return nil, err
+	}
+
+	if matching == false {
+		return nil, fmt.Errorf("collection resource: %s is not a valid sobject", sobject)
+	}
+
+	return &Query{
+		session: r.session,
+		sobject: sobject,
+	}, nil
 }
 
 func (c *collection) send(session session.ServiceFormatter, value interface{}) error {
@@ -49,7 +105,7 @@ func (c *collection) send(session session.ServiceFormatter, value interface{}) e
 		var errMsg error
 		if err == nil {
 			for _, insertErr := range insertErrs {
-				errMsg = fmt.Errorf("insert response err: %s: %s", insertErr.StatusCode, insertErr.Message)
+				errMsg = fmt.Errorf("insert response err: %s: %s", insertErr.ErrorCode, insertErr.Message)
 			}
 		} else {
 			errMsg = fmt.Errorf("insert response err: %d %s", response.StatusCode, response.Status)
