@@ -31,10 +31,10 @@ func (mock *mockUpdater) ID() string {
 func TestUpdate_payload(t *testing.T) {
 	type fields struct {
 		session session.ServiceFormatter
-		records []sobject.Updater
 	}
 	type args struct {
 		allOrNone bool
+		records   []sobject.Updater
 	}
 	tests := []struct {
 		name    string
@@ -43,8 +43,10 @@ func TestUpdate_payload(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name: "payloading",
-			fields: fields{
+			name:   "payloading",
+			fields: fields{},
+			args: args{
+				allOrNone: false,
 				records: []sobject.Updater{
 					&mockUpdater{
 						sobject: "Account",
@@ -62,19 +64,15 @@ func TestUpdate_payload(t *testing.T) {
 					},
 				},
 			},
-			args: args{
-				allOrNone: false,
-			},
 			wantErr: false,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			u := &Update{
+			u := &update{
 				session: tt.fields.session,
-				records: tt.fields.records,
 			}
-			_, err := u.payload(tt.args.allOrNone)
+			_, err := u.payload(tt.args.allOrNone, tt.args.records)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("Update.payload() error = %v, wantErr %v", err, tt.wantErr)
 				return
@@ -83,85 +81,13 @@ func TestUpdate_payload(t *testing.T) {
 	}
 }
 
-func TestUpdate_Records(t *testing.T) {
-	type fields struct {
-		session session.ServiceFormatter
-		records []sobject.Updater
-	}
-	type args struct {
-		records []sobject.Updater
-	}
-	tests := []struct {
-		name   string
-		fields fields
-		args   args
-		want   *Update
-	}{
-		{
-			name: "records",
-			fields: fields{
-				records: []sobject.Updater{
-					&mockUpdater{
-						sobject: "Account",
-						fields: map[string]interface{}{
-							"NumberOfEmployees": 27000,
-						},
-						id: "001xx000003DGb2AAG",
-					},
-				},
-			},
-			args: args{
-				records: []sobject.Updater{
-					&mockUpdater{
-						sobject: "Contact",
-						fields: map[string]interface{}{
-							"Title": "Lead Engineer",
-						},
-						id: "003xx000004TmiQAAS",
-					},
-				},
-			},
-			want: &Update{
-				records: []sobject.Updater{
-					&mockUpdater{
-						sobject: "Account",
-						fields: map[string]interface{}{
-							"NumberOfEmployees": 27000,
-						},
-						id: "001xx000003DGb2AAG",
-					},
-					&mockUpdater{
-						sobject: "Contact",
-						fields: map[string]interface{}{
-							"Title": "Lead Engineer",
-						},
-						id: "003xx000004TmiQAAS",
-					},
-				},
-			},
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			u := &Update{
-				session: tt.fields.session,
-				records: tt.fields.records,
-			}
-			u.Records(tt.args.records...)
-			if !reflect.DeepEqual(u, tt.want) {
-				t.Errorf("Update.Records() = %v, want %v", u, tt.want)
-			}
-		})
-	}
-}
-
 func TestUpdate_Callout(t *testing.T) {
 	type fields struct {
 		session session.ServiceFormatter
-		records []sobject.Updater
 	}
 	type args struct {
 		allOrNone bool
+		records   []sobject.Updater
 	}
 	tests := []struct {
 		name    string
@@ -173,22 +99,6 @@ func TestUpdate_Callout(t *testing.T) {
 		{
 			name: "success",
 			fields: fields{
-				records: []sobject.Updater{
-					&mockUpdater{
-						sobject: "Account",
-						fields: map[string]interface{}{
-							"NumberOfEmployees": 27000,
-						},
-						id: "001xx000003DGb2AAG",
-					},
-					&mockUpdater{
-						sobject: "Contact",
-						fields: map[string]interface{}{
-							"Title": "Lead Engineer",
-						},
-						id: "003xx000004TmiQAAS",
-					},
-				},
 				session: &mockSessionFormatter{
 					url: "something.com",
 					client: mockHTTPClient(func(req *http.Request) *http.Response {
@@ -241,6 +151,22 @@ func TestUpdate_Callout(t *testing.T) {
 			},
 			args: args{
 				allOrNone: true,
+				records: []sobject.Updater{
+					&mockUpdater{
+						sobject: "Account",
+						fields: map[string]interface{}{
+							"NumberOfEmployees": 27000,
+						},
+						id: "001xx000003DGb2AAG",
+					},
+					&mockUpdater{
+						sobject: "Contact",
+						fields: map[string]interface{}{
+							"Title": "Lead Engineer",
+						},
+						id: "003xx000004TmiQAAS",
+					},
+				},
 			},
 			want: []UpdateValue{
 				UpdateValue{
@@ -268,11 +194,10 @@ func TestUpdate_Callout(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			u := &Update{
+			u := &update{
 				session: tt.fields.session,
-				records: tt.fields.records,
 			}
-			got, err := u.Callout(tt.args.allOrNone)
+			got, err := u.callout(tt.args.allOrNone, tt.args.records)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("Update.Callout() error = %v, wantErr %v", err, tt.wantErr)
 				return

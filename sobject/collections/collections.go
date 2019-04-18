@@ -3,6 +3,7 @@ package collections
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"net/http"
@@ -11,6 +12,7 @@ import (
 
 	"github.com/g8rswimmer/goforce"
 	"github.com/g8rswimmer/goforce/session"
+	"github.com/g8rswimmer/goforce/sobject"
 )
 
 const endpoint = "/composite/sobjects"
@@ -29,11 +31,15 @@ type collection struct {
 
 type Resource struct {
 	session session.ServiceFormatter
+	update  *update
 }
 
 func NewResource(session session.ServiceFormatter) *Resource {
 	return &Resource{
 		session: session,
+		update: &update{
+			session: session,
+		},
 	}
 }
 
@@ -54,13 +60,17 @@ func (r *Resource) NewDelete() *Delete {
 		session: r.session,
 	}
 }
-func (r *Resource) NewUpdate() *Update {
+func (r *Resource) Update(allOrNone bool, records []sobject.Updater) ([]UpdateValue, error) {
 	if r == nil {
 		panic("collections resource: Resource can not be nil")
 	}
-	return &Update{
-		session: r.session,
+	if r.update == nil {
+		return nil, errors.New("collections resource: collections may not have been initialized properly")
 	}
+	if records == nil {
+		return nil, errors.New("collections resource: update records can not be nil")
+	}
+	return r.update.callout(allOrNone, records)
 }
 func (r *Resource) NewQuery(sobject string) (*Query, error) {
 	if r == nil {

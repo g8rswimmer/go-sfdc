@@ -12,13 +12,12 @@ type UpdateValue struct {
 	sobject.InsertValue
 }
 
-type Update struct {
+type update struct {
 	session session.ServiceFormatter
-	records []sobject.Updater
 }
 
-func (u *Update) Callout(allOrNone bool) ([]UpdateValue, error) {
-	payload, err := u.payload(allOrNone)
+func (u *update) callout(allOrNone bool, records []sobject.Updater) ([]UpdateValue, error) {
+	payload, err := u.payload(allOrNone, records)
 	if err != nil {
 		return nil, err
 	}
@@ -34,15 +33,9 @@ func (u *Update) Callout(allOrNone bool) ([]UpdateValue, error) {
 	}
 	return values, nil
 }
-func (u *Update) Records(records ...sobject.Updater) {
-	if u == nil {
-		panic("collections: Collection Update can not be nil")
-	}
-	u.records = append(u.records, records...)
-}
-func (u *Update) payload(allOrNone bool) (io.Reader, error) {
-	records := make([]interface{}, len(u.records))
-	for idx, updater := range u.records {
+func (u *update) payload(allOrNone bool, recs []sobject.Updater) (io.Reader, error) {
+	records := make([]interface{}, len(recs))
+	for idx, updater := range recs {
 		rec := map[string]interface{}{
 			"attributes": map[string]string{
 				"type": updater.SObject(),
