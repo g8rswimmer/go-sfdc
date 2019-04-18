@@ -32,12 +32,16 @@ type collection struct {
 type Resource struct {
 	session session.ServiceFormatter
 	update  *update
+	query   *query
 }
 
 func NewResource(session session.ServiceFormatter) *Resource {
 	return &Resource{
 		session: session,
 		update: &update{
+			session: session,
+		},
+		query: &query{
 			session: session,
 		},
 	}
@@ -72,9 +76,15 @@ func (r *Resource) Update(allOrNone bool, records []sobject.Updater) ([]UpdateVa
 	}
 	return r.update.callout(allOrNone, records)
 }
-func (r *Resource) NewQuery(sobject string) (*Query, error) {
+func (r *Resource) Query(sobject string, records []sobject.Querier) ([]*goforce.Record, error) {
 	if r == nil {
 		panic("collections resource: Resource can not be nil")
+	}
+	if r.query == nil {
+		return nil, errors.New("collections resource: collections may not have been initialized properly")
+	}
+	if records == nil {
+		return nil, errors.New("collections resource: update records can not be nil")
 	}
 
 	matching, err := regexp.MatchString(`\w`, sobject)
@@ -86,10 +96,7 @@ func (r *Resource) NewQuery(sobject string) (*Query, error) {
 		return nil, fmt.Errorf("collection resource: %s is not a valid sobject", sobject)
 	}
 
-	return &Query{
-		session: r.session,
-		sobject: sobject,
-	}, nil
+	return r.query.callout(sobject, records)
 }
 
 func (c *collection) send(session session.ServiceFormatter, value interface{}) error {

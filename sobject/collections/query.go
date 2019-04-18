@@ -17,24 +17,22 @@ type collectionQueryPayload struct {
 	Fields []string `json:"fields"`
 }
 
-type Query struct {
+type query struct {
 	session session.ServiceFormatter
-	records []sobject.Querier
-	sobject string
 }
 
-func (q *Query) Callout() ([]*goforce.Record, error) {
+func (q *query) callout(sobject string, records []sobject.Querier) ([]*goforce.Record, error) {
 	if q == nil {
 		panic("collections: Collection Query can not be nil")
 	}
-	payload, err := q.payload()
+	payload, err := q.payload(sobject, records)
 	if err != nil {
 		return nil, err
 	}
 	c := &collection{
 		method:   http.MethodPost,
 		body:     payload,
-		endpoint: endpoint + "/" + q.sobject,
+		endpoint: endpoint + "/" + sobject,
 	}
 	var values []*goforce.Record
 	err = c.send(q.session, &values)
@@ -43,22 +41,12 @@ func (q *Query) Callout() ([]*goforce.Record, error) {
 	}
 	return values, nil
 }
-func (q *Query) Records(records ...sobject.Querier) {
-	if q == nil {
-		panic("collections: Collection Query can not be nil")
-	}
-	q.records = append(q.records, records...)
-}
-func (q *Query) payload() (io.Reader, error) {
+func (q *query) payload(sobject string, records []sobject.Querier) (io.Reader, error) {
 	fields := make(map[string]interface{})
 	ids := make(map[string]interface{})
-	for _, querier := range q.records {
-		if q.sobject == "" {
-			q.sobject = querier.SObject()
-		} else {
-			if q.sobject != querier.SObject() {
-				return nil, fmt.Errorf("sobject collections: sobjects do not match got %s want %s", querier.SObject(), q.sobject)
-			}
+	for _, querier := range records {
+		if sobject != querier.SObject() {
+			return nil, fmt.Errorf("sobject collections: sobjects do not match got %s want %s", querier.SObject(), sobject)
 		}
 		ids[querier.ID()] = nil
 		for _, field := range querier.Fields() {
@@ -75,7 +63,7 @@ func (q *Query) payload() (io.Reader, error) {
 	}
 	return bytes.NewReader(payload), nil
 }
-func (q *Query) keyArray(m map[string]interface{}) []string {
+func (q *query) keyArray(m map[string]interface{}) []string {
 	array := make([]string, len(m))
 	idx := 0
 	for k := range m {

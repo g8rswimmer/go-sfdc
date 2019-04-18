@@ -213,6 +213,16 @@ func TestNewResource(t *testing.T) {
 				session: &mockSessionFormatter{
 					url: "some.url.com",
 				},
+				update: &update{
+					session: &mockSessionFormatter{
+						url: "some.url.com",
+					},
+				},
+				query: &query{
+					session: &mockSessionFormatter{
+						url: "some.url.com",
+					},
+				},
 			},
 		},
 	}
@@ -290,82 +300,6 @@ func TestResource_NewDelete(t *testing.T) {
 			}
 			if got := r.NewDelete(); !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("Resource.NewDelete() = %v, want %v", got, tt.want)
-			}
-		})
-	}
-}
-
-func TestResource_NewQuery(t *testing.T) {
-	type fields struct {
-		session session.ServiceFormatter
-	}
-	type args struct {
-		sobject string
-	}
-	tests := []struct {
-		name    string
-		fields  fields
-		args    args
-		want    *Query
-		wantErr bool
-	}{
-		{
-			name: "get resource",
-			fields: fields{
-				session: &mockSessionFormatter{
-					url: "some.url.com",
-				},
-			},
-			args: args{
-				sobject: "Account",
-			},
-			want: &Query{
-				session: &mockSessionFormatter{
-					url: "some.url.com",
-				},
-				sobject: "Account",
-			},
-			wantErr: false,
-		},
-		{
-			name: "invalid sobject",
-			fields: fields{
-				session: &mockSessionFormatter{
-					url: "some.url.com",
-				},
-			},
-			args: args{
-				sobject: "",
-			},
-			want:    nil,
-			wantErr: true,
-		},
-		{
-			name: "invalid sobject again",
-			fields: fields{
-				session: &mockSessionFormatter{
-					url: "some.url.com",
-				},
-			},
-			args: args{
-				sobject: " ",
-			},
-			want:    nil,
-			wantErr: true,
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			r := &Resource{
-				session: tt.fields.session,
-			}
-			got, err := r.NewQuery(tt.args.sobject)
-			if (err != nil) != tt.wantErr {
-				t.Errorf("Resource.NewQuery() error = %v, wantErr %v", err, tt.wantErr)
-				return
-			}
-			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("Resource.NewQuery() = %v, want %v", got, tt.want)
 			}
 		})
 	}
@@ -514,6 +448,148 @@ func TestResource_Update(t *testing.T) {
 			}
 			if !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("Resource.Update() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestResource_Query(t *testing.T) {
+	type fields struct {
+		session session.ServiceFormatter
+		update  *update
+		query   *query
+	}
+	type args struct {
+		sobject string
+		records []sobject.Querier
+	}
+	tests := []struct {
+		name    string
+		fields  fields
+		args    args
+		wantErr bool
+	}{
+		{
+			name: "success",
+			fields: fields{
+				query: &query{
+					session: &mockSessionFormatter{
+						url: "something.com",
+						client: mockHTTPClient(func(req *http.Request) *http.Response {
+
+							if strings.HasPrefix(req.URL.String(), "something.com/composite/sobjects") == false {
+								return &http.Response{
+									StatusCode: 500,
+									Status:     "Bad URL: " + req.URL.String(),
+									Body:       ioutil.NopCloser(strings.NewReader("resp")),
+									Header:     make(http.Header),
+								}
+							}
+
+							if req.Method != http.MethodPost {
+								return &http.Response{
+									StatusCode: 500,
+									Status:     "Bad Method",
+									Body:       ioutil.NopCloser(strings.NewReader("resp")),
+									Header:     make(http.Header),
+								}
+							}
+
+							resp := `
+							[
+								{
+									"attributes" : {
+										"type" : "Account",
+										"url" : "/services/data/v42.0/sobjects/Account/001xx000003DGb1AAG"
+									},
+									"Id" : "001xx000003DGb1AAG",
+									"Name" : "Acme"
+								},
+								{
+									"attributes" : {
+										"type" : "Account",
+										"url" : "/services/data/v42.0/sobjects/Account/001xx000003DGb0AAG"
+									},
+									"Id" : "001xx000003DGb0AAG",
+									"Name" : "Global Media"
+								},
+								null
+							]`
+
+							return &http.Response{
+								StatusCode: http.StatusOK,
+								Status:     "Some Status",
+								Body:       ioutil.NopCloser(strings.NewReader(resp)),
+								Header:     make(http.Header),
+							}
+						}),
+					},
+				},
+			},
+			args: args{
+				sobject: "Account",
+				records: []sobject.Querier{
+					&mockQuery{
+						sobject: "Account",
+						id:      "001xx000003DGb1AAG",
+						fields: []string{
+							"id",
+						},
+					},
+					&mockQuery{
+						sobject: "Account",
+						id:      "001xx000003DGb0AAG",
+						fields: []string{
+							"id",
+						},
+					},
+					&mockQuery{
+						sobject: "Account",
+						id:      "001xx000003DGb9AAG",
+						fields: []string{
+							"name",
+						},
+					},
+				},
+			},
+			wantErr: false,
+		},
+		{
+			name:    "not initialized",
+			fields:  fields{},
+			args:    args{},
+			wantErr: true,
+		},
+		{
+			name: "no records",
+			fields: fields{
+				query: &query{},
+			},
+			args:    args{},
+			wantErr: true,
+		},
+		{
+			name: "no records",
+			fields: fields{
+				query: &query{},
+			},
+			args: args{
+				records: make([]sobject.Querier, 2),
+			},
+			wantErr: true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			r := &Resource{
+				session: tt.fields.session,
+				update:  tt.fields.update,
+				query:   tt.fields.query,
+			}
+			_, err := r.Query(tt.args.sobject, tt.args.records)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("Resource.Query() error = %v, wantErr %v", err, tt.wantErr)
+				return
 			}
 		})
 	}
