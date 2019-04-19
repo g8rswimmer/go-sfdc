@@ -29,41 +29,66 @@ type collection struct {
 	body     io.Reader
 }
 
+// Resource is the structure for the SObject Collections API.
 type Resource struct {
-	session session.ServiceFormatter
-	update  *update
-	query   *query
+	update *update
+	query  *query
+	insert *insert
+	remove *remove
 }
 
-func NewResource(session session.ServiceFormatter) *Resource {
+// NewResources forms the Salesforce SObject Collections resource structure.  The
+// session formatter is required to form the proper URLs and authorization
+// header.
+func NewResources(session session.ServiceFormatter) *Resource {
 	return &Resource{
-		session: session,
 		update: &update{
 			session: session,
 		},
 		query: &query{
 			session: session,
 		},
+		insert: &insert{
+			session: session,
+		},
+		remove: &remove{
+			session: session,
+		},
 	}
 }
 
-func (r *Resource) NewInsert() *Insert {
+// Insert will create a group of records in the Salesforce org.  The records do not need to be
+// the same SObject.  It is the responsibility of the caller to properly chunck the records.
+func (r *Resource) Insert(allOrNone bool, records []sobject.Inserter) ([]sobject.InsertValue, error) {
 	if r == nil {
 		panic("collections resource: Resource can not be nil")
 	}
-	return &Insert{
-		session: r.session,
+	if r.insert == nil {
+		return nil, errors.New("collections resource: collections may not have been initialized properly")
 	}
+	if records == nil {
+		return nil, errors.New("collections resource: insert records can not be nil")
+	}
+	return r.insert.callout(allOrNone, records)
 }
 
-func (r *Resource) NewDelete() *Delete {
+// Delete will remove a group of records in the Salesforce org.  The records do not need to
+// be the same SObject.
+func (r *Resource) Delete(allOrNone bool, records []string) ([]DeleteValue, error) {
 	if r == nil {
 		panic("collections resource: Resource can not be nil")
 	}
-	return &Delete{
-		session: r.session,
+	if r.remove == nil {
+		return nil, errors.New("collections resource: collections may not have been initialized properly")
 	}
+	if records == nil {
+		return nil, errors.New("collections resource: delete records can not be nil")
+	}
+	return r.remove.callout(allOrNone, records)
 }
+
+// Update will update a group of records in the Salesforce org.  The records do not need to be
+// the same SObject.  It is the responsibility of the caller to properly chunck the records.
 func (r *Resource) Update(allOrNone bool, records []sobject.Updater) ([]UpdateValue, error) {
 	if r == nil {
 		panic("collections resource: Resource can not be nil")
@@ -76,6 +101,9 @@ func (r *Resource) Update(allOrNone bool, records []sobject.Updater) ([]UpdateVa
 	}
 	return r.update.callout(allOrNone, records)
 }
+
+// Query will retrieve a group of records from the Salesforce org.  The records to retrieve must
+// be the same SObject.
 func (r *Resource) Query(sobject string, records []sobject.Querier) ([]*goforce.Record, error) {
 	if r == nil {
 		panic("collections resource: Resource can not be nil")

@@ -27,10 +27,10 @@ func (mock *mockInserter) Fields() map[string]interface{} {
 func TestInsert_payload(t *testing.T) {
 	type fields struct {
 		session session.ServiceFormatter
-		records []sobject.Inserter
 	}
 	type args struct {
 		allOrNone bool
+		records   []sobject.Inserter
 	}
 	tests := []struct {
 		name    string
@@ -39,8 +39,10 @@ func TestInsert_payload(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name: "payload",
-			fields: fields{
+			name:   "payload",
+			fields: fields{},
+			args: args{
+				allOrNone: false,
 				records: []sobject.Inserter{
 					&mockInserter{
 						sobject: "Account",
@@ -58,19 +60,15 @@ func TestInsert_payload(t *testing.T) {
 					},
 				},
 			},
-			args: args{
-				allOrNone: false,
-			},
 			wantErr: false,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			i := &Insert{
+			i := &insert{
 				session: tt.fields.session,
-				records: tt.fields.records,
 			}
-			_, err := i.payload(tt.args.allOrNone)
+			_, err := i.payload(tt.args.allOrNone, tt.args.records)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("Insert.payload() error = %v, wantErr %v", err, tt.wantErr)
 				return
@@ -79,82 +77,13 @@ func TestInsert_payload(t *testing.T) {
 	}
 }
 
-func TestInsert_Records(t *testing.T) {
-	type fields struct {
-		session session.ServiceFormatter
-		records []sobject.Inserter
-	}
-	type args struct {
-		records []sobject.Inserter
-	}
-	tests := []struct {
-		name   string
-		fields fields
-		args   args
-		want   *Insert
-	}{
-		{
-			name:   "add records",
-			fields: fields{},
-			args: args{
-				records: []sobject.Inserter{
-					&mockInserter{
-						sobject: "Account",
-						fields: map[string]interface{}{
-							"Name":        "example.com",
-							"BillingCity": "San Francisco",
-						},
-					},
-					&mockInserter{
-						sobject: "Contact",
-						fields: map[string]interface{}{
-							"LastName":  "Johnson",
-							"FirstName": "Erica",
-						},
-					},
-				},
-			},
-			want: &Insert{
-				records: []sobject.Inserter{
-					&mockInserter{
-						sobject: "Account",
-						fields: map[string]interface{}{
-							"Name":        "example.com",
-							"BillingCity": "San Francisco",
-						},
-					},
-					&mockInserter{
-						sobject: "Contact",
-						fields: map[string]interface{}{
-							"LastName":  "Johnson",
-							"FirstName": "Erica",
-						},
-					},
-				},
-			},
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			i := &Insert{
-				session: tt.fields.session,
-				records: tt.fields.records,
-			}
-			i.Records(tt.args.records...)
-			if !reflect.DeepEqual(i, tt.want) {
-				t.Errorf("Insert.Records() = %v, want %v", i, tt.want)
-			}
-		})
-	}
-}
-
 func TestInsert_Callout(t *testing.T) {
 	type fields struct {
 		session session.ServiceFormatter
-		records []sobject.Inserter
 	}
 	type args struct {
 		allOrNone bool
+		records   []sobject.Inserter
 	}
 	tests := []struct {
 		name    string
@@ -166,22 +95,6 @@ func TestInsert_Callout(t *testing.T) {
 		{
 			name: "success",
 			fields: fields{
-				records: []sobject.Inserter{
-					&mockInserter{
-						sobject: "Account",
-						fields: map[string]interface{}{
-							"Name":        "example.com",
-							"BillingCity": "San Francisco",
-						},
-					},
-					&mockInserter{
-						sobject: "Contact",
-						fields: map[string]interface{}{
-							"LastName":  "Johnson",
-							"FirstName": "Erica",
-						},
-					},
-				},
 				session: &mockSessionFormatter{
 					url: "something.com",
 					client: mockHTTPClient(func(req *http.Request) *http.Response {
@@ -234,6 +147,22 @@ func TestInsert_Callout(t *testing.T) {
 			},
 			args: args{
 				allOrNone: true,
+				records: []sobject.Inserter{
+					&mockInserter{
+						sobject: "Account",
+						fields: map[string]interface{}{
+							"Name":        "example.com",
+							"BillingCity": "San Francisco",
+						},
+					},
+					&mockInserter{
+						sobject: "Contact",
+						fields: map[string]interface{}{
+							"LastName":  "Johnson",
+							"FirstName": "Erica",
+						},
+					},
+				},
 			},
 			want: []sobject.InsertValue{
 				{
@@ -241,8 +170,8 @@ func TestInsert_Callout(t *testing.T) {
 					Errors: []goforce.Error{
 						{
 							ErrorCode: "DUPLICATES_DETECTED",
-							Message:    "Use one of these records?",
-							Fields:     make([]string, 0),
+							Message:   "Use one of these records?",
+							Fields:    make([]string, 0),
 						},
 					},
 				},
@@ -257,11 +186,10 @@ func TestInsert_Callout(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			i := &Insert{
+			i := &insert{
 				session: tt.fields.session,
-				records: tt.fields.records,
 			}
-			got, err := i.Callout(tt.args.allOrNone)
+			got, err := i.callout(tt.args.allOrNone, tt.args.records)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("Insert.Callout() error = %v, wantErr %v", err, tt.wantErr)
 				return

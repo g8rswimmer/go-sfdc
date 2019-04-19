@@ -10,40 +10,35 @@ import (
 	"github.com/g8rswimmer/goforce/sobject"
 )
 
+// DeleteValue is the return value from the
+// Salesforce API.
 type DeleteValue struct {
 	sobject.InsertValue
 }
 
-type Delete struct {
+type remove struct {
 	session session.ServiceFormatter
-	records []string
 }
 
-func (d *Delete) Callout(allOrNone bool) ([]DeleteValue, error) {
-	if d == nil {
+func (r *remove) callout(allOrNone bool, records []string) ([]DeleteValue, error) {
+	if r == nil {
 		panic("collections: Collection Delete can not be nil")
 	}
 	c := &collection{
 		method:   http.MethodDelete,
 		endpoint: endpoint,
-		values:   d.values(allOrNone),
+		values:   r.values(allOrNone, records),
 	}
 	var values []DeleteValue
-	err := c.send(d.session, &values)
+	err := c.send(r.session, &values)
 	if err != nil {
 		return nil, err
 	}
 	return values, nil
 }
-func (d *Delete) Records(records ...string) {
-	if d == nil {
-		panic("collections: Collection Delete can not be nil")
-	}
-	d.records = append(d.records, records...)
-}
-func (d *Delete) values(allOrNone bool) *url.Values {
+func (r *remove) values(allOrNone bool, records []string) *url.Values {
 	values := &url.Values{}
-	values.Add("ids", strings.Join(d.records, ","))
+	values.Add("ids", strings.Join(records, ","))
 	values.Add("allOrNone", fmt.Sprintf("%t", allOrNone))
 	return values
 }

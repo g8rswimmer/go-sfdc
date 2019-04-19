@@ -18,10 +18,10 @@ import (
 func TestDelete_values(t *testing.T) {
 	type fields struct {
 		session session.ServiceFormatter
-		records []string
 	}
 	type args struct {
 		allOrNone bool
+		records   []string
 	}
 	tests := []struct {
 		name   string
@@ -30,12 +30,11 @@ func TestDelete_values(t *testing.T) {
 		want   *url.Values
 	}{
 		{
-			name: "values",
-			fields: fields{
-				records: []string{"id1", "id2", "id3"},
-			},
+			name:   "values",
+			fields: fields{},
 			args: args{
 				allOrNone: true,
+				records:   []string{"id1", "id2", "id3"},
 			},
 			want: &url.Values{
 				"ids":       []string{"id1,id2,id3"},
@@ -45,51 +44,11 @@ func TestDelete_values(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			d := &Delete{
+			d := &remove{
 				session: tt.fields.session,
-				records: tt.fields.records,
 			}
-			if got := d.values(tt.args.allOrNone); !reflect.DeepEqual(got, tt.want) {
+			if got := d.values(tt.args.allOrNone, tt.args.records); !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("Delete.values() = %v, want %v", got, tt.want)
-			}
-		})
-	}
-}
-
-func TestDelete_Records(t *testing.T) {
-	type fields struct {
-		session session.ServiceFormatter
-		records []string
-	}
-	type args struct {
-		records []string
-	}
-	tests := []struct {
-		name   string
-		fields fields
-		args   args
-		want   *Delete
-	}{
-		{
-			name:   "records",
-			fields: fields{},
-			args: args{
-				records: []string{"id1", "id2", "id3"},
-			},
-			want: &Delete{
-				records: []string{"id1", "id2", "id3"},
-			},
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			d := &Delete{
-				session: tt.fields.session,
-				records: tt.fields.records,
-			}
-			d.Records(tt.args.records...)
-			if !reflect.DeepEqual(d, tt.want) {
-				t.Errorf("Delete.Records() = %v, want %v", d, tt.want)
 			}
 		})
 	}
@@ -98,10 +57,10 @@ func TestDelete_Records(t *testing.T) {
 func TestDelete_Callout(t *testing.T) {
 	type fields struct {
 		session session.ServiceFormatter
-		records []string
 	}
 	type args struct {
 		allOrNone bool
+		records   []string
 	}
 	tests := []struct {
 		name    string
@@ -112,8 +71,10 @@ func TestDelete_Callout(t *testing.T) {
 	}{
 		{
 			name: "success",
-			fields: fields{
+			args: args{
 				records: []string{"id1", "id2", "id3"},
+			},
+			fields: fields{
 				session: &mockSessionFormatter{
 					url: "something.com",
 					client: mockHTTPClient(func(req *http.Request) *http.Response {
@@ -209,11 +170,10 @@ func TestDelete_Callout(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			d := &Delete{
+			d := &remove{
 				session: tt.fields.session,
-				records: tt.fields.records,
 			}
-			got, err := d.Callout(tt.args.allOrNone)
+			got, err := d.callout(tt.args.allOrNone, tt.args.records)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("Delete.Callout() error = %v, wantErr %v", err, tt.wantErr)
 				return

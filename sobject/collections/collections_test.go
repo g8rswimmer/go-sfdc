@@ -210,9 +210,6 @@ func TestNewResource(t *testing.T) {
 				},
 			},
 			want: &Resource{
-				session: &mockSessionFormatter{
-					url: "some.url.com",
-				},
 				update: &update{
 					session: &mockSessionFormatter{
 						url: "some.url.com",
@@ -223,83 +220,23 @@ func TestNewResource(t *testing.T) {
 						url: "some.url.com",
 					},
 				},
+				insert: &insert{
+					session: &mockSessionFormatter{
+						url: "some.url.com",
+					},
+				},
+				remove: &remove{
+					session: &mockSessionFormatter{
+						url: "some.url.com",
+					},
+				},
 			},
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := NewResource(tt.args.session); !reflect.DeepEqual(got, tt.want) {
+			if got := NewResources(tt.args.session); !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("NewResource() = %v, want %v", got, tt.want)
-			}
-		})
-	}
-}
-
-func TestResource_NewInsert(t *testing.T) {
-	type fields struct {
-		session session.ServiceFormatter
-	}
-	tests := []struct {
-		name   string
-		fields fields
-		want   *Insert
-	}{
-		{
-			name: "get resource",
-			fields: fields{
-				session: &mockSessionFormatter{
-					url: "some.url.com",
-				},
-			},
-			want: &Insert{
-				session: &mockSessionFormatter{
-					url: "some.url.com",
-				},
-			},
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			r := &Resource{
-				session: tt.fields.session,
-			}
-			if got := r.NewInsert(); !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("Resource.NewInsert() = %v, want %v", got, tt.want)
-			}
-		})
-	}
-}
-
-func TestResource_NewDelete(t *testing.T) {
-	type fields struct {
-		session session.ServiceFormatter
-	}
-	tests := []struct {
-		name   string
-		fields fields
-		want   *Delete
-	}{
-		{
-			name: "get resource",
-			fields: fields{
-				session: &mockSessionFormatter{
-					url: "some.url.com",
-				},
-			},
-			want: &Delete{
-				session: &mockSessionFormatter{
-					url: "some.url.com",
-				},
-			},
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			r := &Resource{
-				session: tt.fields.session,
-			}
-			if got := r.NewDelete(); !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("Resource.NewDelete() = %v, want %v", got, tt.want)
 			}
 		})
 	}
@@ -307,8 +244,7 @@ func TestResource_NewDelete(t *testing.T) {
 
 func TestResource_Update(t *testing.T) {
 	type fields struct {
-		session session.ServiceFormatter
-		update  *update
+		update *update
 	}
 	type args struct {
 		allOrNone bool
@@ -438,8 +374,7 @@ func TestResource_Update(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			r := &Resource{
-				session: tt.fields.session,
-				update:  tt.fields.update,
+				update: tt.fields.update,
 			}
 			got, err := r.Update(tt.args.allOrNone, tt.args.records)
 			if (err != nil) != tt.wantErr {
@@ -455,9 +390,8 @@ func TestResource_Update(t *testing.T) {
 
 func TestResource_Query(t *testing.T) {
 	type fields struct {
-		session session.ServiceFormatter
-		update  *update
-		query   *query
+		update *update
+		query  *query
 	}
 	type args struct {
 		sobject string
@@ -582,14 +516,310 @@ func TestResource_Query(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			r := &Resource{
-				session: tt.fields.session,
-				update:  tt.fields.update,
-				query:   tt.fields.query,
+				update: tt.fields.update,
+				query:  tt.fields.query,
 			}
 			_, err := r.Query(tt.args.sobject, tt.args.records)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("Resource.Query() error = %v, wantErr %v", err, tt.wantErr)
 				return
+			}
+		})
+	}
+}
+
+func TestResource_Insert(t *testing.T) {
+	type fields struct {
+		update *update
+		query  *query
+		insert *insert
+	}
+	type args struct {
+		allOrNone bool
+		records   []sobject.Inserter
+	}
+	tests := []struct {
+		name    string
+		fields  fields
+		args    args
+		want    []sobject.InsertValue
+		wantErr bool
+	}{
+		{
+			name: "success",
+			fields: fields{
+				insert: &insert{
+					session: &mockSessionFormatter{
+						url: "something.com",
+						client: mockHTTPClient(func(req *http.Request) *http.Response {
+
+							if strings.HasPrefix(req.URL.String(), "something.com/composite/sobjects") == false {
+								return &http.Response{
+									StatusCode: 500,
+									Status:     "Bad URL: " + req.URL.String(),
+									Body:       ioutil.NopCloser(strings.NewReader("resp")),
+									Header:     make(http.Header),
+								}
+							}
+
+							if req.Method != http.MethodPost {
+								return &http.Response{
+									StatusCode: 500,
+									Status:     "Bad Method",
+									Body:       ioutil.NopCloser(strings.NewReader("resp")),
+									Header:     make(http.Header),
+								}
+							}
+
+							resp := `
+							[
+								{
+								   "success" : false,
+								   "errors" : [
+									  {
+										 "statusCode" : "DUPLICATES_DETECTED",
+										 "message" : "Use one of these records?",
+										 "fields" : [ ]
+									  }
+								   ]
+								},
+								{
+								   "id" : "003RM0000068xVCYAY",
+								   "success" : true,
+								   "errors" : [ ]
+								}
+							 ]`
+
+							return &http.Response{
+								StatusCode: http.StatusOK,
+								Status:     "Some Status",
+								Body:       ioutil.NopCloser(strings.NewReader(resp)),
+								Header:     make(http.Header),
+							}
+						}),
+					},
+				},
+			},
+			args: args{
+				allOrNone: true,
+				records: []sobject.Inserter{
+					&mockInserter{
+						sobject: "Account",
+						fields: map[string]interface{}{
+							"Name":        "example.com",
+							"BillingCity": "San Francisco",
+						},
+					},
+					&mockInserter{
+						sobject: "Contact",
+						fields: map[string]interface{}{
+							"LastName":  "Johnson",
+							"FirstName": "Erica",
+						},
+					},
+				},
+			},
+			want: []sobject.InsertValue{
+				{
+					Success: false,
+					Errors: []goforce.Error{
+						{
+							ErrorCode: "DUPLICATES_DETECTED",
+							Message:   "Use one of these records?",
+							Fields:    make([]string, 0),
+						},
+					},
+				},
+				{
+					Success: true,
+					ID:      "003RM0000068xVCYAY",
+					Errors:  make([]goforce.Error, 0),
+				},
+			},
+			wantErr: false,
+		},
+		{
+			name:    "not initialized",
+			fields:  fields{},
+			args:    args{},
+			wantErr: true,
+		},
+		{
+			name: "no records",
+			fields: fields{
+				insert: &insert{},
+			},
+			args:    args{},
+			wantErr: true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			r := &Resource{
+				update: tt.fields.update,
+				query:  tt.fields.query,
+				insert: tt.fields.insert,
+			}
+			got, err := r.Insert(tt.args.allOrNone, tt.args.records)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("Resource.Insert() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("Resource.Insert() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestResource_Delete(t *testing.T) {
+	type fields struct {
+		update *update
+		query  *query
+		insert *insert
+		remove *remove
+	}
+	type args struct {
+		allOrNone bool
+		records   []string
+	}
+	tests := []struct {
+		name    string
+		fields  fields
+		args    args
+		want    []DeleteValue
+		wantErr bool
+	}{
+		{
+			name: "success",
+			args: args{
+				records: []string{"id1", "id2", "id3"},
+			},
+			fields: fields{
+				remove: &remove{
+					session: &mockSessionFormatter{
+						url: "something.com",
+						client: mockHTTPClient(func(req *http.Request) *http.Response {
+
+							if strings.HasPrefix(req.URL.String(), "something.com/composite/sobjects") == false {
+								return &http.Response{
+									StatusCode: 500,
+									Status:     "Bad URL: " + req.URL.String(),
+									Body:       ioutil.NopCloser(strings.NewReader("resp")),
+									Header:     make(http.Header),
+								}
+							}
+
+							if req.Method != http.MethodDelete {
+								return &http.Response{
+									StatusCode: 500,
+									Status:     "Bad Method",
+									Body:       ioutil.NopCloser(strings.NewReader("resp")),
+									Header:     make(http.Header),
+								}
+							}
+
+							values := req.URL.Query()
+							if _, ok := values["allOrNone"]; ok == false {
+
+								return &http.Response{
+									StatusCode: 500,
+									Status:     "allOrNone",
+									Body:       ioutil.NopCloser(strings.NewReader("resp")),
+									Header:     make(http.Header),
+								}
+							}
+							if _, ok := values["ids"]; ok == false {
+
+								return &http.Response{
+									StatusCode: 500,
+									Status:     "ids",
+									Body:       ioutil.NopCloser(strings.NewReader("resp")),
+									Header:     make(http.Header),
+								}
+							}
+							resp := `
+							[
+								{
+									"id" : "001RM000003oLrfYAE",
+									"success" : true,
+									"errors" : [ ]
+								 },
+								 {
+									"success" : false,
+									"errors" : [
+									   {
+										  "statusCode" : "MALFORMED_ID",
+										  "message" : "malformed id 001RM000003oLrB000",
+										  "fields" : [ ]
+									   }
+									]
+								 }
+							  ]`
+
+							return &http.Response{
+								StatusCode: http.StatusOK,
+								Status:     "Some Status",
+								Body:       ioutil.NopCloser(strings.NewReader(resp)),
+								Header:     make(http.Header),
+							}
+						}),
+					},
+				},
+			},
+			want: []DeleteValue{
+				{
+					sobject.InsertValue{
+						Success: true,
+						ID:      "001RM000003oLrfYAE",
+						Errors:  make([]goforce.Error, 0),
+					},
+				},
+				{
+					sobject.InsertValue{
+						Success: false,
+						Errors: []goforce.Error{
+							{
+								ErrorCode: "MALFORMED_ID",
+								Message:   "malformed id 001RM000003oLrB000",
+								Fields:    make([]string, 0),
+							},
+						},
+					},
+				},
+			},
+			wantErr: false,
+		},
+		{
+			name:    "not initialized",
+			fields:  fields{},
+			args:    args{},
+			wantErr: true,
+		},
+		{
+			name: "no records",
+			fields: fields{
+				remove: &remove{},
+			},
+			args:    args{},
+			wantErr: true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			r := &Resource{
+				update: tt.fields.update,
+				query:  tt.fields.query,
+				insert: tt.fields.insert,
+				remove: tt.fields.remove,
+			}
+			got, err := r.Delete(tt.args.allOrNone, tt.args.records)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("Resource.Delete() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("Resource.Delete() = %v, want %v", got, tt.want)
 			}
 		})
 	}

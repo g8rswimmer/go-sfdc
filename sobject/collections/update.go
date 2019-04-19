@@ -8,6 +8,8 @@ import (
 	"github.com/g8rswimmer/goforce/sobject"
 )
 
+// UpdateValue is the return value from the
+// Salesforce API.
 type UpdateValue struct {
 	sobject.InsertValue
 }
