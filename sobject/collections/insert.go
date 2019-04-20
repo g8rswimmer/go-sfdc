@@ -1,7 +1,7 @@
 package collections
 
 import (
-	"io"
+	"bytes"
 	"net/http"
 
 	"github.com/g8rswimmer/goforce/session"
@@ -29,7 +29,7 @@ func (i *insert) callout(allOrNone bool, records []sobject.Inserter) ([]sobject.
 	}
 	return values, nil
 }
-func (i *insert) payload(allOrNone bool, records []sobject.Inserter) (io.Reader, error) {
+func (i *insert) payload(allOrNone bool, records []sobject.Inserter) (*bytes.Reader, error) {
 	recs := make([]interface{}, len(records))
 	for idx, inserter := range records {
 		rec := map[string]interface{}{

@@ -24,13 +24,25 @@ func (e *Error) UnmarshalJSON(data []byte) error {
 	}
 
 	if code, ok := jsonMap["statusCode"]; ok {
-		e.ErrorCode = code.(string)
+		if codeStr, ok := code.(string); ok {
+			e.ErrorCode = codeStr
+		} else {
+			return errors.New("json error: statusCode is not a string")
+		}
 	}
 	if code, ok := jsonMap["errorCode"]; ok {
-		e.ErrorCode = code.(string)
+		if codeStr, ok := code.(string); ok {
+			e.ErrorCode = codeStr
+		} else {
+			return errors.New("json error: errorCode is not a string")
+		}
 	}
 	if message, ok := jsonMap["message"]; ok {
-		e.Message = message.(string)
+		if messageStr, ok := message.(string); ok {
+			e.Message = messageStr
+		} else {
+			return errors.New("json error: message is not a string")
+		}
 	}
 	if fields, ok := jsonMap["fields"]; ok {
 		if array, has := fields.([]interface{}); has {
@@ -38,8 +50,12 @@ func (e *Error) UnmarshalJSON(data []byte) error {
 			for idx, element := range array {
 				if field, ok := element.(string); ok {
 					e.Fields[idx] = field
+				} else {
+					return errors.New("json error: field element is not a string")
 				}
 			}
+		} else {
+			return errors.New("json error: fields is not an array")
 		}
 	}
 	return nil

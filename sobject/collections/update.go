@@ -1,7 +1,7 @@
 package collections
 
 import (
-	"io"
+	"bytes"
 	"net/http"
 
 	"github.com/g8rswimmer/goforce/session"
@@ -35,7 +35,7 @@ func (u *update) callout(allOrNone bool, records []sobject.Updater) ([]UpdateVal
 	}
 	return values, nil
 }
-func (u *update) payload(allOrNone bool, recs []sobject.Updater) (io.Reader, error) {
+func (u *update) payload(allOrNone bool, recs []sobject.Updater) (*bytes.Reader, error) {
 	records := make([]interface{}, len(recs))
 	for idx, updater := range recs {
 		rec := map[string]interface{}{

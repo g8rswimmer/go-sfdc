@@ -1,3 +1,4 @@
+// Package collections is the implementation of the SObject Collections API.
 package collections
 
 import (
@@ -164,7 +165,7 @@ func (c *collection) send(session session.ServiceFormatter, value interface{}) e
 	return nil
 }
 
-func dmlpayload(allOrNone bool, records []interface{}) (io.Reader, error) {
+func dmlpayload(allOrNone bool, records []interface{}) (*bytes.Reader, error) {
 	dmlPayload := collectionDmlPayload{
 		AllOrNone: allOrNone,
 		Records:   records,

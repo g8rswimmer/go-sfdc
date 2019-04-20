@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"io"
 	"net/http"
 
 	"github.com/g8rswimmer/goforce"
@@ -41,7 +40,7 @@ func (q *query) callout(sobject string, records []sobject.Querier) ([]*goforce.R
 	}
 	return values, nil
 }
-func (q *query) payload(sobject string, records []sobject.Querier) (io.Reader, error) {
+func (q *query) payload(sobject string, records []sobject.Querier) (*bytes.Reader, error) {
 	fields := make(map[string]interface{})
 	ids := make(map[string]interface{})
 	for _, querier := range records {
