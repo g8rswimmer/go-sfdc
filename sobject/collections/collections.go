@@ -16,7 +16,10 @@ import (
 	"github.com/g8rswimmer/goforce/sobject"
 )
 
-const endpoint = "/composite/sobjects"
+const (
+	endpoint        = "/composite/sobjects"
+	jsonContentType = "application/json"
+)
 
 type collectionDmlPayload struct {
 	AllOrNone bool          `json:"allOrNone"`
@@ -24,10 +27,11 @@ type collectionDmlPayload struct {
 }
 
 type collection struct {
-	method   string
-	endpoint string
-	values   *url.Values
-	body     io.Reader
+	method      string
+	endpoint    string
+	values      *url.Values
+	body        io.Reader
+	contentType string
 }
 
 // Resource is the structure for the SObject Collections API.
@@ -137,6 +141,13 @@ func (c *collection) send(session session.ServiceFormatter, value interface{}) e
 	if err != nil {
 		return err
 	}
+
+	request.Header.Add("Accept", "application/json")
+	if c.contentType != "" {
+		request.Header.Add("Content-Type", c.contentType)
+	}
+	session.AuthorizationHeader(request)
+
 	response, err := session.Client().Do(request)
 	if err != nil {
 		return err

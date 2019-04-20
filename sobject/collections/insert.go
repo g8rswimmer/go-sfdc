@@ -18,9 +18,10 @@ func (i *insert) callout(allOrNone bool, records []sobject.Inserter) ([]sobject.
 		return nil, err
 	}
 	c := &collection{
-		method:   http.MethodPost,
-		body:     payload,
-		endpoint: endpoint,
+		method:      http.MethodPost,
+		body:        payload,
+		endpoint:    endpoint,
+		contentType: jsonContentType,
 	}
 	var values []sobject.InsertValue
 	err = c.send(i.session, &values)
