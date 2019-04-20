@@ -29,9 +29,10 @@ func (q *query) callout(sobject string, records []sobject.Querier) ([]*goforce.R
 		return nil, err
 	}
 	c := &collection{
-		method:   http.MethodPost,
-		body:     payload,
-		endpoint: endpoint + "/" + sobject,
+		method:      http.MethodPost,
+		body:        payload,
+		endpoint:    endpoint + "/" + sobject,
+		contentType: jsonContentType,
 	}
 	var values []*goforce.Record
 	err = c.send(q.session, &values)
