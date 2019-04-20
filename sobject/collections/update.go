@@ -24,9 +24,10 @@ func (u *update) callout(allOrNone bool, records []sobject.Updater) ([]UpdateVal
 		return nil, err
 	}
 	c := &collection{
-		method:   http.MethodPatch,
-		body:     payload,
-		endpoint: endpoint,
+		method:      http.MethodPatch,
+		body:        payload,
+		endpoint:    endpoint,
+		contentType: jsonContentType,
 	}
 	var values []UpdateValue
 	err = c.send(u.session, &values)
