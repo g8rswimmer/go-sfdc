@@ -13,32 +13,41 @@ import (
 	"github.com/g8rswimmer/goforce/session"
 )
 
+// Inserter is used to define the SObject and it's records for the
+// composite tree API.
 type Inserter interface {
 	SObject() string
 	Records() []*Record
 }
 
+// InsertValue is the return value for each record.
 type InsertValue struct {
 	ReferenceID string          `json:"referenceId"`
 	ID          string          `json:"id"`
 	Errors      []goforce.Error `json:"errors"`
 }
+
+// Value is the return value from the API call.
 type Value struct {
 	HasErrors bool          `json:"hasErrors"`
 	Results   []InsertValue `json:"results"`
 }
 
+// Resource is the composite tree API resource.
 type Resource struct {
 	session session.ServiceFormatter
 }
 
 const objectEndpoint = "/composite/tree/"
 
+// NewResource creates a new composite tree resource from the session.
 func NewResource(session session.ServiceFormatter) *Resource {
 	return &Resource{
 		session: session,
 	}
 }
+
+// Insert will call the composite tree API.
 func (r *Resource) Insert(inserter Inserter) (*Value, error) {
 	if r == nil {
 		panic("tree resource can not be nil")

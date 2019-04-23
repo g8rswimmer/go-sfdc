@@ -5,17 +5,20 @@ import (
 	"errors"
 )
 
+// Record is the composite tree SObject.
 type Record struct {
 	Attributes Attributes
 	Fields     map[string]interface{}
 	Records    map[string][]*Record
 }
 
+// Attributes are the attributes of the composite tree.
 type Attributes struct {
 	Type        string `json:"type"`
 	ReferenceID string `json:"referenceId"`
 }
 
+// MarshalJSON will create the JSON byte array.
 func (r *Record) MarshalJSON() ([]byte, error) {
 	if r == nil {
 		return nil, errors.New("record: can't unmarshal to a nil struct")
