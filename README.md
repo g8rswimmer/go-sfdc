@@ -8,6 +8,7 @@ To use this library, the following will need to be done.
 * Open a [session](./session/README.md)
 * Use the `APIs`
   - [SObject APIs](./sobject/README.md)
+  - [SObject Collection APIs](./sobject/collections/README.md)
   - [SOQL APIs](./soql/README.md)
 
 ## Configuration
