@@ -1,4 +1,4 @@
-# SObject Tree APIs
+# SObject Tree API
 [back](../../README.md)
 
 The `tree` package is an implementation of `Salesforce APIs` centered on `SObject Tree` operations.  These operations include:
