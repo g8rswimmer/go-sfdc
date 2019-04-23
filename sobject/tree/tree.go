@@ -116,25 +116,14 @@ func (r *Resource) response(request *http.Request) (Value, error) {
 	decoder := json.NewDecoder(response.Body)
 	defer response.Body.Close()
 
-	if response.StatusCode != http.StatusOK {
-		var insertErrs []goforce.Error
-		err = decoder.Decode(&insertErrs)
-		var errMsg error
-		if err == nil {
-			for _, insertErr := range insertErrs {
-				errMsg = fmt.Errorf("insert response err: %s: %s", insertErr.ErrorCode, insertErr.Message)
-			}
-		} else {
-			errMsg = fmt.Errorf("insert response err: %d %s", response.StatusCode, response.Status)
-		}
-
-		return Value{}, errMsg
-	}
-
 	var value Value
 	err = decoder.Decode(&value)
 	if err != nil {
 		return Value{}, err
+	}
+
+	if response.StatusCode != http.StatusCreated {
+		return value, fmt.Errorf("insert response err: %d %s", response.StatusCode, response.Status)
 	}
 
 	return value, nil

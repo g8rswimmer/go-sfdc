@@ -154,7 +154,7 @@ func TestResource_Insert(t *testing.T) {
 						}`
 
 						return &http.Response{
-							StatusCode: http.StatusOK,
+							StatusCode: http.StatusCreated,
 							Status:     "Some Status",
 							Body:       ioutil.NopCloser(strings.NewReader(resp)),
 							Header:     make(http.Header),
@@ -233,7 +233,7 @@ func TestResource_Insert(t *testing.T) {
 						 }`
 
 						return &http.Response{
-							StatusCode: http.StatusOK,
+							StatusCode: http.StatusCreated,
 							Status:     "Some Status",
 							Body:       ioutil.NopCloser(strings.NewReader(resp)),
 							Header:     make(http.Header),
