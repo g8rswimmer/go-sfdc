@@ -9,6 +9,7 @@ To use this library, the following will need to be done.
 * Use the `APIs`
   - [SObject APIs](./sobject/README.md)
   - [SObject Collection APIs](./sobject/collections/README.md)
+  - [SObject Tree API](./sobject/tree/README.md)
   - [SOQL APIs](./soql/README.md)
 
 ## Configuration
