@@ -97,59 +97,6 @@ func (b *treeBuilder) ReferenceID() string {
 	}
 
 ```
-### Create Multiple Records
-```go
-	// insert some records
-	var insertRecords []sobject.Inserter
-
-	acc1 := &dml{
-		sobject: "Account",
-		fields: map[string]interface{}{
-			"Name":  "Collections Demo",
-			"Phone": "9045551212",
-		},
-	}
-	insertRecords = append(insertRecords, acc1)
-	acc2 := &dml{
-		sobject: "Account",
-		fields: map[string]interface{}{
-			"Name":      "Collections Demo Two",
-			"Active__c": "Yes",
-		},
-	}
-	insertRecords = append(insertRecords, acc2)
-	con1 := &dml{
-		sobject: "Contact",
-		fields: map[string]interface{}{
-			"LastName":       "Last Name Demo",
-			"AssistantPhone": "6065551212",
-		},
-	}
-	insertRecords = append(insertRecords, con1)
-	con2 := &dml{
-		sobject: "Contact",
-		fields: map[string]interface{}{
-			"LastName": "Last Name Demo Two",
-			"Level__c": "Tertiary",
-		},
-	}
-	insertRecords = append(insertRecords, con2)
-
-	resource := collections.NewResources(session)
-	values, err := resource.Insert(true, insertRecords)
-	if err != nil {
-		fmt.Printf("Collection Error %s", err.Error())
-		fmt.Println()
-		return
-	}
-
-	fmt.Println("Collections Inserted")
-	fmt.Println("-------------------")
-	for _, value := range values {
-		fmt.Printf("%+v\n", value)
-	}
-	fmt.Println()
-```
 
 ### Create Accounts with Children
 ```go
