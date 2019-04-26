@@ -24,6 +24,9 @@ type RecordBuilder struct {
 // NewRecordBuilder will create a new builder.  If the SObject is
 // not value or the reference ID is empyt, an error will be returned.
 func NewRecordBuilder(builder Builder) (*RecordBuilder, error) {
+	if builder == nil {
+		return nil, errors.New("soql: the builder can not be nil")
+	}
 	sobject := builder.SObject()
 	matching, err := regexp.MatchString(`\w`, sobject)
 	if err != nil {
@@ -49,9 +52,6 @@ func NewRecordBuilder(builder Builder) (*RecordBuilder, error) {
 
 // SubRecords will add subrecords to the object.
 func (rb *RecordBuilder) SubRecords(sobjects string, records ...*Record) {
-	if rb == nil {
-		panic("record builder can not be nil")
-	}
 	var subRecords []*Record
 	if subRec, ok := rb.record.Records[sobjects]; ok {
 		subRecords = subRec
@@ -62,8 +62,5 @@ func (rb *RecordBuilder) SubRecords(sobjects string, records ...*Record) {
 
 // Build will create the composite tree record.
 func (rb *RecordBuilder) Build() *Record {
-	if rb == nil {
-		panic("record builder can not be nil")
-	}
 	return &rb.record
 }
