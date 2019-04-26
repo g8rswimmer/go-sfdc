@@ -25,7 +25,7 @@ type RecordBuilder struct {
 // not value or the reference ID is empyt, an error will be returned.
 func NewRecordBuilder(builder Builder) (*RecordBuilder, error) {
 	if builder == nil {
-		return nil, errors.New("soql: the builder can not be nil")
+		return nil, errors.New("sobject tree: the builder can not be nil")
 	}
 	sobject := builder.SObject()
 	matching, err := regexp.MatchString(`\w`, sobject)

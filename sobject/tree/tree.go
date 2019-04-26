@@ -41,17 +41,17 @@ type Resource struct {
 const objectEndpoint = "/composite/tree/"
 
 // NewResource creates a new composite tree resource from the session.
-func NewResource(session session.ServiceFormatter) *Resource {
+func NewResource(session session.ServiceFormatter) (*Resource, error) {
+	if session == nil {
+		return nil, errors.New("sobject tree: session can not be nil")
+	}
 	return &Resource{
 		session: session,
-	}
+	}, nil
 }
 
 // Insert will call the composite tree API.
 func (r *Resource) Insert(inserter Inserter) (*Value, error) {
-	if r == nil {
-		panic("tree resource can not be nil")
-	}
 	if inserter == nil {
 		return nil, errors.New("tree resourse: inserter can not be nil")
 	}
