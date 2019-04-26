@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/g8rswimmer/goforce"
+	"github.com/g8rswimmer/goforce/session"
 )
 
 func TestSalesforceAPI_Metadata(t *testing.T) {
@@ -613,6 +614,68 @@ func TestSalesforceAPI_GetContent(t *testing.T) {
 			}
 			if !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("SalesforceAPI.GetContent() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestNewResources(t *testing.T) {
+	type args struct {
+		session session.ServiceFormatter
+	}
+	tests := []struct {
+		name    string
+		args    args
+		want    *Resources
+		wantErr bool
+	}{
+		{
+			name: "passing",
+			args: args{
+				session: &mockSessionFormatter{
+					url: "https://test.salesforce.com",
+				},
+			},
+			want: &Resources{
+				metadata: &metadata{
+					session: &mockSessionFormatter{
+						url: "https://test.salesforce.com",
+					},
+				},
+				describe: &describe{
+					session: &mockSessionFormatter{
+						url: "https://test.salesforce.com",
+					},
+				},
+				dml: &dml{
+					session: &mockSessionFormatter{
+						url: "https://test.salesforce.com",
+					},
+				},
+				query: &query{
+					session: &mockSessionFormatter{
+						url: "https://test.salesforce.com",
+					},
+				},
+			},
+			wantErr: false,
+		},
+		{
+			name:    "error",
+			args:    args{},
+			want:    nil,
+			wantErr: true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := NewResources(tt.args.session)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("NewResources() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("NewResources() = %v, want %v", got, tt.want)
 			}
 		})
 	}
