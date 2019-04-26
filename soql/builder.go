@@ -38,49 +38,31 @@ func NewBuilder(object string) (*Builder, error) {
 
 // FieldList is the list of fields to query.
 func (b *Builder) FieldList(fields ...string) {
-	if b == nil {
-		panic("builder can not be nil")
-	}
 	b.fieldList = append(b.fieldList, fields...)
 }
 
 // SubQuery places a inner query.
 func (b *Builder) SubQuery(query Querier) {
-	if b == nil {
-		panic("builder can not be nil")
-	}
 	b.subQuery = append(b.subQuery, query)
 }
 
 // Where will add the where cluase expression to the query.
 func (b *Builder) Where(where WhereClauser) {
-	if b == nil {
-		panic("builder can not be nil")
-	}
 	b.where = where
 }
 
 // OrderBy is the order of the results from the query.
 func (b *Builder) OrderBy(order Orderer) {
-	if b == nil {
-		panic("builder can not be nil")
-	}
 	b.order = order
 }
 
 // Limit will limit the number of records returned by the query.
 func (b *Builder) Limit(limit int) {
-	if b == nil {
-		panic("builder can not be nil")
-	}
 	b.limit = limit
 }
 
 // Offset will offset the records rows returned.
 func (b *Builder) Offset(offset int) {
-	if b == nil {
-		panic("builder can not be nil")
-	}
 	b.offset = offset
 }
 
@@ -144,6 +126,12 @@ type WhereClauser interface {
 
 // WhereLike will form the LIKE expression.
 func WhereLike(field string, value string) (*WhereClause, error) {
+	if field == "" {
+		return nil, errors.New("soql where: field can not be empty")
+	}
+	if value == "" {
+		return nil, errors.New("soql where: value can not be empty")
+	}
 	return &WhereClause{
 		expression: fmt.Sprintf("%s LIKE '%s'", field, value),
 	}, nil
@@ -152,19 +140,21 @@ func WhereLike(field string, value string) (*WhereClause, error) {
 // WhereGreaterThan will form the greater or equal than expression.  If the value is a
 // string or boolean, an error is returned.
 func WhereGreaterThan(field string, value interface{}, equals bool) (*WhereClause, error) {
+	if field == "" {
+		return nil, errors.New("soql where: field can not be empty")
+	}
+	if value == nil {
+		return nil, errors.New("soql where: value can not be nil")
+	}
 	var v string
-	if value != nil {
-		switch value.(type) {
-		case string, bool:
-			return nil, errors.New("where greater than: value can not be a string or bool")
-		case time.Time:
-			date := value.(time.Time)
-			v = date.Format(time.RFC3339)
-		default:
-			v = fmt.Sprintf("%v", value)
-		}
-	} else {
-		return nil, errors.New("where greater than: value can not be nil")
+	switch value.(type) {
+	case string, bool:
+		return nil, errors.New("where greater than: value can not be a string or bool")
+	case time.Time:
+		date := value.(time.Time)
+		v = date.Format(time.RFC3339)
+	default:
+		v = fmt.Sprintf("%v", value)
 	}
 
 	operator := ">"
@@ -180,19 +170,21 @@ func WhereGreaterThan(field string, value interface{}, equals bool) (*WhereClaus
 // WhereLessThan will form the less or equal than expression.  If the value is a
 // string or boolean, an error is returned.
 func WhereLessThan(field string, value interface{}, equals bool) (*WhereClause, error) {
+	if field == "" {
+		return nil, errors.New("soql where: field can not be empty")
+	}
+	if value == nil {
+		return nil, errors.New("soql where: value can not be nil")
+	}
 	var v string
-	if value != nil {
-		switch value.(type) {
-		case string, bool:
-			return nil, errors.New("where less than: value can not be a string")
-		case time.Time:
-			date := value.(time.Time)
-			v = date.Format(time.RFC3339)
-		default:
-			v = fmt.Sprintf("%v", value)
-		}
-	} else {
-		return nil, errors.New("where less than: value can not be nil")
+	switch value.(type) {
+	case string, bool:
+		return nil, errors.New("where less than: value can not be a string")
+	case time.Time:
+		date := value.(time.Time)
+		v = date.Format(time.RFC3339)
+	default:
+		v = fmt.Sprintf("%v", value)
 	}
 
 	operator := "<"
@@ -207,6 +199,9 @@ func WhereLessThan(field string, value interface{}, equals bool) (*WhereClause, 
 
 // WhereEquals forms the equals where expression.
 func WhereEquals(field string, value interface{}) (*WhereClause, error) {
+	if field == "" {
+		return nil, errors.New("soql where: field can not be empty")
+	}
 	var v string
 	if value != nil {
 		switch value.(type) {
@@ -229,6 +224,9 @@ func WhereEquals(field string, value interface{}) (*WhereClause, error) {
 
 // WhereNotEquals forms the not equals where expression.
 func WhereNotEquals(field string, value interface{}) (*WhereClause, error) {
+	if field == "" {
+		return nil, errors.New("soql where: field can not be empty")
+	}
 	var v string
 	if value != nil {
 		switch value.(type) {
@@ -251,6 +249,12 @@ func WhereNotEquals(field string, value interface{}) (*WhereClause, error) {
 
 // WhereIn forms the field in a set expression.
 func WhereIn(field string, values []interface{}) (*WhereClause, error) {
+	if field == "" {
+		return nil, errors.New("soql where: field can not be empty")
+	}
+	if values == nil {
+		return nil, errors.New("soql where: value array can not be nil")
+	}
 	set := make([]string, len(values))
 	for idx, value := range values {
 		switch value.(type) {
@@ -273,6 +277,12 @@ func WhereIn(field string, values []interface{}) (*WhereClause, error) {
 
 // WhereNotIn forms the field is not in a set expression.
 func WhereNotIn(field string, values []interface{}) (*WhereClause, error) {
+	if field == "" {
+		return nil, errors.New("soql where: field can not be empty")
+	}
+	if values == nil {
+		return nil, errors.New("soql where: value array can not be nil")
+	}
 	set := make([]string, len(values))
 	for idx, value := range values {
 		switch value.(type) {
@@ -295,42 +305,26 @@ func WhereNotIn(field string, values []interface{}) (*WhereClause, error) {
 
 // Clause returns the where cluase.
 func (wc *WhereClause) Clause() string {
-	if wc == nil {
-		panic("WhereClause can not be nil")
-	}
-
 	return fmt.Sprintf("WHERE %s", wc.expression)
 }
 
 // Group will form a grouping around the expression.
 func (wc *WhereClause) Group() {
-	if wc == nil {
-		panic("WhereClause can not be nil")
-	}
 	wc.expression = fmt.Sprintf("(%s)", wc.expression)
 }
 
 // And will logical AND the expressions.
 func (wc *WhereClause) And(where WhereExpression) {
-	if wc == nil {
-		panic("WhereClause can not be nil")
-	}
 	wc.expression = fmt.Sprintf("%s AND %s", wc.expression, where.Expression())
 }
 
 // Or will logical OR the expressions.
 func (wc *WhereClause) Or(where WhereExpression) {
-	if wc == nil {
-		panic("WhereClause can not be nil")
-	}
 	wc.expression = fmt.Sprintf("%s OR %s", wc.expression, where.Expression())
 }
 
 // Expression will return the where expression.
 func (wc *WhereClause) Expression() string {
-	if wc == nil {
-		panic("WhereClause can not be nil")
-	}
 	return wc.expression
 }
 
@@ -383,19 +377,11 @@ func NewOrderBy(result OrderResult) (*OrderBy, error) {
 
 // FieldOrder is a list of fields in the ordering.
 func (o *OrderBy) FieldOrder(fields ...string) {
-	if o == nil {
-		panic("OrderBy can not be nil")
-	}
-
 	o.fieldOrder = append(o.fieldOrder, fields...)
 }
 
 // NullOrdering sets the ordering, first or last, of the null values.
 func (o *OrderBy) NullOrdering(nulls OrderNulls) error {
-	if o == nil {
-		panic("OrderBy can not be nil")
-	}
-
 	switch nulls {
 	case OrderNullsLast, OrderNullsFirst:
 	default:
@@ -407,10 +393,6 @@ func (o *OrderBy) NullOrdering(nulls OrderNulls) error {
 
 // Order returns the order by SOQL string.
 func (o *OrderBy) Order() (string, error) {
-	if o == nil {
-		panic("OrderBy can not be nil")
-	}
-
 	switch o.result {
 	case OrderAsc, OrderDesc:
 	default:

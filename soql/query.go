@@ -21,19 +21,19 @@ type Resource struct {
 // NewResource forms the Salesforce SOQL resource. The
 // session formatter is required to form the proper URLs and authorization
 // header.
-func NewResource(session session.ServiceFormatter) *Resource {
+func NewResource(session session.ServiceFormatter) (*Resource, error) {
+	if session == nil {
+		return nil, errors.New("soql: session can not be nil")
+	}
 	return &Resource{
 		session: session,
-	}
+	}, nil
 }
 
 // Query will call out to the Salesforce org for a SOQL.  The results will
 // be the result of the query.  The all parameter is for querying all records,
 // which include deleted records that are in the recycle bin.
 func (r *Resource) Query(querier Querier, all bool) (*QueryResult, error) {
-	if r == nil {
-		panic("soql resource: the resource can not be nil")
-	}
 	if querier == nil {
 		return nil, errors.New("soql resource query: querier can not be nil")
 	}
