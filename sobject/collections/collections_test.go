@@ -198,9 +198,10 @@ func TestNewResource(t *testing.T) {
 		session session.ServiceFormatter
 	}
 	tests := []struct {
-		name string
-		args args
-		want *Resource
+		name    string
+		args    args
+		want    *Resource
+		wantErr bool
 	}{
 		{
 			name: "get resource",
@@ -231,11 +232,23 @@ func TestNewResource(t *testing.T) {
 					},
 				},
 			},
+			wantErr: false,
+		},
+		{
+			name:    "no session",
+			args:    args{},
+			want:    nil,
+			wantErr: true,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := NewResources(tt.args.session); !reflect.DeepEqual(got, tt.want) {
+			got, err := NewResources(tt.args.session)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("Resource.Update() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("NewResource() = %v, want %v", got, tt.want)
 			}
 		})
