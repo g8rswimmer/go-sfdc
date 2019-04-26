@@ -13,11 +13,11 @@ func TestNewPasswordCredentials(t *testing.T) {
 		creds PasswordCredentails
 	}
 	tests := []struct {
-		name string
-		args args
-		want *Credentials
+		name    string
+		args    args
+		want    *Credentials
+		wantErr bool
 	}{
-		// TODO: Add test cases.
 		{
 			name: "Password Credentials",
 			args: args{
@@ -40,11 +40,88 @@ func TestNewPasswordCredentials(t *testing.T) {
 					},
 				},
 			},
+			wantErr: false,
+		},
+		{
+			name: "No URL",
+			args: args{
+				creds: PasswordCredentails{
+					URL:          "",
+					Username:     "myusername",
+					Password:     "12345",
+					ClientID:     "some client id",
+					ClientSecret: "shhhh its a secret",
+				},
+			},
+			want:    nil,
+			wantErr: true,
+		},
+		{
+			name: "No Username",
+			args: args{
+				creds: PasswordCredentails{
+					URL:          "http://test.password.session",
+					Username:     "",
+					Password:     "12345",
+					ClientID:     "some client id",
+					ClientSecret: "shhhh its a secret",
+				},
+			},
+			want:    nil,
+			wantErr: true,
+		},
+		{
+			name: "No password",
+			args: args{
+				creds: PasswordCredentails{
+					URL:          "http://test.password.session",
+					Username:     "myusername",
+					Password:     "",
+					ClientID:     "some client id",
+					ClientSecret: "shhhh its a secret",
+				},
+			},
+			want:    nil,
+			wantErr: true,
+		},
+		{
+			name: "No client ID",
+			args: args{
+				creds: PasswordCredentails{
+					URL:          "http://test.password.session",
+					Username:     "myusername",
+					Password:     "12345",
+					ClientID:     "",
+					ClientSecret: "shhhh its a secret",
+				},
+			},
+			want:    nil,
+			wantErr: true,
+		},
+		{
+			name: "No client secret",
+			args: args{
+				creds: PasswordCredentails{
+					URL:          "http://test.password.session",
+					Username:     "myusername",
+					Password:     "12345",
+					ClientID:     "some client id",
+					ClientSecret: "",
+				},
+			},
+			want:    nil,
+			wantErr: true,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := NewPasswordCredentials(tt.args.creds); !reflect.DeepEqual(got, tt.want) {
+
+			got, err := NewPasswordCredentials(tt.args.creds)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("NewPasswordCredentials() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("NewPasswordCredentials() = %v, want %v", got, tt.want)
 			}
 		})
@@ -56,11 +133,11 @@ func TestNewCredentials(t *testing.T) {
 		provider Provider
 	}
 	tests := []struct {
-		name string
-		args args
-		want *Credentials
+		name    string
+		args    args
+		want    *Credentials
+		wantErr bool
 	}{
-		// TODO: Add test cases.
 		{
 			name: "New Credentials",
 			args: args{
@@ -85,11 +162,23 @@ func TestNewCredentials(t *testing.T) {
 					},
 				},
 			},
+			wantErr: false,
+		},
+		{
+			name:    "No Provider",
+			args:    args{},
+			want:    nil,
+			wantErr: true,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := NewCredentials(tt.args.provider); !reflect.DeepEqual(got, tt.want) {
+			got, err := NewCredentials(tt.args.provider)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("NewCredentials() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("NewCredentials() = %v, want %v", got, tt.want)
 			}
 		})
