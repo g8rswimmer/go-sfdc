@@ -36,7 +36,9 @@ func (r *Record) UnmarshalJSON(data []byte) error {
 	if r == nil {
 		return errors.New("record: can't unmarshal to a nil struct")
 	}
-
+	if data == nil {
+		return errors.New("record: can't unmarshal to a nil byte array")
+	}
 	var jsonMap map[string]interface{}
 	err := json.Unmarshal(data, &jsonMap)
 	if err != nil {
@@ -77,38 +79,23 @@ func (r *Record) fromJSONMap(jsonMap map[string]interface{}) {
 
 // SObject returns attribute's Salesforce object name.
 func (r *Record) SObject() string {
-	if r == nil {
-		return ""
-	}
-
 	return r.sobject
 }
 
 // URL returns the record attribute's URL.
 func (r *Record) URL() string {
-	if r == nil {
-		return ""
-	}
-
 	return r.url
 }
 
 // FieldValue returns the field's value.  If there is no field
 // for the field name, then false will be returned.
 func (r *Record) FieldValue(field string) (interface{}, bool) {
-	if r == nil {
-		return nil, false
-	}
-
 	value, has := r.fields[field]
 	return value, has
 }
 
 // Fields returns the map of field name to value relationships.
 func (r *Record) Fields() map[string]interface{} {
-	if r == nil {
-		return nil
-	}
 
 	fields := make(map[string]interface{})
 	for k, v := range r.fields {
