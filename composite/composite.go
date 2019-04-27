@@ -11,6 +11,9 @@ import (
 	"github.com/g8rswimmer/goforce/session"
 )
 
+// Subrequester provides the composite API requests.  The
+// order of the array is the order in which the subrequests are
+// placed in the composite body.
 type Subrequester interface {
 	URL() string
 	ReferenceID() string
@@ -19,9 +22,13 @@ type Subrequester interface {
 	Body() map[string]interface{}
 }
 
+// Value is the returned structure from the composite API response.
 type Value struct {
 	Response []Subvalue `json:"compositeResponse"`
 }
+
+// Subvalue is the subresponses to the composite API.  Using the
+// referende id, one will be able to match the response with the request.
 type Subvalue struct {
 	Body           interface{}       `json:"body"`
 	HTTPHeaders    map[string]string `json:"httpHeaders"`
@@ -31,7 +38,7 @@ type Subvalue struct {
 
 const endpoint = "/composite"
 
-var invalidHttpHeader = map[string]interface{}{
+var invalidHTTPHeader = map[string]interface{}{
 	"Accept":        nil,
 	"Authorization": nil,
 	"Content-Type":  nil,
@@ -44,10 +51,13 @@ var validMethods = map[string]interface{}{
 	"DELETE": nil,
 }
 
+// Resource is the structure that can be just to call composite APIs.
 type Resource struct {
 	session session.ServiceFormatter
 }
 
+// NewResource creates a new resourse with the session.  If the session is
+// nil an error will be thrown.
 func NewResource(session session.ServiceFormatter) (*Resource, error) {
 	if session == nil {
 		return nil, errors.New("composite: session can not be nil")
@@ -57,6 +67,7 @@ func NewResource(session session.ServiceFormatter) (*Resource, error) {
 	}, nil
 }
 
+// Retrieve will retrieve the responses to a composite requests.
 func (r *Resource) Retrieve(allOrNone bool, requesters []Subrequester) (Value, error) {
 	if requesters == nil {
 		return Value{}, errors.New("composite subrequests: requesters can not nil")
@@ -129,7 +140,7 @@ func (r *Resource) validateSubrequests(requesters []Subrequester) error {
 		}
 		if requester.HTTPHeaders() != nil {
 			for key := range requester.HTTPHeaders() {
-				if _, has := invalidHttpHeader[key]; has {
+				if _, has := invalidHTTPHeader[key]; has {
 					return errors.New("composite subrequest: can not contain the http header key " + key)
 				}
 			}
