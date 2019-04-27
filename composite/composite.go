@@ -26,7 +26,7 @@ type Subvalue struct {
 	Body           interface{}       `json:"body"`
 	HTTPHeaders    map[string]string `json:"httpHeaders"`
 	HTTPStatusCode int               `json:"httpStatusCode"`
-	ReferenceID    string            `json:"referenceID"`
+	ReferenceID    string            `json:"referenceId"`
 }
 
 const endpoint = "/composite"
@@ -48,10 +48,13 @@ type Resource struct {
 	session session.ServiceFormatter
 }
 
-func NewResource(session session.ServiceFormatter) *Resource {
+func NewResource(session session.ServiceFormatter) (*Resource, error) {
+	if session == nil {
+		return nil, errors.New("composite: session can not be nil")
+	}
 	return &Resource{
 		session: session,
-	}
+	}, nil
 }
 
 func (r *Resource) Retrieve(allOrNone bool, requesters []Subrequester) (Value, error) {
@@ -151,6 +154,7 @@ func (r *Resource) payload(allOrNone bool, requesters []Subrequester) (*bytes.Re
 		}
 		subRequests[idx] = subRequest
 	}
+	payload["compositeRequest"] = subRequests
 	jsonBody, err := json.Marshal(payload)
 	if err != nil {
 		return nil, err
