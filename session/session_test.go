@@ -46,7 +46,10 @@ func TestPasswordSessionRequest(t *testing.T) {
 
 	for _, scenario := range scenarios {
 
-		passwordCreds := credentials.NewPasswordCredentials(scenario.creds)
+		passwordCreds, err := credentials.NewPasswordCredentials(scenario.creds)
+		if err != nil {
+			t.Fatal("password credentials can not return an error for these tests")
+		}
 		request, err := passwordSessionRequest(passwordCreds)
 
 		if err != nil && scenario.err == nil {
@@ -217,6 +220,13 @@ func TestPasswordSessionResponse(t *testing.T) {
 	}
 }
 
+func testNewPasswordCredentials(cred credentials.PasswordCredentails) *credentials.Credentials {
+	creds, err := credentials.NewPasswordCredentials(cred)
+	if err != nil {
+		return nil
+	}
+	return creds
+}
 func TestNewPasswordSession(t *testing.T) {
 	scenarios := []struct {
 		desc    string
@@ -227,7 +237,7 @@ func TestNewPasswordSession(t *testing.T) {
 		{
 			desc: "Passing",
 			config: goforce.Configuration{
-				Credentials: credentials.NewPasswordCredentials(credentials.PasswordCredentails{
+				Credentials: testNewPasswordCredentials(credentials.PasswordCredentails{
 					URL:          "http://test.password.session",
 					Username:     "myusername",
 					Password:     "12345",
@@ -251,6 +261,7 @@ func TestNewPasswordSession(t *testing.T) {
 						Header:     make(http.Header),
 					}
 				}),
+				Version: 45,
 			},
 			session: &Session{
 				response: &sessionPasswordResponse{
@@ -264,17 +275,24 @@ func TestNewPasswordSession(t *testing.T) {
 			},
 			err: nil,
 		},
+
 		{
 			desc: "Error Request",
 			config: goforce.Configuration{
-				Credentials: credentials.NewPasswordCredentials(credentials.PasswordCredentails{
+				Credentials: testNewPasswordCredentials(credentials.PasswordCredentails{
 					URL:          "123://test.password.session",
 					Username:     "myusername",
 					Password:     "12345",
 					ClientID:     "some client id",
 					ClientSecret: "shhhh its a secret",
 				}),
-				Client: nil,
+				Client: mockHTTPClient(func(req *http.Request) *http.Response {
+					return &http.Response{
+						StatusCode: 500,
+						Header:     make(http.Header),
+					}
+				}),
+				Version: 45,
 			},
 			session: nil,
 			err:     errors.New("parse 123://test.password.session/services/oauth2/token: first path segment in URL cannot contain colon"),
@@ -282,7 +300,7 @@ func TestNewPasswordSession(t *testing.T) {
 		{
 			desc: "Error Response",
 			config: goforce.Configuration{
-				Credentials: credentials.NewPasswordCredentials(credentials.PasswordCredentails{
+				Credentials: testNewPasswordCredentials(credentials.PasswordCredentails{
 					URL:          "http://test.password.session",
 					Username:     "myusername",
 					Password:     "12345",
@@ -298,6 +316,7 @@ func TestNewPasswordSession(t *testing.T) {
 						Header:     make(http.Header),
 					}
 				}),
+				Version: 45,
 			},
 			session: nil,
 			err:     fmt.Errorf("session response error: %d %s", http.StatusInternalServerError, "Some status"),

@@ -17,6 +17,12 @@ func TestParseTime(t *testing.T) {
 		wantErr bool
 	}{
 		{
+			name:    "No Time",
+			args:    args{},
+			want:    time.Time{},
+			wantErr: true,
+		},
+		{
 			name: "Invalid Format",
 			args: args{
 				salesforceTime: "Invalid",

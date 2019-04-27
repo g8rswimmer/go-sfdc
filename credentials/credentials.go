@@ -1,6 +1,9 @@
 package credentials
 
-import "io"
+import (
+	"errors"
+	"io"
+)
 
 // PasswordCredentails is a structure for the OAuth credentials
 // that are needed to authenticate with a Salesforce org.
@@ -56,17 +59,42 @@ func (creds *Credentials) URL() string {
 }
 
 // NewCredentials will create a credential with the custom provider.
-func NewCredentials(provider Provider) *Credentials {
+func NewCredentials(provider Provider) (*Credentials, error) {
+	if provider == nil {
+		return nil, errors.New("credentials: the provider can not be nil")
+	}
 	return &Credentials{
 		provider: provider,
-	}
+	}, nil
 }
 
 // NewPasswordCredentials will create a crendential with the password credentials.
-func NewPasswordCredentials(creds PasswordCredentails) *Credentials {
+func NewPasswordCredentials(creds PasswordCredentails) (*Credentials, error) {
+	if err := validatePasswordCredentails(creds); err != nil {
+		return nil, err
+	}
 	return &Credentials{
 		provider: &passwordProvider{
 			creds: creds,
 		},
+	}, nil
+}
+
+func validatePasswordCredentails(cred PasswordCredentails) error {
+	if cred.URL == "" {
+		return errors.New("credentials: password credentail's URL can not be empty")
 	}
+	if cred.Username == "" {
+		return errors.New("credentials: password credentail's username can not be empty")
+	}
+	if cred.Password == "" {
+		return errors.New("credentials: password credentail's password can not be empty")
+	}
+	if cred.ClientID == "" {
+		return errors.New("credentials: password credentail's client ID can not be empty")
+	}
+	if cred.ClientSecret == "" {
+		return errors.New("credentials: password credentail's client secret can not be empty")
+	}
+	return nil
 }

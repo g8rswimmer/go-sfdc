@@ -45,7 +45,10 @@ type Resource struct {
 // NewResources forms the Salesforce SObject Collections resource structure.  The
 // session formatter is required to form the proper URLs and authorization
 // header.
-func NewResources(session session.ServiceFormatter) *Resource {
+func NewResources(session session.ServiceFormatter) (*Resource, error) {
+	if session == nil {
+		return nil, errors.New("collections: session can not be nil")
+	}
 	return &Resource{
 		update: &update{
 			session: session,
@@ -59,15 +62,12 @@ func NewResources(session session.ServiceFormatter) *Resource {
 		remove: &remove{
 			session: session,
 		},
-	}
+	}, nil
 }
 
 // Insert will create a group of records in the Salesforce org.  The records do not need to be
 // the same SObject.  It is the responsibility of the caller to properly chunck the records.
 func (r *Resource) Insert(allOrNone bool, records []sobject.Inserter) ([]sobject.InsertValue, error) {
-	if r == nil {
-		panic("collections resource: Resource can not be nil")
-	}
 	if r.insert == nil {
 		return nil, errors.New("collections resource: collections may not have been initialized properly")
 	}
@@ -80,9 +80,6 @@ func (r *Resource) Insert(allOrNone bool, records []sobject.Inserter) ([]sobject
 // Delete will remove a group of records in the Salesforce org.  The records do not need to
 // be the same SObject.
 func (r *Resource) Delete(allOrNone bool, records []string) ([]DeleteValue, error) {
-	if r == nil {
-		panic("collections resource: Resource can not be nil")
-	}
 	if r.remove == nil {
 		return nil, errors.New("collections resource: collections may not have been initialized properly")
 	}
@@ -95,9 +92,6 @@ func (r *Resource) Delete(allOrNone bool, records []string) ([]DeleteValue, erro
 // Update will update a group of records in the Salesforce org.  The records do not need to be
 // the same SObject.  It is the responsibility of the caller to properly chunck the records.
 func (r *Resource) Update(allOrNone bool, records []sobject.Updater) ([]UpdateValue, error) {
-	if r == nil {
-		panic("collections resource: Resource can not be nil")
-	}
 	if r.update == nil {
 		return nil, errors.New("collections resource: collections may not have been initialized properly")
 	}
@@ -110,9 +104,6 @@ func (r *Resource) Update(allOrNone bool, records []sobject.Updater) ([]UpdateVa
 // Query will retrieve a group of records from the Salesforce org.  The records to retrieve must
 // be the same SObject.
 func (r *Resource) Query(sobject string, records []sobject.Querier) ([]*goforce.Record, error) {
-	if r == nil {
-		panic("collections resource: Resource can not be nil")
-	}
 	if r.query == nil {
 		return nil, errors.New("collections resource: collections may not have been initialized properly")
 	}

@@ -12,6 +12,7 @@ type Error struct {
 	Fields    []string `json:"fields"`
 }
 
+// UnmarshalJSON will unmarshal a JSON byte array.
 func (e *Error) UnmarshalJSON(data []byte) error {
 	if e == nil {
 		return errors.New("record: can't unmarshal to a nil struct")

@@ -1,6 +1,7 @@
 package goforce
 
 import (
+	"errors"
 	"time"
 )
 
@@ -20,6 +21,9 @@ var layouts = []string{
 // to parse the time using RFC 3339, then Salesforce DateTime format and lastly Salesforce
 // Date format.
 func ParseTime(salesforceTime string) (time.Time, error) {
+	if salesforceTime == "" {
+		return time.Time{}, errors.New("parse time: time string to decode can not be empty")
+	}
 	var err error
 	for _, layout := range layouts {
 		var date time.Time

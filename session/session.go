@@ -3,6 +3,7 @@ package session
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 
@@ -61,7 +62,15 @@ const oauthEndpoint = "/services/oauth2/token"
 // Open is used to authenticate with Salesforce and open a session.  The user will need to
 // supply the proper credentails and a HTTP client.
 func Open(config goforce.Configuration) (*Session, error) {
-
+	if config.Credentials == nil {
+		return nil, errors.New("session: configuration crendentials can not be nil")
+	}
+	if config.Client == nil {
+		return nil, errors.New("session: configuration client can not be nil")
+	}
+	if config.Version <= 0 {
+		return nil, errors.New("session: configuration version can not be less than zero")
+	}
 	request, err := passwordSessionRequest(config.Credentials)
 
 	if err != nil {

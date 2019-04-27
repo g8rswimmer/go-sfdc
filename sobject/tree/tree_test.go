@@ -8,7 +8,6 @@ import (
 	"testing"
 
 	"github.com/g8rswimmer/goforce"
-
 	"github.com/g8rswimmer/goforce/session"
 )
 
@@ -292,6 +291,47 @@ func TestResource_Insert(t *testing.T) {
 			}
 			if !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("Resource.Insert() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestNewResource(t *testing.T) {
+	type args struct {
+		session session.ServiceFormatter
+	}
+	tests := []struct {
+		name    string
+		args    args
+		want    *Resource
+		wantErr bool
+	}{
+		{
+			name: "success",
+			args: args{
+				session: &mockSessionFormatter{},
+			},
+			want: &Resource{
+				session: &mockSessionFormatter{},
+			},
+			wantErr: false,
+		},
+		{
+			name:    "no session",
+			args:    args{},
+			want:    nil,
+			wantErr: true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := NewResource(tt.args.session)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("NewResource() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("NewResource() = %v, want %v", got, tt.want)
 			}
 		})
 	}
