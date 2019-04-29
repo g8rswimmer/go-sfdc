@@ -36,7 +36,6 @@ func (c *compositeSubRequest) HTTPHeaders() http.Header {
 func (c *compositeSubRequest) Body() map[string]interface{} {
 	return c.body
 }
-)
 ```
 ### Composite
 ```go
