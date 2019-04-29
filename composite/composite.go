@@ -38,17 +38,17 @@ type Subvalue struct {
 
 const endpoint = "/composite"
 
-var invalidHTTPHeader = map[string]interface{}{
-	"Accept":        nil,
-	"Authorization": nil,
-	"Content-Type":  nil,
+var invalidHTTPHeader = map[string]struct{}{
+	"Accept":        {},
+	"Authorization": {},
+	"Content-Type":  {},
 }
-var validMethods = map[string]interface{}{
-	"PUT":    nil,
-	"POST":   nil,
-	"PATCH":  nil,
-	"GET":    nil,
-	"DELETE": nil,
+var validMethods = map[string]struct{}{
+	"PUT":    {},
+	"POST":   {},
+	"PATCH":  {},
+	"GET":    {},
+	"DELETE": {},
 }
 
 // Resource is the structure that can be just to call composite APIs.
