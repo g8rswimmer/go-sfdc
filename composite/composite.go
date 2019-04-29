@@ -57,7 +57,7 @@ type Resource struct {
 }
 
 // NewResource creates a new resourse with the session.  If the session is
-// nil an error will be thrown.
+// nil an error will be returned.
 func NewResource(session session.ServiceFormatter) (*Resource, error) {
 	if session == nil {
 		return nil, errors.New("composite: session can not be nil")
@@ -123,9 +123,7 @@ func (r *Resource) Retrieve(allOrNone bool, requesters []Subrequester) (Value, e
 	if err != nil {
 		return Value{}, err
 	}
-
 	return value, nil
-
 }
 func (r *Resource) validateSubrequests(requesters []Subrequester) error {
 	for _, requester := range requesters {
