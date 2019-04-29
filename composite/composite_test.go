@@ -14,7 +14,7 @@ type mockSubrequester struct {
 	url         string
 	referenceID string
 	method      string
-	httpHeaders map[string]string
+	httpHeaders http.Header
 	body        map[string]interface{}
 }
 
@@ -27,7 +27,7 @@ func (mock *mockSubrequester) ReferenceID() string {
 func (mock *mockSubrequester) Method() string {
 	return mock.method
 }
-func (mock *mockSubrequester) HTTPHeaders() map[string]string {
+func (mock *mockSubrequester) HTTPHeaders() http.Header {
 	return mock.httpHeaders
 }
 func (mock *mockSubrequester) Body() map[string]interface{} {
@@ -56,9 +56,9 @@ func TestResource_validateSubrequests(t *testing.T) {
 						url:         "www.something.com",
 						referenceID: "someID",
 						method:      http.MethodGet,
-						httpHeaders: map[string]string{
-							"Accept-Language": "en-us,",
-						},
+						httpHeaders: http.Header(map[string][]string{
+							"Accept-Language": []string{"en-us,"},
+						}),
 					},
 				},
 			},
@@ -73,9 +73,9 @@ func TestResource_validateSubrequests(t *testing.T) {
 						url:         "",
 						referenceID: "someID",
 						method:      http.MethodGet,
-						httpHeaders: map[string]string{
-							"Accept-Language": "en-us,",
-						},
+						httpHeaders: http.Header(map[string][]string{
+							"Accept-Language": []string{"en-us,"},
+						}),
 					},
 				},
 			},
@@ -90,9 +90,9 @@ func TestResource_validateSubrequests(t *testing.T) {
 						url:         "www.something.com",
 						referenceID: "",
 						method:      http.MethodGet,
-						httpHeaders: map[string]string{
-							"Accept-Language": "en-us,",
-						},
+						httpHeaders: http.Header(map[string][]string{
+							"Accept-Language": []string{"en-us,"},
+						}),
 					},
 				},
 			},
@@ -107,16 +107,16 @@ func TestResource_validateSubrequests(t *testing.T) {
 						url:         "www.something.com",
 						referenceID: "someID",
 						method:      http.MethodTrace,
-						httpHeaders: map[string]string{
-							"Accept-Language": "en-us,",
-						},
+						httpHeaders: http.Header(map[string][]string{
+							"Accept-Language": []string{"en-us,"},
+						}),
 					},
 				},
 			},
 			wantErr: true,
 		},
 		{
-			name:   "Mo method",
+			name:   "No method",
 			fields: fields{},
 			args: args{
 				requesters: []Subrequester{
@@ -124,9 +124,9 @@ func TestResource_validateSubrequests(t *testing.T) {
 						url:         "www.something.com",
 						referenceID: "someID",
 						method:      "",
-						httpHeaders: map[string]string{
-							"Accept-Language": "en-us,",
-						},
+						httpHeaders: http.Header(map[string][]string{
+							"Accept-Language": []string{"en-us,"},
+						}),
 					},
 				},
 			},
@@ -141,9 +141,9 @@ func TestResource_validateSubrequests(t *testing.T) {
 						url:         "www.something.com",
 						referenceID: "someID",
 						method:      http.MethodGet,
-						httpHeaders: map[string]string{
-							"Accept": "application/json",
-						},
+						httpHeaders: http.Header(map[string][]string{
+							"Accept": []string{"application/json"},
+						}),
 					},
 				},
 			},
@@ -186,9 +186,9 @@ func TestResource_payload(t *testing.T) {
 						url:         "www.something.com",
 						referenceID: "someID",
 						method:      http.MethodGet,
-						httpHeaders: map[string]string{
-							"Accept": "application/json",
-						},
+						httpHeaders: http.Header(map[string][]string{
+							"Accept-Language": []string{"en-us,"},
+						}),
 					},
 				},
 			},

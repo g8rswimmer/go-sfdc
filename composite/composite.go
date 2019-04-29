@@ -18,7 +18,7 @@ type Subrequester interface {
 	URL() string
 	ReferenceID() string
 	Method() string
-	HTTPHeaders() map[string]string
+	HTTPHeaders() http.Header
 	Body() map[string]interface{}
 }
 
