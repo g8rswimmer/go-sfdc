@@ -147,8 +147,6 @@ func (r *Resource) validateSubrequests(requesters []Subrequester) error {
 	return nil
 }
 func (r *Resource) payload(allOrNone bool, requesters []Subrequester) (*bytes.Reader, error) {
-	payload := make(map[string]interface{})
-	payload["allOrNone"] = allOrNone
 	subRequests := make([]interface{}, len(requesters))
 	for idx, requester := range requesters {
 		subRequest := map[string]interface{}{
@@ -164,7 +162,10 @@ func (r *Resource) payload(allOrNone bool, requesters []Subrequester) (*bytes.Re
 		}
 		subRequests[idx] = subRequest
 	}
-	payload["compositeRequest"] = subRequests
+	payload := map[string]interface{}{
+		"allOrNone":        allOrNone,
+		"compositeRequest": subRequests,
+	}
 	jsonBody, err := json.Marshal(payload)
 	if err != nil {
 		return nil, err
