@@ -151,10 +151,11 @@ func (r *Resource) payload(allOrNone bool, requesters []Subrequester) (*bytes.Re
 	payload["allOrNone"] = allOrNone
 	subRequests := make([]interface{}, len(requesters))
 	for idx, requester := range requesters {
-		subRequest := make(map[string]interface{})
-		subRequest["url"] = requester.URL()
-		subRequest["referenceId"] = requester.ReferenceID()
-		subRequest["method"] = requester.Method()
+		subRequest := map[string]interface{}{
+			"url":         requester.URL(),
+			"referenceId": requester.ReferenceID(),
+			"method":      requester.Method(),
+		}
 		if requester.Body() != nil {
 			subRequest["body"] = requester.Body()
 		}
