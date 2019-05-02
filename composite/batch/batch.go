@@ -11,9 +11,7 @@ import (
 	"github.com/g8rswimmer/goforce/session"
 )
 
-// Subrequester provides the composite batch API requests.  The
-// order of the array is the order in which the subrequests are
-// placed in the composite body.
+// Subrequester provides the composite batch API requests.
 type Subrequester interface {
 	URL() string
 	Method() string
@@ -28,8 +26,7 @@ type Value struct {
 	Results   []Subvalue `json:"results"`
 }
 
-// Subvalue is the subresponses to the composite batch API.  Using the
-// referende id, one will be able to match the response with the request.
+// Subvalue is the subresponses to the composite batch API.
 type Subvalue struct {
 	Result     interface{} `json:"result"`
 	StatusCode int         `json:"statusCode"`
@@ -61,7 +58,9 @@ func NewResource(session session.ServiceFormatter) (*Resource, error) {
 	}, nil
 }
 
-// Retrieve will retrieve the responses to a composite batch requests.
+// Retrieve will retrieve the responses to a composite batch requests.  The
+// order of the array is the order in which the subrequests are
+// placed in the composite batch body.
 func (r *Resource) Retrieve(haltOnError bool, requesters []Subrequester) (Value, error) {
 	if requesters == nil {
 		return Value{}, errors.New("composite subrequests: requesters can not nil")
@@ -122,7 +121,7 @@ func (r *Resource) Retrieve(haltOnError bool, requesters []Subrequester) (Value,
 func (r *Resource) validateSubrequests(requesters []Subrequester) error {
 	for _, requester := range requesters {
 		if requester.URL() == "" {
-			return errors.New("composite subrequest: must contain an url")
+			return errors.New("composite subrequest: must contain a url")
 		}
 		if _, has := validMethods[requester.Method()]; has == false {
 			return errors.New("composite subrequest: empty or invalid method " + requester.Method())
