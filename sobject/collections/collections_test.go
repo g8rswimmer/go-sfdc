@@ -9,9 +9,9 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/g8rswimmer/goforce"
-	"github.com/g8rswimmer/goforce/session"
-	"github.com/g8rswimmer/goforce/sobject"
+	"github.com/g8rswimmer/go-sfdc"
+	"github.com/g8rswimmer/go-sfdc/session"
+	"github.com/g8rswimmer/go-sfdc/sobject"
 )
 
 func Test_collection_send(t *testing.T) {
@@ -99,7 +99,7 @@ func Test_collection_send(t *testing.T) {
 						}
 					}),
 				},
-				value: &goforce.Error{},
+				value: &sfdc.Error{},
 			},
 			wantErr: false,
 		},
@@ -173,7 +173,7 @@ func Test_collection_send(t *testing.T) {
 						}
 					}),
 				},
-				value: &goforce.Error{},
+				value: &sfdc.Error{},
 			},
 			wantErr: true,
 		},
@@ -348,7 +348,7 @@ func TestResource_Update(t *testing.T) {
 				UpdateValue{
 					InsertValue: sobject.InsertValue{
 						Success: false,
-						Errors: []goforce.Error{
+						Errors: []sfdc.Error{
 							{
 								ErrorCode: "MALFORMED_ID",
 								Message:   "Use one of these records?",
@@ -361,7 +361,7 @@ func TestResource_Update(t *testing.T) {
 					InsertValue: sobject.InsertValue{
 						Success: true,
 						ID:      "003RM0000068xVCYAY",
-						Errors:  make([]goforce.Error, 0),
+						Errors:  make([]sfdc.Error, 0),
 					},
 				},
 			},
@@ -635,7 +635,7 @@ func TestResource_Insert(t *testing.T) {
 			want: []sobject.InsertValue{
 				{
 					Success: false,
-					Errors: []goforce.Error{
+					Errors: []sfdc.Error{
 						{
 							ErrorCode: "DUPLICATES_DETECTED",
 							Message:   "Use one of these records?",
@@ -646,7 +646,7 @@ func TestResource_Insert(t *testing.T) {
 				{
 					Success: true,
 					ID:      "003RM0000068xVCYAY",
-					Errors:  make([]goforce.Error, 0),
+					Errors:  make([]sfdc.Error, 0),
 				},
 			},
 			wantErr: false,
@@ -785,13 +785,13 @@ func TestResource_Delete(t *testing.T) {
 					sobject.InsertValue{
 						Success: true,
 						ID:      "001RM000003oLrfYAE",
-						Errors:  make([]goforce.Error, 0),
+						Errors:  make([]sfdc.Error, 0),
 					},
 				},
 				{
 					sobject.InsertValue{
 						Success: false,
-						Errors: []goforce.Error{
+						Errors: []sfdc.Error{
 							{
 								ErrorCode: "MALFORMED_ID",
 								Message:   "malformed id 001RM000003oLrB000",

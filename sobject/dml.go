@@ -6,16 +6,16 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/g8rswimmer/goforce"
-	"github.com/g8rswimmer/goforce/session"
+	"github.com/g8rswimmer/go-sfdc"
+	"github.com/g8rswimmer/go-sfdc/session"
 )
 
 // InsertValue is the value that is returned when a
 // record is inserted into Salesforce.
 type InsertValue struct {
-	Success bool            `json:"success"`
-	ID      string          `json:"id"`
-	Errors  []goforce.Error `json:"errors"`
+	Success bool         `json:"success"`
+	ID      string       `json:"id"`
+	Errors  []sfdc.Error `json:"errors"`
 }
 
 // UpsertValue is the value that is return when a
@@ -130,7 +130,7 @@ func (d *dml) insertResponse(request *http.Request) (InsertValue, error) {
 	defer response.Body.Close()
 
 	if response.StatusCode != http.StatusCreated {
-		var insertErrs []goforce.Error
+		var insertErrs []sfdc.Error
 		err = decoder.Decode(&insertErrs)
 		var errMsg error
 		if err == nil {
@@ -196,7 +196,7 @@ func (d *dml) updateResponse(request *http.Request) error {
 		decoder := json.NewDecoder(response.Body)
 		defer response.Body.Close()
 
-		var updateErrs []goforce.Error
+		var updateErrs []sfdc.Error
 		err = decoder.Decode(&updateErrs)
 		var errMsg error
 		if err == nil {
@@ -273,7 +273,7 @@ func (d *dml) upsertResponse(request *http.Request) (UpsertValue, error) {
 		isInsert = false
 	default:
 		defer response.Body.Close()
-		var upsetErrs []goforce.Error
+		var upsetErrs []sfdc.Error
 		err = decoder.Decode(&upsetErrs)
 		errMsg := fmt.Errorf("upsert response err: %d %s", response.StatusCode, response.Status)
 		if err == nil {

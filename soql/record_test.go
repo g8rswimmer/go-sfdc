@@ -4,11 +4,11 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/g8rswimmer/goforce"
+	"github.com/g8rswimmer/go-sfdc"
 )
 
-func testQueryRecord(jsonMap map[string]interface{}) *goforce.Record {
-	if rec, err := goforce.RecordFromJSONMap(jsonMap); err == nil {
+func testQueryRecord(jsonMap map[string]interface{}) *sfdc.Record {
+	if rec, err := sfdc.RecordFromJSONMap(jsonMap); err == nil {
 		return rec
 	}
 	return nil
@@ -151,13 +151,13 @@ func Test_newQueryRecord(t *testing.T) {
 
 func TestQueryRecord_Record(t *testing.T) {
 	type fields struct {
-		record     *goforce.Record
+		record     *sfdc.Record
 		subresults map[string]*QueryResult
 	}
 	tests := []struct {
 		name   string
 		fields fields
-		want   *goforce.Record
+		want   *sfdc.Record
 	}{
 		{
 			name: "Get Record",
@@ -195,7 +195,7 @@ func TestQueryRecord_Record(t *testing.T) {
 
 func TestQueryRecord_Subresults(t *testing.T) {
 	type fields struct {
-		record     *goforce.Record
+		record     *sfdc.Record
 		subresults map[string]*QueryResult
 	}
 	tests := []struct {
@@ -323,7 +323,7 @@ func TestQueryRecord_Subresults(t *testing.T) {
 
 func TestQueryRecord_Subresult(t *testing.T) {
 	type fields struct {
-		record     *goforce.Record
+		record     *sfdc.Record
 		subresults map[string]*QueryResult
 	}
 	type args struct {

@@ -7,9 +7,9 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/g8rswimmer/goforce"
+	"github.com/g8rswimmer/go-sfdc"
 
-	"github.com/g8rswimmer/goforce/session"
+	"github.com/g8rswimmer/go-sfdc/session"
 )
 
 type mockInserter struct {
@@ -182,7 +182,7 @@ func Test_dml_Insert(t *testing.T) {
 			},
 			want: InsertValue{
 				Success: true,
-				Errors:  make([]goforce.Error, 0),
+				Errors:  make([]sfdc.Error, 0),
 				ID:      "001D000000IqhSLIAZ",
 			},
 			wantErr: false,
@@ -522,7 +522,7 @@ func Test_dml_Upsert(t *testing.T) {
 				Inserted: true,
 				InsertValue: InsertValue{
 					Success: true,
-					Errors:  make([]goforce.Error, 0),
+					Errors:  make([]sfdc.Error, 0),
 					ID:      "001D000000IqhSLIAZ",
 				},
 			},

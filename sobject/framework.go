@@ -6,8 +6,8 @@ import (
 	"regexp"
 	"time"
 
-	"github.com/g8rswimmer/goforce"
-	"github.com/g8rswimmer/goforce/session"
+	"github.com/g8rswimmer/go-sfdc"
+	"github.com/g8rswimmer/go-sfdc/session"
 )
 
 // ObjectURLs is the URL for the SObject metadata.
@@ -151,7 +151,7 @@ func (r *Resources) Delete(deleter Deleter) error {
 }
 
 // Query returns a SObject record using the Salesforce ID.
-func (r *Resources) Query(querier Querier) (*goforce.Record, error) {
+func (r *Resources) Query(querier Querier) (*sfdc.Record, error) {
 	if r.query == nil {
 		return nil, errors.New("salesforce api is not initialized properly")
 	}
@@ -164,7 +164,7 @@ func (r *Resources) Query(querier Querier) (*goforce.Record, error) {
 }
 
 // ExternalQuery returns a SObject record using an external ID field.
-func (r *Resources) ExternalQuery(querier ExternalQuerier) (*goforce.Record, error) {
+func (r *Resources) ExternalQuery(querier ExternalQuerier) (*sfdc.Record, error) {
 	if r.query == nil {
 		return nil, errors.New("salesforce api is not initialized properly")
 	}

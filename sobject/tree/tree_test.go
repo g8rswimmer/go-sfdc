@@ -7,8 +7,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/g8rswimmer/goforce"
-	"github.com/g8rswimmer/goforce/session"
+	"github.com/g8rswimmer/go-sfdc"
+	"github.com/g8rswimmer/go-sfdc/session"
 )
 
 type mockInserter struct {
@@ -266,7 +266,7 @@ func TestResource_Insert(t *testing.T) {
 				Results: []InsertValue{
 					{
 						ReferenceID: "ref2",
-						Errors: []goforce.Error{
+						Errors: []sfdc.Error{
 							{
 								ErrorCode: "INVALID_EMAIL_ADDRESS",
 								Message:   "Email: invalid email address: 123",

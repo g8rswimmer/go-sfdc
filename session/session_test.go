@@ -9,8 +9,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/g8rswimmer/goforce"
-	"github.com/g8rswimmer/goforce/credentials"
+	"github.com/g8rswimmer/go-sfdc"
+	"github.com/g8rswimmer/go-sfdc/credentials"
 )
 
 func TestPasswordSessionRequest(t *testing.T) {
@@ -230,13 +230,13 @@ func testNewPasswordCredentials(cred credentials.PasswordCredentails) *credentia
 func TestNewPasswordSession(t *testing.T) {
 	scenarios := []struct {
 		desc    string
-		config  goforce.Configuration
+		config  sfdc.Configuration
 		session *Session
 		err     error
 	}{
 		{
 			desc: "Passing",
-			config: goforce.Configuration{
+			config: sfdc.Configuration{
 				Credentials: testNewPasswordCredentials(credentials.PasswordCredentails{
 					URL:          "http://test.password.session",
 					Username:     "myusername",
@@ -278,7 +278,7 @@ func TestNewPasswordSession(t *testing.T) {
 
 		{
 			desc: "Error Request",
-			config: goforce.Configuration{
+			config: sfdc.Configuration{
 				Credentials: testNewPasswordCredentials(credentials.PasswordCredentails{
 					URL:          "123://test.password.session",
 					Username:     "myusername",
@@ -299,7 +299,7 @@ func TestNewPasswordSession(t *testing.T) {
 		},
 		{
 			desc: "Error Response",
-			config: goforce.Configuration{
+			config: sfdc.Configuration{
 				Credentials: testNewPasswordCredentials(credentials.PasswordCredentails{
 					URL:          "http://test.password.session",
 					Username:     "myusername",
@@ -370,7 +370,7 @@ func TestNewPasswordSession(t *testing.T) {
 func TestSession_ServiceURL(t *testing.T) {
 	type fields struct {
 		response *sessionPasswordResponse
-		config   goforce.Configuration
+		config   sfdc.Configuration
 	}
 	tests := []struct {
 		name   string
@@ -383,7 +383,7 @@ func TestSession_ServiceURL(t *testing.T) {
 				response: &sessionPasswordResponse{
 					InstanceURL: "https://www.my.salesforce.instance",
 				},
-				config: goforce.Configuration{
+				config: sfdc.Configuration{
 					Version: 43,
 				},
 			},
@@ -406,7 +406,7 @@ func TestSession_ServiceURL(t *testing.T) {
 func TestSession_AuthorizationHeader(t *testing.T) {
 	type fields struct {
 		response *sessionPasswordResponse
-		config   goforce.Configuration
+		config   sfdc.Configuration
 	}
 	type args struct {
 		request *http.Request
@@ -424,7 +424,7 @@ func TestSession_AuthorizationHeader(t *testing.T) {
 					TokenType:   "Type",
 					AccessToken: "Access",
 				},
-				config: goforce.Configuration{},
+				config: sfdc.Configuration{},
 			},
 			args: args{
 				request: &http.Request{
@@ -453,7 +453,7 @@ func TestSession_AuthorizationHeader(t *testing.T) {
 func TestSession_Client(t *testing.T) {
 	type fields struct {
 		response *sessionPasswordResponse
-		config   goforce.Configuration
+		config   sfdc.Configuration
 	}
 	tests := []struct {
 		name   string
@@ -464,7 +464,7 @@ func TestSession_Client(t *testing.T) {
 			name: "Session Client",
 			fields: fields{
 				response: &sessionPasswordResponse{},
-				config: goforce.Configuration{
+				config: sfdc.Configuration{
 					Client: http.DefaultClient,
 				},
 			},
@@ -487,7 +487,7 @@ func TestSession_Client(t *testing.T) {
 func TestSession_InstanceURL(t *testing.T) {
 	type fields struct {
 		response *sessionPasswordResponse
-		config   goforce.Configuration
+		config   sfdc.Configuration
 	}
 	tests := []struct {
 		name   string
@@ -500,7 +500,7 @@ func TestSession_InstanceURL(t *testing.T) {
 				response: &sessionPasswordResponse{
 					InstanceURL: "https://www.my.salesforce.instance",
 				},
-				config: goforce.Configuration{
+				config: sfdc.Configuration{
 					Version: 43,
 				},
 			},

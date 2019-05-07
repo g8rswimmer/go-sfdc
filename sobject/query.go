@@ -9,8 +9,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/g8rswimmer/goforce"
-	"github.com/g8rswimmer/goforce/session"
+	"github.com/g8rswimmer/go-sfdc"
+	"github.com/g8rswimmer/go-sfdc/session"
 )
 
 // Querier is the interface used to query a SObject from
@@ -84,7 +84,7 @@ type query struct {
 	session session.ServiceFormatter
 }
 
-func (q *query) callout(querier Querier) (*goforce.Record, error) {
+func (q *query) callout(querier Querier) (*sfdc.Record, error) {
 	request, err := q.queryRequest(querier)
 
 	if err != nil {
@@ -122,7 +122,7 @@ func (q *query) queryRequest(querier Querier) (*http.Request, error) {
 
 }
 
-func (q *query) queryResponse(request *http.Request) (*goforce.Record, error) {
+func (q *query) queryResponse(request *http.Request) (*sfdc.Record, error) {
 	response, err := q.session.Client().Do(request)
 
 	if err != nil {
@@ -133,7 +133,7 @@ func (q *query) queryResponse(request *http.Request) (*goforce.Record, error) {
 	defer response.Body.Close()
 
 	if response.StatusCode != http.StatusOK {
-		var queryErrs []goforce.Error
+		var queryErrs []sfdc.Error
 		err = decoder.Decode(&queryErrs)
 		var errMsg error
 		if err == nil {
@@ -147,7 +147,7 @@ func (q *query) queryResponse(request *http.Request) (*goforce.Record, error) {
 		return nil, errMsg
 	}
 
-	var record goforce.Record
+	var record sfdc.Record
 	err = decoder.Decode(&record)
 	if err != nil {
 		return nil, err
@@ -156,7 +156,7 @@ func (q *query) queryResponse(request *http.Request) (*goforce.Record, error) {
 	return &record, nil
 }
 
-func (q *query) externalCallout(querier ExternalQuerier) (*goforce.Record, error) {
+func (q *query) externalCallout(querier ExternalQuerier) (*sfdc.Record, error) {
 	request, err := q.externalQueryRequest(querier)
 
 	if err != nil {
@@ -231,19 +231,19 @@ func (q *query) deletedRecordsResponse(request *http.Request) (DeletedRecords, e
 	}
 
 	for idx, record := range records.Records {
-		date, err := goforce.ParseTime(record.DeletedDateStr)
+		date, err := sfdc.ParseTime(record.DeletedDateStr)
 		if err != nil {
 			return DeletedRecords{}, err
 		}
 		records.Records[idx].DeletedDate = date
 	}
 	var date time.Time
-	date, err = goforce.ParseTime(records.EarliestDateStr)
+	date, err = sfdc.ParseTime(records.EarliestDateStr)
 	if err != nil {
 		return DeletedRecords{}, err
 	}
 	records.EarliestDate = date
-	date, err = goforce.ParseTime(records.LatestDateStr)
+	date, err = sfdc.ParseTime(records.LatestDateStr)
 	if err != nil {
 		return DeletedRecords{}, err
 	}
@@ -288,7 +288,7 @@ func (q *query) updatedRecordsResponse(request *http.Request) (UpdatedRecords, e
 		return UpdatedRecords{}, err
 	}
 
-	date, err := goforce.ParseTime(records.LatestDateStr)
+	date, err := sfdc.ParseTime(records.LatestDateStr)
 	if err != nil {
 		return UpdatedRecords{}, err
 	}

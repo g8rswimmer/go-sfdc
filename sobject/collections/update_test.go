@@ -7,9 +7,9 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/g8rswimmer/goforce"
-	"github.com/g8rswimmer/goforce/session"
-	"github.com/g8rswimmer/goforce/sobject"
+	"github.com/g8rswimmer/go-sfdc"
+	"github.com/g8rswimmer/go-sfdc/session"
+	"github.com/g8rswimmer/go-sfdc/sobject"
 )
 
 type mockUpdater struct {
@@ -172,7 +172,7 @@ func TestUpdate_Callout(t *testing.T) {
 				UpdateValue{
 					InsertValue: sobject.InsertValue{
 						Success: false,
-						Errors: []goforce.Error{
+						Errors: []sfdc.Error{
 							{
 								ErrorCode: "MALFORMED_ID",
 								Message:   "Use one of these records?",
@@ -185,7 +185,7 @@ func TestUpdate_Callout(t *testing.T) {
 					InsertValue: sobject.InsertValue{
 						Success: true,
 						ID:      "003RM0000068xVCYAY",
-						Errors:  make([]goforce.Error, 0),
+						Errors:  make([]sfdc.Error, 0),
 					},
 				},
 			},
