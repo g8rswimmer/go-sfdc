@@ -9,7 +9,7 @@ The `soql` package is an implementation of the `Salesforce APIs` centered on `SO
  As a reference, see `Salesforce API` [documentation](https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/intro_what_is_rest_api.htm)
 
 ## Examples
-The following are examples to access the `APIs`.  It is assumed that a `goforce` [session](../session/README.md) has been created.
+The following are examples to access the `APIs`.  It is assumed that a `go-sfdc` [session](../session/README.md) has been created.
 ### SOQL Builder
 The following examplas cenrter around `SOQL` builder.  Although using the builder is not required to use the `API`, it is recommended as it generates the proper query statement.
 #### SELECT Name, Id FROM Account WHERE Name = 'Golang'

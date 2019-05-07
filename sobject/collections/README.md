@@ -10,7 +10,7 @@ The `collection` package is an implementation of `Salesforce APIs` centered on `
 As a reference, see `Salesforce API` [documentation](https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/resources_composite_sobjects_collections.htm)
 
 ## Examples
-The following are examples to access the `APIs`.  It is assumed that a `goforce` [session](../../session/README.md) has been created.
+The following are examples to access the `APIs`.  It is assumed that a `go-sfdc` [session](../../session/README.md) has been created.
 
 ```go
 type dml struct {

@@ -8,11 +8,11 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/g8rswimmer/goforce/sobject"
+	"github.com/g8rswimmer/go-sfdc/sobject"
 
-	"github.com/g8rswimmer/goforce"
+	"github.com/g8rswimmer/go-sfdc"
 
-	"github.com/g8rswimmer/goforce/session"
+	"github.com/g8rswimmer/go-sfdc/session"
 )
 
 func TestDelete_values(t *testing.T) {
@@ -149,13 +149,13 @@ func TestDelete_Callout(t *testing.T) {
 					sobject.InsertValue{
 						Success: true,
 						ID:      "001RM000003oLrfYAE",
-						Errors:  make([]goforce.Error, 0),
+						Errors:  make([]sfdc.Error, 0),
 					},
 				},
 				{
 					sobject.InsertValue{
 						Success: false,
-						Errors: []goforce.Error{
+						Errors: []sfdc.Error{
 							{
 								ErrorCode: "MALFORMED_ID",
 								Message:   "malformed id 001RM000003oLrB000",

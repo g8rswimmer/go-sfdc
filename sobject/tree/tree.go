@@ -8,9 +8,9 @@ import (
 	"net/http"
 	"regexp"
 
-	"github.com/g8rswimmer/goforce"
+	"github.com/g8rswimmer/go-sfdc"
 
-	"github.com/g8rswimmer/goforce/session"
+	"github.com/g8rswimmer/go-sfdc/session"
 )
 
 // Inserter is used to define the SObject and it's records for the
@@ -22,9 +22,9 @@ type Inserter interface {
 
 // InsertValue is the return value for each record.
 type InsertValue struct {
-	ReferenceID string          `json:"referenceId"`
-	ID          string          `json:"id"`
-	Errors      []goforce.Error `json:"errors"`
+	ReferenceID string       `json:"referenceId"`
+	ID          string       `json:"id"`
+	Errors      []sfdc.Error `json:"errors"`
 }
 
 // Value is the return value from the API call.

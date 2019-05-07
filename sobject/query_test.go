@@ -9,8 +9,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/g8rswimmer/goforce"
-	"github.com/g8rswimmer/goforce/session"
+	"github.com/g8rswimmer/go-sfdc"
+	"github.com/g8rswimmer/go-sfdc/session"
 )
 
 type mockQuery struct {
@@ -35,17 +35,17 @@ type mockRecord struct {
 	fields  map[string]interface{}
 }
 
-func testNewRecord(data []byte) *goforce.Record {
-	var record goforce.Record
+func testNewRecord(data []byte) *sfdc.Record {
+	var record sfdc.Record
 	err := json.Unmarshal(data, &record)
 	if err != nil {
-		return &goforce.Record{}
+		return &sfdc.Record{}
 	}
 	return &record
 }
 
 func testSalesforceParseTime(salesforceTime string) time.Time {
-	date, _ := goforce.ParseTime(salesforceTime)
+	date, _ := sfdc.ParseTime(salesforceTime)
 	return date
 }
 
@@ -60,7 +60,7 @@ func Test_query_Query(t *testing.T) {
 		name    string
 		fields  fields
 		args    args
-		want    *goforce.Record
+		want    *sfdc.Record
 		wantErr bool
 	}{
 		{
@@ -263,7 +263,7 @@ func Test_query_ExternalQuery(t *testing.T) {
 		name    string
 		fields  fields
 		args    args
-		want    *goforce.Record
+		want    *sfdc.Record
 		wantErr bool
 	}{
 		{

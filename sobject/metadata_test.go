@@ -7,7 +7,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/g8rswimmer/goforce/session"
+	"github.com/g8rswimmer/go-sfdc/session"
 )
 
 func Test_metadata_Metadata(t *testing.T) {

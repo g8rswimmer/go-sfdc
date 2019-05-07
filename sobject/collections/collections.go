@@ -11,9 +11,9 @@ import (
 	"net/url"
 	"regexp"
 
-	"github.com/g8rswimmer/goforce"
-	"github.com/g8rswimmer/goforce/session"
-	"github.com/g8rswimmer/goforce/sobject"
+	"github.com/g8rswimmer/go-sfdc"
+	"github.com/g8rswimmer/go-sfdc/session"
+	"github.com/g8rswimmer/go-sfdc/sobject"
 )
 
 const (
@@ -103,7 +103,7 @@ func (r *Resource) Update(allOrNone bool, records []sobject.Updater) ([]UpdateVa
 
 // Query will retrieve a group of records from the Salesforce org.  The records to retrieve must
 // be the same SObject.
-func (r *Resource) Query(sobject string, records []sobject.Querier) ([]*goforce.Record, error) {
+func (r *Resource) Query(sobject string, records []sobject.Querier) ([]*sfdc.Record, error) {
 	if r.query == nil {
 		return nil, errors.New("collections resource: collections may not have been initialized properly")
 	}
@@ -148,7 +148,7 @@ func (c *collection) send(session session.ServiceFormatter, value interface{}) e
 	defer response.Body.Close()
 
 	if response.StatusCode != http.StatusOK {
-		var insertErrs []goforce.Error
+		var insertErrs []sfdc.Error
 		err = decoder.Decode(&insertErrs)
 		var errMsg error
 		if err == nil {

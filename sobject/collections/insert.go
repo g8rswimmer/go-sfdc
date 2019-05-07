@@ -4,8 +4,8 @@ import (
 	"bytes"
 	"net/http"
 
-	"github.com/g8rswimmer/goforce/session"
-	"github.com/g8rswimmer/goforce/sobject"
+	"github.com/g8rswimmer/go-sfdc/session"
+	"github.com/g8rswimmer/go-sfdc/sobject"
 )
 
 type insert struct {

@@ -1,24 +1,24 @@
 package soql
 
-import "github.com/g8rswimmer/goforce"
+import "github.com/g8rswimmer/go-sfdc"
 
 // QueryRecord is the result of the SOQL record.  If
 // the query statement contains an inner query, there
 // will be a group of subresults.
 type QueryRecord struct {
-	record     *goforce.Record
+	record     *sfdc.Record
 	subresults map[string]*QueryResult
 }
 
 func newQueryRecord(jsonMap map[string]interface{}, resource *Resource) (*QueryRecord, error) {
-	rec, err := goforce.RecordFromJSONMap(jsonMap)
+	rec, err := sfdc.RecordFromJSONMap(jsonMap)
 	if err != nil {
 		return nil, err
 	}
 	subresults := make(map[string]*QueryResult)
 	for k, v := range jsonMap {
 		if sub, has := v.(map[string]interface{}); has {
-			if k != goforce.RecordAttributes {
+			if k != sfdc.RecordAttributes {
 				resp, err := newQueryResponseJSON(sub)
 				if err != nil {
 					return nil, err
@@ -39,7 +39,7 @@ func newQueryRecord(jsonMap map[string]interface{}, resource *Resource) (*QueryR
 }
 
 // Record returns the SOQL record.
-func (rec *QueryRecord) Record() *goforce.Record {
+func (rec *QueryRecord) Record() *sfdc.Record {
 	return rec.record
 }
 

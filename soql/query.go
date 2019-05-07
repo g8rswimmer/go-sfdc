@@ -7,9 +7,9 @@ import (
 	"net/http"
 	"net/url"
 
-	"github.com/g8rswimmer/goforce"
+	"github.com/g8rswimmer/go-sfdc"
 
-	"github.com/g8rswimmer/goforce/session"
+	"github.com/g8rswimmer/go-sfdc/session"
 )
 
 // Resource is the structure for the Salesforce
@@ -118,7 +118,7 @@ func (r *Resource) queryResponse(request *http.Request) (queryResponse, error) {
 	defer response.Body.Close()
 
 	if response.StatusCode != http.StatusOK {
-		var queryErrs []goforce.Error
+		var queryErrs []sfdc.Error
 		err = decoder.Decode(&queryErrs)
 		var errMsg error
 		if err == nil {

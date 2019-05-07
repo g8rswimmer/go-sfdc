@@ -6,9 +6,9 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/g8rswimmer/goforce"
-	"github.com/g8rswimmer/goforce/session"
-	"github.com/g8rswimmer/goforce/sobject"
+	"github.com/g8rswimmer/go-sfdc"
+	"github.com/g8rswimmer/go-sfdc/session"
+	"github.com/g8rswimmer/go-sfdc/sobject"
 )
 
 type collectionQueryPayload struct {
@@ -20,7 +20,7 @@ type query struct {
 	session session.ServiceFormatter
 }
 
-func (q *query) callout(sobject string, records []sobject.Querier) ([]*goforce.Record, error) {
+func (q *query) callout(sobject string, records []sobject.Querier) ([]*sfdc.Record, error) {
 	if q == nil {
 		panic("collections: Collection Query can not be nil")
 	}
@@ -34,7 +34,7 @@ func (q *query) callout(sobject string, records []sobject.Querier) ([]*goforce.R
 		endpoint:    endpoint + "/" + sobject,
 		contentType: jsonContentType,
 	}
-	var values []*goforce.Record
+	var values []*sfdc.Record
 	err = c.send(q.session, &values)
 	if err != nil {
 		return nil, err

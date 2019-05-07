@@ -7,8 +7,8 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/g8rswimmer/goforce"
-	"github.com/g8rswimmer/goforce/session"
+	"github.com/g8rswimmer/go-sfdc"
+	"github.com/g8rswimmer/go-sfdc/session"
 )
 
 // Subrequester provides the composite batch API requests.
@@ -97,7 +97,7 @@ func (r *Resource) Retrieve(haltOnError bool, requesters []Subrequester) (Value,
 	defer response.Body.Close()
 
 	if response.StatusCode != http.StatusOK {
-		var insertErrs []goforce.Error
+		var insertErrs []sfdc.Error
 		err = decoder.Decode(&insertErrs)
 		var errMsg error
 		if err == nil {

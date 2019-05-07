@@ -14,7 +14,7 @@ creds := credentials.PasswordCredentails{
   ClientSecret: "12312573857105",
 }
 
-config := goforce.Configuration{
+config := sfdc.Configuration{
   Credentials: credentials.NewPasswordCredentials(creds),
   Client:      http.DefaultClient,
   Version:     44,

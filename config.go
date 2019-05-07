@@ -1,9 +1,9 @@
-package goforce
+package sfdc
 
 import (
 	"net/http"
 
-	"github.com/g8rswimmer/goforce/credentials"
+	"github.com/g8rswimmer/go-sfdc/credentials"
 )
 
 // Configuration is the structure for goforce sessions.

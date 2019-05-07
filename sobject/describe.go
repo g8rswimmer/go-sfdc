@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/g8rswimmer/goforce"
-	"github.com/g8rswimmer/goforce/session"
+	"github.com/g8rswimmer/go-sfdc"
+	"github.com/g8rswimmer/go-sfdc/session"
 )
 
 // DescribeValue is a structure that is returned from the from the Salesforce
@@ -212,7 +212,7 @@ func (d *describe) response(request *http.Request) (DescribeValue, error) {
 	defer response.Body.Close()
 
 	if response.StatusCode != http.StatusOK {
-		var respErrs []goforce.Error
+		var respErrs []sfdc.Error
 		err = decoder.Decode(&respErrs)
 		var errMsg error
 		if err == nil {

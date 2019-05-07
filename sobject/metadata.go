@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/g8rswimmer/goforce"
-	"github.com/g8rswimmer/goforce/session"
+	"github.com/g8rswimmer/go-sfdc"
+	"github.com/g8rswimmer/go-sfdc/session"
 )
 
 // MetadataValue is the response from the SObject metadata API.
@@ -90,7 +90,7 @@ func (md *metadata) response(request *http.Request) (MetadataValue, error) {
 	defer response.Body.Close()
 
 	if response.StatusCode != http.StatusOK {
-		var respErrs []goforce.Error
+		var respErrs []sfdc.Error
 		err = decoder.Decode(&respErrs)
 		var errMsg error
 		if err == nil {

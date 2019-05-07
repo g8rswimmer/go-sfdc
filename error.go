@@ -1,4 +1,4 @@
-package goforce
+package sfdc
 
 import (
 	"encoding/json"

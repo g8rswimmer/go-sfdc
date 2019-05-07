@@ -5,8 +5,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/g8rswimmer/goforce"
-	"github.com/g8rswimmer/goforce/session"
+	"github.com/g8rswimmer/go-sfdc"
+	"github.com/g8rswimmer/go-sfdc/session"
 )
 
 func TestSalesforceAPI_Metadata(t *testing.T) {
@@ -337,7 +337,7 @@ func TestSalesforceAPI_Query(t *testing.T) {
 		name    string
 		fields  fields
 		args    args
-		want    *goforce.Record
+		want    *sfdc.Record
 		wantErr bool
 	}{
 		{
@@ -392,7 +392,7 @@ func TestSalesforceAPI_ExternalQuery(t *testing.T) {
 		name    string
 		fields  fields
 		args    args
-		want    *goforce.Record
+		want    *sfdc.Record
 		wantErr bool
 	}{
 		{

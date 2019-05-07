@@ -7,15 +7,15 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/g8rswimmer/goforce"
-	"github.com/g8rswimmer/goforce/credentials"
+	"github.com/g8rswimmer/go-sfdc"
+	"github.com/g8rswimmer/go-sfdc/credentials"
 )
 
 // Session is the authentication response.  This is used to generate the
 // authroization header for the Salesforce API calls.
 type Session struct {
 	response *sessionPasswordResponse
-	config   goforce.Configuration
+	config   sfdc.Configuration
 }
 
 // Clienter interface provides the HTTP client used by the
@@ -61,7 +61,7 @@ const oauthEndpoint = "/services/oauth2/token"
 
 // Open is used to authenticate with Salesforce and open a session.  The user will need to
 // supply the proper credentails and a HTTP client.
-func Open(config goforce.Configuration) (*Session, error) {
+func Open(config sfdc.Configuration) (*Session, error) {
 	if config.Credentials == nil {
 		return nil, errors.New("session: configuration crendentials can not be nil")
 	}

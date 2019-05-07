@@ -7,9 +7,9 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/g8rswimmer/goforce"
-	"github.com/g8rswimmer/goforce/session"
-	"github.com/g8rswimmer/goforce/sobject"
+	"github.com/g8rswimmer/go-sfdc"
+	"github.com/g8rswimmer/go-sfdc/session"
+	"github.com/g8rswimmer/go-sfdc/sobject"
 )
 
 type mockInserter struct {
@@ -167,7 +167,7 @@ func TestInsert_Callout(t *testing.T) {
 			want: []sobject.InsertValue{
 				{
 					Success: false,
-					Errors: []goforce.Error{
+					Errors: []sfdc.Error{
 						{
 							ErrorCode: "DUPLICATES_DETECTED",
 							Message:   "Use one of these records?",
@@ -178,7 +178,7 @@ func TestInsert_Callout(t *testing.T) {
 				{
 					Success: true,
 					ID:      "003RM0000068xVCYAY",
-					Errors:  make([]goforce.Error, 0),
+					Errors:  make([]sfdc.Error, 0),
 				},
 			},
 			wantErr: false,
