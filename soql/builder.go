@@ -7,6 +7,31 @@ import (
 	"time"
 )
 
+// QueryInput is used to provide SOQL inputs.
+//
+// ObjectType is the Salesforce Object, like Account
+//
+// FieldList is the Salesforce Object's fields to query
+//
+// SubQuery is the inner query
+//
+// Where is the SOQL where cause
+//
+// Order is the SOQL ordering
+//
+// Limit is the SOQL record limit
+//
+// Offset is the SOQL record offset
+type QueryInput struct {
+	FieldList  []string
+	ObjectType string
+	SubQuery   []Querier
+	Where      WhereClauser
+	Order      Orderer
+	Limit      int
+	Offset     int
+}
+
 // Builder is the struture used to build a SOQL query.
 type Builder struct {
 	fieldList  []string
@@ -27,43 +52,23 @@ type Querier interface {
 
 // NewBuilder creates a new builder.  If the object is an
 // empty string, then an error is returned.
-func NewBuilder(object string) (*Builder, error) {
-	if object == "" {
+func NewBuilder(input QueryInput) (*Builder, error) {
+	if input.ObjectType == "" {
 		return nil, errors.New("builder: object type can not be an empty string")
 	}
+	if len(input.FieldList) == 0 {
+		return nil, errors.New("builder: field list can not be empty")
+	}
+
 	return &Builder{
-		objectType: object,
+		objectType: input.ObjectType,
+		fieldList:  input.FieldList,
+		subQuery:   input.SubQuery,
+		where:      input.Where,
+		order:      input.Order,
+		limit:      input.Limit,
+		offset:     input.Offset,
 	}, nil
-}
-
-// FieldList is the list of fields to query.
-func (b *Builder) FieldList(fields ...string) {
-	b.fieldList = append(b.fieldList, fields...)
-}
-
-// SubQuery places a inner query.
-func (b *Builder) SubQuery(query Querier) {
-	b.subQuery = append(b.subQuery, query)
-}
-
-// Where will add the where cluase expression to the query.
-func (b *Builder) Where(where WhereClauser) {
-	b.where = where
-}
-
-// OrderBy is the order of the results from the query.
-func (b *Builder) OrderBy(order Orderer) {
-	b.order = order
-}
-
-// Limit will limit the number of records returned by the query.
-func (b *Builder) Limit(limit int) {
-	b.limit = limit
-}
-
-// Offset will offset the records rows returned.
-func (b *Builder) Offset(offset int) {
-	b.offset = offset
 }
 
 // Query will return the SOQL query.  If the builder has an empty string or
