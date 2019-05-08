@@ -14,17 +14,27 @@ The following are examples to access the `APIs`.  It is assumed that a `go-sfdc`
 The following examplas cenrter around `SOQL` builder.  Although using the builder is not required to use the `API`, it is recommended as it generates the proper query statement.
 #### SELECT Name, Id FROM Account WHERE Name = 'Golang'
 ```go
-	queryStmt, err := soql.NewBuilder("Account")
+	where, err := soql.WhereEquals("Name", "Golang")
+	if err != nil {
+		fmt.Printf("SOQL Query Where Statement Error %s", err.Error())
+		fmt.Println()
+		return
+	}
+	input := soql.QueryInput{
+		ObjectType: "Account",
+		FieldList: []string{
+			"Name",
+			"Id",
+		},
+		Where: where,
+	}
+	queryStmt, err := soql.NewBuilder(input)
 	if err != nil {
 		fmt.Printf("SOQL Query Statement Error %s", err.Error())
 		fmt.Println()
 		return
 	}
-
-	queryStmt.FieldList("Name", "Id")
 	stmt, err := queryStmt.Query()
-	where := soql.WhereEquals("Name", "Golang")
-	queryStmt.Where(where)
 	if err != nil {
 		fmt.Printf("SOQL Query Statement Error %s", err.Error())
 		fmt.Println()
@@ -38,23 +48,36 @@ The following examplas cenrter around `SOQL` builder.  Although using the builde
 ```
 #### SELECT Name, Id, (SELECT LastName FROM Contacts) FROM Account 
 ```go
-	subQuery, err := soql.NewBuilder("Contacts")
+	subInput := soql.QueryInput{
+		ObjectType: "Contacts",
+		FieldList: []string{
+			"LastName",
+		},
+	}
+	subQuery, err := soql.NewBuilder(subInput)
 	if err != nil {
 		fmt.Printf("SOQL Sub Query Error %s", err.Error())
 		fmt.Println()
 		return
 	}
-	subQuery.FieldList("LastName")
 
-	queryStmt, err := soql.NewBuilder("Account")
+	input := soql.QueryInput{
+		ObjectType: "Account",
+		FieldList: []string{
+			"Name",
+			"Id",
+		},
+		SubQuery: []soql.Querier{
+			subQuery,
+		},
+	}
+	queryStmt, err := soql.NewBuilder(input)
 	if err != nil {
 		fmt.Printf("SOQL Query Statement Error %s", err.Error())
 		fmt.Println()
 		return
 	}
 
-	queryStmt.FieldList("Name", "Id")
-	queryStmt.SubQuery(subQuery)
 	stmt, err := queryStmt.Query()
 	if err != nil {
 		fmt.Printf("SOQL Query Statement Error %s", err.Error())
