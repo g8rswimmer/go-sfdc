@@ -5,3 +5,4 @@ tests:
 .PHONY: docs
 docs:
 	godoc -http=:6060
+	
