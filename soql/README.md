@@ -28,13 +28,13 @@ The following examplas cenrter around `SOQL` builder.  Although using the builde
 		},
 		Where: where,
 	}
-	queryStmt, err := soql.NewBuilder(input)
+	queryStmt, err := soql.NewQuery(input)
 	if err != nil {
 		fmt.Printf("SOQL Query Statement Error %s", err.Error())
 		fmt.Println()
 		return
 	}
-	stmt, err := queryStmt.Query()
+	stmt, err := queryStmt.Format()
 	if err != nil {
 		fmt.Printf("SOQL Query Statement Error %s", err.Error())
 		fmt.Println()
@@ -54,7 +54,7 @@ The following examplas cenrter around `SOQL` builder.  Although using the builde
 			"LastName",
 		},
 	}
-	subQuery, err := soql.NewBuilder(subInput)
+	subQuery, err := soql.NewQuery(subInput)
 	if err != nil {
 		fmt.Printf("SOQL Sub Query Error %s", err.Error())
 		fmt.Println()
@@ -71,14 +71,14 @@ The following examplas cenrter around `SOQL` builder.  Although using the builde
 			subQuery,
 		},
 	}
-	queryStmt, err := soql.NewBuilder(input)
+	queryStmt, err := soql.NewQuery(input)
 	if err != nil {
 		fmt.Printf("SOQL Query Statement Error %s", err.Error())
 		fmt.Println()
 		return
 	}
 
-	stmt, err := queryStmt.Query()
+	stmt, err := queryStmt.Format()
 	if err != nil {
 		fmt.Printf("SOQL Query Statement Error %s", err.Error())
 		fmt.Println()
