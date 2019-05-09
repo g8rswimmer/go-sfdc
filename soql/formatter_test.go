@@ -971,7 +971,7 @@ func TestBuilder_Query(t *testing.T) {
 	type fields struct {
 		fieldList  []string
 		objectType string
-		subQuery   []Querier
+		subQuery   []QueryFormatter
 		where      WhereClauser
 		order      Orderer
 		limit      int
@@ -1017,8 +1017,8 @@ func TestBuilder_Query(t *testing.T) {
 					"Name",
 					"CreatedBy",
 				},
-				subQuery: []Querier{
-					&Builder{
+				subQuery: []QueryFormatter{
+					&Query{
 						objectType: "Contacts",
 						fieldList: []string{
 							"LastName",
@@ -1091,7 +1091,7 @@ func TestBuilder_Query(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			b := &Builder{
+			b := &Query{
 				fieldList:  tt.fields.fieldList,
 				objectType: tt.fields.objectType,
 				subQuery:   tt.fields.subQuery,
@@ -1100,7 +1100,7 @@ func TestBuilder_Query(t *testing.T) {
 				limit:      tt.fields.limit,
 				offset:     tt.fields.offset,
 			}
-			got, err := b.Query()
+			got, err := b.Format()
 			if (err != nil) != tt.wantErr {
 				t.Errorf("Builder.Query() error = %v, wantErr %v", err, tt.wantErr)
 				return
@@ -1119,7 +1119,7 @@ func TestNewBuilder(t *testing.T) {
 	tests := []struct {
 		name    string
 		args    args
-		want    *Builder
+		want    *Query
 		wantErr bool
 	}{
 		{
@@ -1133,7 +1133,7 @@ func TestNewBuilder(t *testing.T) {
 					},
 				},
 			},
-			want: &Builder{
+			want: &Query{
 				objectType: "Account",
 				fieldList: []string{
 					"Name",
@@ -1168,7 +1168,7 @@ func TestNewBuilder(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := NewBuilder(tt.args.input)
+			got, err := NewQuery(tt.args.input)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("NewBuilder() error = %v, wantErr %v", err, tt.wantErr)
 				return
