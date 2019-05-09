@@ -967,374 +967,11 @@ func TestWhereClause_Expression(t *testing.T) {
 	}
 }
 
-func TestNewBuilder(t *testing.T) {
-	type args struct {
-		object string
-	}
-	tests := []struct {
-		name    string
-		args    args
-		want    *Builder
-		wantErr bool
-	}{
-		{
-			name: "Valid Builder",
-			args: args{
-				object: "Account",
-			},
-			want: &Builder{
-				objectType: "Account",
-			},
-			wantErr: false,
-		},
-		{
-			name: "Invalid Builder",
-			args: args{
-				object: "",
-			},
-			want:    nil,
-			wantErr: true,
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			got, err := NewBuilder(tt.args.object)
-			if (err != nil) != tt.wantErr {
-				t.Errorf("NewBuilder() error = %v, wantErr %v", err, tt.wantErr)
-				return
-			}
-			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("NewBuilder() = %v, want %v", got, tt.want)
-			}
-		})
-	}
-}
-
-func TestBuilder_FieldList(t *testing.T) {
-	type fields struct {
-		fieldList  []string
-		objectType string
-		subQuery   []Querier
-		where      WhereClauser
-		order      Orderer
-		limit      int
-		offset     int
-	}
-	type args struct {
-		fields []string
-	}
-	tests := []struct {
-		name   string
-		fields fields
-		args   args
-		want   *Builder
-	}{
-		{
-			name:   "Add Fields",
-			fields: fields{},
-			args: args{
-				fields: []string{
-					"FirstName",
-					"LastName",
-				},
-			},
-			want: &Builder{
-				fieldList: []string{
-					"FirstName",
-					"LastName",
-				},
-			},
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			b := &Builder{
-				fieldList:  tt.fields.fieldList,
-				objectType: tt.fields.objectType,
-				subQuery:   tt.fields.subQuery,
-				where:      tt.fields.where,
-				order:      tt.fields.order,
-				limit:      tt.fields.limit,
-				offset:     tt.fields.offset,
-			}
-			b.FieldList(tt.args.fields...)
-			if !reflect.DeepEqual(b, tt.want) {
-				t.Errorf("Builder.FieldList() = %v, want %v", b, tt.want)
-			}
-		})
-	}
-}
-
-func TestBuilder_SubQuery(t *testing.T) {
-	type fields struct {
-		fieldList  []string
-		objectType string
-		subQuery   []Querier
-		where      WhereClauser
-		order      Orderer
-		limit      int
-		offset     int
-	}
-	type args struct {
-		query Querier
-	}
-	tests := []struct {
-		name   string
-		fields fields
-		args   args
-		want   *Builder
-	}{
-		{
-			name:   "Sub Query",
-			fields: fields{},
-			args: args{
-				query: &Builder{
-					objectType: "Account",
-				},
-			},
-			want: &Builder{
-				subQuery: []Querier{
-					&Builder{
-						objectType: "Account",
-					},
-				},
-			},
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			b := &Builder{
-				fieldList:  tt.fields.fieldList,
-				objectType: tt.fields.objectType,
-				subQuery:   tt.fields.subQuery,
-				where:      tt.fields.where,
-				order:      tt.fields.order,
-				limit:      tt.fields.limit,
-				offset:     tt.fields.offset,
-			}
-			b.SubQuery(tt.args.query)
-			if !reflect.DeepEqual(b, tt.want) {
-				t.Errorf("Builder.SubQuery() = %v, want %v", b, tt.want)
-			}
-		})
-	}
-}
-
-func TestBuilder_Where(t *testing.T) {
-	type fields struct {
-		fieldList  []string
-		objectType string
-		subQuery   []Querier
-		where      WhereClauser
-		order      Orderer
-		limit      int
-		offset     int
-	}
-	type args struct {
-		where WhereClauser
-	}
-	tests := []struct {
-		name   string
-		fields fields
-		args   args
-		want   *Builder
-	}{
-		{
-			name:   "Where...",
-			fields: fields{},
-			args: args{
-				where: &WhereClause{
-					expression: "Name = 'Yeah'",
-				},
-			},
-			want: &Builder{
-				where: &WhereClause{
-					expression: "Name = 'Yeah'",
-				},
-			},
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			b := &Builder{
-				fieldList:  tt.fields.fieldList,
-				objectType: tt.fields.objectType,
-				subQuery:   tt.fields.subQuery,
-				where:      tt.fields.where,
-				order:      tt.fields.order,
-				limit:      tt.fields.limit,
-				offset:     tt.fields.offset,
-			}
-			b.Where(tt.args.where)
-			if !reflect.DeepEqual(b, tt.want) {
-				t.Errorf("Builder.Where() = %v, want %v", b, tt.want)
-			}
-		})
-	}
-}
-
-func TestBuilder_OrderBy(t *testing.T) {
-	type fields struct {
-		fieldList  []string
-		objectType string
-		subQuery   []Querier
-		where      WhereClauser
-		order      Orderer
-		limit      int
-		offset     int
-	}
-	type args struct {
-		order Orderer
-	}
-	tests := []struct {
-		name   string
-		fields fields
-		args   args
-		want   *Builder
-	}{
-		{
-			name:   "Order By",
-			fields: fields{},
-			args: args{
-				order: &OrderBy{
-					fieldOrder: []string{
-						"Name",
-					},
-					result: OrderAsc,
-				},
-			},
-			want: &Builder{
-				order: &OrderBy{
-					fieldOrder: []string{
-						"Name",
-					},
-					result: OrderAsc,
-				},
-			},
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			b := &Builder{
-				fieldList:  tt.fields.fieldList,
-				objectType: tt.fields.objectType,
-				subQuery:   tt.fields.subQuery,
-				where:      tt.fields.where,
-				order:      tt.fields.order,
-				limit:      tt.fields.limit,
-				offset:     tt.fields.offset,
-			}
-			b.OrderBy(tt.args.order)
-			if !reflect.DeepEqual(b, tt.want) {
-				t.Errorf("Builder.OrderBy() = %v, want %v", b, tt.want)
-			}
-		})
-	}
-}
-
-func TestBuilder_Limit(t *testing.T) {
-	type fields struct {
-		fieldList  []string
-		objectType string
-		subQuery   []Querier
-		where      WhereClauser
-		order      Orderer
-		limit      int
-		offset     int
-	}
-	type args struct {
-		limit int
-	}
-	tests := []struct {
-		name   string
-		fields fields
-		args   args
-		want   *Builder
-	}{
-		{
-			name:   "Limits",
-			fields: fields{},
-			args: args{
-				limit: 10,
-			},
-			want: &Builder{
-				limit: 10,
-			},
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			b := &Builder{
-				fieldList:  tt.fields.fieldList,
-				objectType: tt.fields.objectType,
-				subQuery:   tt.fields.subQuery,
-				where:      tt.fields.where,
-				order:      tt.fields.order,
-				limit:      tt.fields.limit,
-				offset:     tt.fields.offset,
-			}
-			b.Limit(tt.args.limit)
-			if !reflect.DeepEqual(b, tt.want) {
-				t.Errorf("Builder.Limit() = %v, want %v", b, tt.want)
-			}
-		})
-	}
-}
-
-func TestBuilder_Offset(t *testing.T) {
-	type fields struct {
-		fieldList  []string
-		objectType string
-		subQuery   []Querier
-		where      WhereClauser
-		order      Orderer
-		limit      int
-		offset     int
-	}
-	type args struct {
-		offset int
-	}
-	tests := []struct {
-		name   string
-		fields fields
-		args   args
-		want   *Builder
-	}{
-		{
-			name:   "Offsets",
-			fields: fields{},
-			args: args{
-				offset: 25,
-			},
-			want: &Builder{
-				offset: 25,
-			},
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			b := &Builder{
-				fieldList:  tt.fields.fieldList,
-				objectType: tt.fields.objectType,
-				subQuery:   tt.fields.subQuery,
-				where:      tt.fields.where,
-				order:      tt.fields.order,
-				limit:      tt.fields.limit,
-				offset:     tt.fields.offset,
-			}
-			b.Offset(tt.args.offset)
-			if !reflect.DeepEqual(b, tt.want) {
-				t.Errorf("Builder.Offset() = %v, want %v", b, tt.want)
-			}
-		})
-	}
-}
-
 func TestBuilder_Query(t *testing.T) {
 	type fields struct {
 		fieldList  []string
 		objectType string
-		subQuery   []Querier
+		subQuery   []QueryFormatter
 		where      WhereClauser
 		order      Orderer
 		limit      int
@@ -1380,8 +1017,8 @@ func TestBuilder_Query(t *testing.T) {
 					"Name",
 					"CreatedBy",
 				},
-				subQuery: []Querier{
-					&Builder{
+				subQuery: []QueryFormatter{
+					&Query{
 						objectType: "Contacts",
 						fieldList: []string{
 							"LastName",
@@ -1454,7 +1091,7 @@ func TestBuilder_Query(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			b := &Builder{
+			b := &Query{
 				fieldList:  tt.fields.fieldList,
 				objectType: tt.fields.objectType,
 				subQuery:   tt.fields.subQuery,
@@ -1463,13 +1100,81 @@ func TestBuilder_Query(t *testing.T) {
 				limit:      tt.fields.limit,
 				offset:     tt.fields.offset,
 			}
-			got, err := b.Query()
+			got, err := b.Format()
 			if (err != nil) != tt.wantErr {
 				t.Errorf("Builder.Query() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
 			if got != tt.want {
 				t.Errorf("Builder.Query() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestNewBuilder(t *testing.T) {
+	type args struct {
+		input QueryInput
+	}
+	tests := []struct {
+		name    string
+		args    args
+		want    *Query
+		wantErr bool
+	}{
+		{
+			name: "success",
+			args: args{
+				input: QueryInput{
+					ObjectType: "Account",
+					FieldList: []string{
+						"Name",
+						"Id",
+					},
+				},
+			},
+			want: &Query{
+				objectType: "Account",
+				fieldList: []string{
+					"Name",
+					"Id",
+				},
+			},
+			wantErr: false,
+		},
+		{
+			name: "no object type",
+			args: args{
+				input: QueryInput{
+					FieldList: []string{
+						"Name",
+						"Id",
+					},
+				},
+			},
+			want:    nil,
+			wantErr: true,
+		},
+		{
+			name: "no field list",
+			args: args{
+				input: QueryInput{
+					ObjectType: "Account",
+				},
+			},
+			want:    nil,
+			wantErr: true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := NewQuery(tt.args.input)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("NewBuilder() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("NewBuilder() = %v, want %v", got, tt.want)
 			}
 		})
 	}

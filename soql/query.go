@@ -33,7 +33,7 @@ func NewResource(session session.ServiceFormatter) (*Resource, error) {
 // Query will call out to the Salesforce org for a SOQL.  The results will
 // be the result of the query.  The all parameter is for querying all records,
 // which include deleted records that are in the recycle bin.
-func (r *Resource) Query(querier Querier, all bool) (*QueryResult, error) {
+func (r *Resource) Query(querier QueryFormatter, all bool) (*QueryResult, error) {
 	if querier == nil {
 		return nil, errors.New("soql resource query: querier can not be nil")
 	}
@@ -79,8 +79,8 @@ func (r *Resource) next(recordURL string) (*QueryResult, error) {
 
 	return result, nil
 }
-func (r *Resource) queryRequest(querier Querier, all bool) (*http.Request, error) {
-	query, err := querier.Query()
+func (r *Resource) queryRequest(querier QueryFormatter, all bool) (*http.Request, error) {
+	query, err := querier.Format()
 	if err != nil {
 		return nil, err
 	}

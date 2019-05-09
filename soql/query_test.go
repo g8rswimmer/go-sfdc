@@ -15,7 +15,7 @@ type mockQuerier struct {
 	err  error
 }
 
-func (mock *mockQuerier) Query() (string, error) {
+func (mock *mockQuerier) Format() (string, error) {
 	return mock.stmt, mock.err
 }
 
@@ -69,7 +69,7 @@ func TestResource_Query(t *testing.T) {
 		session session.ServiceFormatter
 	}
 	type args struct {
-		querier Querier
+		querier QueryFormatter
 		all     bool
 	}
 	tests := []struct {
