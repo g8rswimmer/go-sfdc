@@ -11,7 +11,7 @@ To use this library, the following will need to be done.
   - [SObject Collection APIs](./sobject/collections/README.md)
   - [SObject Tree API](./sobject/tree/README.md)
   - [SOQL APIs](./soql/README.md)
-  - [Composite](./composite.README.md)
+  - [Composite](./composite/README.md)
   - [Composite Batch](./composite/batch/README.md)
 
 ## Configuration
