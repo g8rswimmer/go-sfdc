@@ -4,5 +4,4 @@ tests:
 
 .PHONY: docs
 docs:
-	godoc -http=:6060
-	
+	godoc -http=:6060 &
