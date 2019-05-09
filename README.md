@@ -35,9 +35,6 @@ config := sfdc.Configuration{
 	Version:     44,
 }
 ```
-## Collaborators
-A special thanks for the suggestions and code reviews
-@Guitarbum722
-@pauljuneau
+
 ## License
 GO-SFDC source code is available under the [MIT License](LICENSE.txt)
