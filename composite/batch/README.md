@@ -1,4 +1,4 @@
-# Composite API
+# Composite Batch API
 [back](../../README.md)
 
 The `batch` package is an implementation of `Salesforce APIs` centered on `Composite Batch` operations.  These operations include:

@@ -11,16 +11,16 @@ The following are some example(s) of creating credentials to be used when openin
 ### Password
 ```go
 creds := credentials.PasswordCredentails{
-  URL:          "https://login.salesforce.com",
-  Username:     "my.user@name.com",
-  Password:     "greatpassword",
-  ClientID:     "asdfnapodfnavppe",
-  ClientSecret: "12312573857105",
+	URL:          "https://login.salesforce.com",
+	Username:     "my.user@name.com",
+	Password:     "greatpassword",
+	ClientID:     "asdfnapodfnavppe",
+	ClientSecret: "12312573857105",
 }
 
 config := sfdc.Configuration{
-  Credentials: credentials.NewPasswordCredentials(creds),
-  Client:      salesforceHTTPClient,
-  Version:     44,
+	Credentials: credentials.NewPasswordCredentials(creds),
+	Client:      salesforceHTTPClient,
+	Version:     44,
 }
 ```
