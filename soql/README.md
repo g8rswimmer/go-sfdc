@@ -2,7 +2,7 @@
 [back](../README.md)
 
 The `soql` package is an implementation of the `Salesforce APIs` centered on `SOQL` operations.  These operations include:
-* `SOQL` query builder
+* `SOQL` query formatter
 * `SOQL` query
 * `SOQL` query all
 
