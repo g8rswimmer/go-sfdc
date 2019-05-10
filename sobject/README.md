@@ -28,15 +28,13 @@ sobjResources := sobject.NewResources(session)
 metadata, err := sobjResources.Metadata("Account")
 
 if err != nil {
-  fmt.Printf("Error %s", err.Error())
-  fmt.Println()
-  return
+	fmt.Printf("Error %s\n", err.Error())
+	return
 }
 
 fmt.Println("Account Metadata")
 fmt.Println("-------------------")
 fmt.Printf("%+v\n", metadata)
-fmt.Println()
 ```
 ### Describe
 ```go
@@ -45,15 +43,13 @@ sobjResources := sobject.NewResources(session)
 describe, err := sobjResources.Describe("Account")
 
 if err != nil {
-  fmt.Printf("Error %s", err.Error())
-  fmt.Println()
-  return
+	fmt.Printf("Error %s\n", err.Error())
+	return
 }
 
 fmt.Println("Account Describe")
 fmt.Println("-------------------")
 fmt.Printf("%+v\n", describe)
-fmt.Println()
 ```
 ### DML Insert
 ```go
@@ -73,34 +69,32 @@ func (d *dml) Fields() map[string]interface{} {
 sobjResources := sobject.NewResources(session)
 
 dml := &dml{
-  sobject: "Account",
-  fields: map[string]interface{}{
-    "Name":            "Test Account",
-    "MyUID__c":        "AccExID222",
-    "MyCustomText__c": "My fun text",
-    "Phone":           "9045551212",
-  },
+	sobject: "Account",
+	fields: map[string]interface{}{
+		"Name":            "Test Account",
+		"MyUID__c":        "AccExID222",
+		"MyCustomText__c": "My fun text",
+		"Phone":           "9045551212",
+	},
 }
 
 insertValue, err := sobjResources.Insert(dml)
 
 if err != nil {
-  fmt.Printf("Insert Error %s", err.Error())
-  fmt.Println()
-  return
+	fmt.Printf("Insert Error %s\n", err.Error())
+	return
 }
 
 fmt.Println("Account")
 fmt.Println("-------------------")
 fmt.Printf("%+v\n", insertValue)
-fmt.Println()
 ```
 ### DML Update
 ```go
 type dml struct {
 	sobject       string
 	fields        map[string]interface{}
-  id            string
+	id            string
 }
 
 func (d *dml) SObject() string {
@@ -117,7 +111,7 @@ func (d *dml) ID() string {
 sobjResources := sobject.NewResources(session)
 
 dml := &dml{
-  sobject: "Account",
+	sobject: "Account",
 }
 
 dml.id = "Account Salesforce ID"
@@ -127,14 +121,13 @@ dml.fields["MyCustomText__c"] = "updated text"
 err = sobjResources.Update(dml)
 
 if err != nil {
-  fmt.Printf("Update Error %s", err.Error())
-  fmt.Println()
-  return
+	fmt.Printf("Update Error %s\n", err.Error())
+	fmt.Println()
+	return
 }
 
 fmt.Println("Account Updated")
 fmt.Println("-------------------")
-fmt.Println()
 
 ```
 ### DML Upsert
@@ -162,7 +155,7 @@ func (d *dml) ExternalField() string {
 sobjResources := sobject.NewResources(session)
 
 dml := &dml{
-  sobject: "Account",
+	sobject: "Account",
 }
 dml.id = "AccExID345"
 dml.externalField = "MyUID__c"
@@ -171,15 +164,13 @@ dml.fields["Name"] = "Upsert Update"
 upsertValue, err := sobjResources.Upsert(dml)
 
 if err != nil {
-  fmt.Printf("Upsert Error %s", err.Error())
-  fmt.Println()
-  return
+	fmt.Printf("Upsert Error %s\n", err.Error())
+	return
 }
 
 fmt.Println("Account Upsert")
 fmt.Println("-------------------")
 fmt.Printf("%+v\n", upsertValue)
-fmt.Println()
 ```
 ### DML Delete
 ```go
@@ -198,16 +189,15 @@ func (d *dml) ID() string {
 sobjResources := sobject.NewResources(session)
 
 dml := &dml{
-  sobject: "Account",
-  id:      "0012E00001oHQDNQA4",
+	sobject: "Account",
+	id:      "0012E00001oHQDNQA4",
 }
 
 err = sobjResources.Delete(dml)
 
 if err != nil {
-  fmt.Printf("Upsert Error %s", err.Error())
-  fmt.Println()
-  return
+	fmt.Printf("Upsert Error %s\n", err.Error())
+	return
 }
 
 fmt.Println("Account Deleted")
@@ -235,21 +225,19 @@ func (q *query) Fields() []string {
 sobjResources := sobject.NewResources(session)
 
 query := &query{
-  sobject: "Account",
-  id:      "Account Salesforce ID",
+	sobject: "Account",
+	id:      "Account Salesforce ID",
 }
 
 record, err := sobjResources.Query(query)
 if err != nil {
-  fmt.Printf("Query Error %s", err.Error())
-  fmt.Println()
-  return
+	fmt.Printf("Query Error %s\n", err.Error())
+	return
 }
 
 fmt.Println("Account Query")
 fmt.Println("-------------------")
-fmt.Printf("%+v", record)
-fmt.Println()
+fmt.Printf("%+v\n", record)
 
 ```
 Return specific `SObject` fields.
@@ -273,27 +261,25 @@ func (q *query) Fields() []string {
 sobjResources := sobject.NewResources(session)
 
 query := &query{
-  sobject: "Account",
-  id:      "Account Salesforce ID",
-  fields: []string{
-    "Name",
-    "MyUID__c",
-    "Phone",
-    "MyCustomText__c",
-  },
+	sobject: "Account",
+	id:      "Account Salesforce ID",
+	fields: []string{
+		"Name",
+		"MyUID__c",
+		"Phone",
+		"MyCustomText__c",
+	},
 }
 
 record, err := sobjResources.Query(query)
 if err != nil {
-  fmt.Printf("Query Error %s", err.Error())
-  fmt.Println()
-  return
+	fmt.Printf("Query Error %s\n", err.Error())
+	return
 }
 
 fmt.Println("Account Query")
 fmt.Println("-------------------")
-fmt.Printf("%+v", record)
-fmt.Println()
+fmt.Printf("%+\nv", record)
 
 ```
 ### Query: With External ID
@@ -322,22 +308,20 @@ func (q *query) ExternalField() string {
 sobjResources := sobject.NewResources(session)
 
 query := &query{
-  sobject:  "Account",
-  id:       "AccExID234",
-  external: "MyUID__c",
+	sobject:  "Account",
+	id:       "AccExID234",
+	external: "MyUID__c",
 }
 
 record, err := sobjResources.ExternalQuery(query)
 if err != nil {
-  fmt.Printf("Query Error %s", err.Error())
-  fmt.Println()
-  return
+	fmt.Printf("Query Error %s\n", err.Error())
+	return
 }
 
 fmt.Println("Account Query")
 fmt.Println("-------------------")
-fmt.Printf("%+v", record)
-fmt.Println()
+fmt.Printf("%+v\n", record)
 ```
 Return specific `SObject` fields.
 ```go
@@ -364,27 +348,25 @@ func (q *query) ExternalField() string {
 sobjResources := sobject.NewResources(session)
 
 query := &query{
-  sobject:  "Account",
-  id:       "AccExID234",
-  external: "MyUID__c",
-  fields: []string{
-    "Name",
-    "Phone",
-    "MyCustomText__c",
-  },
+	sobject:  "Account",
+	id:       "AccExID234",
+	external: "MyUID__c",
+	fields: []string{
+		"Name",
+		"Phone",
+		"MyCustomText__c",
+	},
 }
 
 record, err := sobjResources.ExternalQuery(query)
 if err != nil {
-  fmt.Printf("Query Error %s", err.Error())
-  fmt.Println()
-  return
+	fmt.Printf("Query Error %s\n", err.Error())
+	return
 }
 
 fmt.Println("Account Query")
 fmt.Println("-------------------")
-fmt.Printf("%+v", record)
-fmt.Println()
+fmt.Printf("%+v\n", record)
 ```
 ### List of Deleted Records
 ```go
@@ -392,15 +374,13 @@ sobjResources := sobject.NewResources(session)
 
 deletedRecords, err := sobjResources.DeletedRecords("Account", time.Now().Add(time.Hour*-12), time.Now())
 if err != nil {
-  fmt.Printf("Deleted Records Error %s", err.Error())
-  fmt.Println()
-  return
+	fmt.Printf("Deleted Records Error %s\n", err.Error())
+	return
 }
 
 fmt.Println("Deleted Account Records")
 fmt.Println("-------------------")
-fmt.Printf("%+v", deletedRecords)
-fmt.Println()
+fmt.Printf("%+v\n", deletedRecords)
 ```
 ### List of Updated Records
 ```go
@@ -408,15 +388,13 @@ sobjResources := sobject.NewResources(session)
 
 updatedRecords, err := sobjResources.UpdatedRecords("Account", time.Now().Add(time.Hour*-12), time.Now())
 if err != nil {
-  fmt.Printf("Deleted Records Error %s", err.Error())
-  fmt.Println()
-  return
+	fmt.Printf("Deleted Records Error %s\n", err.Error())
+	return
 }
 
 fmt.Println("Updated Account Records")
 fmt.Println("-------------------")
-fmt.Printf("%+v", updatedRecords)
-fmt.Println()
+fmt.Printf("%+v\n", updatedRecords)
 
 ```
 ### Get Attachment and Document Content
@@ -425,15 +403,13 @@ sobjResources := sobject.NewResources(session)
 
 attachment, err := sobjResources.GetContent("Attachment ID", sobject.AttachmentType)
 if err != nil {
-  fmt.Printf("Error %s", err.Error())
-  fmt.Println()
-  return
+	fmt.Printf("Error %s\n", err.Error())
+	return
 }
 
 document, err := sobjResources.GetContent("Document ID", sobject.DocumentType)
 if err != nil {
-  fmt.Printf("Error %s", err.Error())
-  fmt.Println()
-  return
+	fmt.Printf("Error %s\n", err.Error())
+	return
 }
 ```

@@ -1,7 +1,7 @@
 # Composite API
 [back](../README.md)
 
-The `sobject` package is an implementation of `Salesforce APIs` centered on `Composite` operations.  These operations include:
+The `composite` package is an implementation of `Salesforce APIs` centered on `Composite` operations.  These operations include:
 * SObject Resources
 * Query Resource
 * Query All Resource
@@ -81,16 +81,14 @@ func (c *compositeSubRequest) Body() map[string]interface{} {
 
 	resource, err := composite.NewResource(session)
 	if err != nil {
-		fmt.Printf("Composite Error %s", err.Error())
-		fmt.Println()
+		fmt.Printf("Composite Error %s\n", err.Error())
 		return
 	}
 	value, err := resource.Retrieve(false, subRequests)
 	if err != nil {
-		fmt.Printf("Composite Error %s", err.Error())
-		fmt.Println()
+		fmt.Printf("Composite Error %s\n", err.Error())
 		return
 	}
 
-	fmt.Printf("%+v", value)
+	fmt.Printf("%+v\n", value)
 ```

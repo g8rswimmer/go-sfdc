@@ -2,7 +2,7 @@
 [back](../README.md)
 
 The `soql` package is an implementation of the `Salesforce APIs` centered on `SOQL` operations.  These operations include:
-* `SOQL` query builder
+* `SOQL` query formatter
 * `SOQL` query
 * `SOQL` query all
 
@@ -16,8 +16,7 @@ The following examplas cenrter around `SOQL` builder.  Although using the builde
 ```go
 	where, err := soql.WhereEquals("Name", "Golang")
 	if err != nil {
-		fmt.Printf("SOQL Query Where Statement Error %s", err.Error())
-		fmt.Println()
+		fmt.Printf("SOQL Query Where Statement Error %s\n", err.Error())
 		return
 	}
 	input := soql.QueryInput{
@@ -30,21 +29,18 @@ The following examplas cenrter around `SOQL` builder.  Although using the builde
 	}
 	queryStmt, err := soql.NewQuery(input)
 	if err != nil {
-		fmt.Printf("SOQL Query Statement Error %s", err.Error())
-		fmt.Println()
+		fmt.Printf("SOQL Query Statement Error %s\n", err.Error())
 		return
 	}
 	stmt, err := queryStmt.Format()
 	if err != nil {
-		fmt.Printf("SOQL Query Statement Error %s", err.Error())
-		fmt.Println()
+		fmt.Printf("SOQL Query Statement Error %s\n", err.Error())
 		return
 	}
 
 	fmt.Println("SOQL Query Statement")
 	fmt.Println("-------------------")
 	fmt.Println(stmt)
-	fmt.Println()
 ```
 #### SELECT Name, Id, (SELECT LastName FROM Contacts) FROM Account 
 ```go
@@ -56,8 +52,7 @@ The following examplas cenrter around `SOQL` builder.  Although using the builde
 	}
 	subQuery, err := soql.NewQuery(subInput)
 	if err != nil {
-		fmt.Printf("SOQL Sub Query Error %s", err.Error())
-		fmt.Println()
+		fmt.Printf("SOQL Sub Query Error %s\n", err.Error())
 		return
 	}
 
@@ -73,22 +68,19 @@ The following examplas cenrter around `SOQL` builder.  Although using the builde
 	}
 	queryStmt, err := soql.NewQuery(input)
 	if err != nil {
-		fmt.Printf("SOQL Query Statement Error %s", err.Error())
-		fmt.Println()
+		fmt.Printf("SOQL Query Statement Error %s\n", err.Error())
 		return
 	}
 
 	stmt, err := queryStmt.Format()
 	if err != nil {
-		fmt.Printf("SOQL Query Statement Error %s", err.Error())
-		fmt.Println()
+		fmt.Printf("SOQL Query Statement Error %s\n", err.Error())
 		return
 	}
 
 	fmt.Println("SOQL Query Statement")
 	fmt.Println("-------------------")
 	fmt.Println(stmt)
-	fmt.Println()
 ```
 ### SOQL Query
 The following example demostrates how to `SOQL` query.  It is assumed that a session has need created and a `SOQL` statement has been built.
@@ -110,16 +102,14 @@ FROM
 	resource := soql.NewResource(session)
 	result, err := resource.Query(queryStmt, false)
 	if err != nil {
-		fmt.Printf("SOQL Query Error %s", err.Error())
-		fmt.Println()
+		fmt.Printf("SOQL Query Error %s\n", err.Error())
 		return
 	}
 	fmt.Println("SOQL Query")
 	fmt.Println("-------------------")
 	fmt.Printf("Done: %t\n", result.Done())
 	fmt.Printf("Total Size: %d\n", result.TotalSize())
-	fmt.Printf("Next Records URL: %t\n", result.MoreRecords())
-	fmt.Println()
+	fmt.Printf("Next Records URL: %t\n\n", result.MoreRecords())
 
 	for _, rec := range result.Records() {
 		r := rec.Record()

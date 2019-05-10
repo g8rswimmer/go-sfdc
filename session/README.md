@@ -7,25 +7,24 @@ The session is used to authenticate with `Salesforce` and retrieve the org's inf
 The following example demonstrates how to create a session.
 ```go
 creds := credentials.PasswordCredentails{
-  URL:          "https://login.salesforce.com",
-  Username:     "my.user@name.com",
-  Password:     "greatpassword",
-  ClientID:     "asdfnapodfnavppe",
-  ClientSecret: "12312573857105",
+	URL:          "https://login.salesforce.com",
+	Username:     "my.user@name.com",
+	Password:     "greatpassword",
+	ClientID:     "asdfnapodfnavppe",
+	ClientSecret: "12312573857105",
 }
 
 config := sfdc.Configuration{
-  Credentials: credentials.NewPasswordCredentials(creds),
-  Client:      http.DefaultClient,
-  Version:     44,
+	Credentials: credentials.NewPasswordCredentials(creds),
+	Client:      http.DefaultClient,
+	Version:     44,
 }
 
 session, err := session.Open(config)
 
 if err != nil {
-  fmt.Printf("Error %s", err.Error())
-  fmt.Println()
-  return
+	fmt.Printf("Error %s\n", err.Error())
+	return
 }
 
 // access Salesforce APIs
