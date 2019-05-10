@@ -23,8 +23,7 @@ config := sfdc.Configuration{
 session, err := session.Open(config)
 
 if err != nil {
-	fmt.Printf("Error %s", err.Error())
-	fmt.Println()
+	fmt.Printf("Error %s\n", err.Error())
 	return
 }
 

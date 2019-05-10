@@ -81,16 +81,14 @@ func (c *compositeSubRequest) Body() map[string]interface{} {
 
 	resource, err := composite.NewResource(session)
 	if err != nil {
-		fmt.Printf("Composite Error %s", err.Error())
-		fmt.Println()
+		fmt.Printf("Composite Error %s\n", err.Error())
 		return
 	}
 	value, err := resource.Retrieve(false, subRequests)
 	if err != nil {
-		fmt.Printf("Composite Error %s", err.Error())
-		fmt.Println()
+		fmt.Printf("Composite Error %s\n", err.Error())
 		return
 	}
 
-	fmt.Printf("%+v", value)
+	fmt.Printf("%+v\n", value)
 ```

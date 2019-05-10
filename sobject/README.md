@@ -28,15 +28,13 @@ sobjResources := sobject.NewResources(session)
 metadata, err := sobjResources.Metadata("Account")
 
 if err != nil {
-	fmt.Printf("Error %s", err.Error())
-	fmt.Println()
+	fmt.Printf("Error %s\n", err.Error())
 	return
 }
 
 fmt.Println("Account Metadata")
 fmt.Println("-------------------")
 fmt.Printf("%+v\n", metadata)
-fmt.Println()
 ```
 ### Describe
 ```go
@@ -45,15 +43,13 @@ sobjResources := sobject.NewResources(session)
 describe, err := sobjResources.Describe("Account")
 
 if err != nil {
-	fmt.Printf("Error %s", err.Error())
-	fmt.Println()
+	fmt.Printf("Error %s\n", err.Error())
 	return
 }
 
 fmt.Println("Account Describe")
 fmt.Println("-------------------")
 fmt.Printf("%+v\n", describe)
-fmt.Println()
 ```
 ### DML Insert
 ```go
@@ -85,15 +81,13 @@ dml := &dml{
 insertValue, err := sobjResources.Insert(dml)
 
 if err != nil {
-	fmt.Printf("Insert Error %s", err.Error())
-	fmt.Println()
+	fmt.Printf("Insert Error %s\n", err.Error())
 	return
 }
 
 fmt.Println("Account")
 fmt.Println("-------------------")
 fmt.Printf("%+v\n", insertValue)
-fmt.Println()
 ```
 ### DML Update
 ```go
@@ -127,14 +121,13 @@ dml.fields["MyCustomText__c"] = "updated text"
 err = sobjResources.Update(dml)
 
 if err != nil {
-	fmt.Printf("Update Error %s", err.Error())
+	fmt.Printf("Update Error %s\n", err.Error())
 	fmt.Println()
 	return
 }
 
 fmt.Println("Account Updated")
 fmt.Println("-------------------")
-fmt.Println()
 
 ```
 ### DML Upsert
@@ -171,15 +164,13 @@ dml.fields["Name"] = "Upsert Update"
 upsertValue, err := sobjResources.Upsert(dml)
 
 if err != nil {
-	fmt.Printf("Upsert Error %s", err.Error())
-	fmt.Println()
+	fmt.Printf("Upsert Error %s\n", err.Error())
 	return
 }
 
 fmt.Println("Account Upsert")
 fmt.Println("-------------------")
 fmt.Printf("%+v\n", upsertValue)
-fmt.Println()
 ```
 ### DML Delete
 ```go
@@ -205,8 +196,7 @@ dml := &dml{
 err = sobjResources.Delete(dml)
 
 if err != nil {
-	fmt.Printf("Upsert Error %s", err.Error())
-	fmt.Println()
+	fmt.Printf("Upsert Error %s\n", err.Error())
 	return
 }
 
@@ -241,15 +231,13 @@ query := &query{
 
 record, err := sobjResources.Query(query)
 if err != nil {
-	fmt.Printf("Query Error %s", err.Error())
-	fmt.Println()
+	fmt.Printf("Query Error %s\n", err.Error())
 	return
 }
 
 fmt.Println("Account Query")
 fmt.Println("-------------------")
-fmt.Printf("%+v", record)
-fmt.Println()
+fmt.Printf("%+v\n", record)
 
 ```
 Return specific `SObject` fields.
@@ -285,15 +273,13 @@ query := &query{
 
 record, err := sobjResources.Query(query)
 if err != nil {
-	fmt.Printf("Query Error %s", err.Error())
-	fmt.Println()
+	fmt.Printf("Query Error %s\n", err.Error())
 	return
 }
 
 fmt.Println("Account Query")
 fmt.Println("-------------------")
-fmt.Printf("%+v", record)
-fmt.Println()
+fmt.Printf("%+\nv", record)
 
 ```
 ### Query: With External ID
@@ -329,15 +315,13 @@ query := &query{
 
 record, err := sobjResources.ExternalQuery(query)
 if err != nil {
-	fmt.Printf("Query Error %s", err.Error())
-	fmt.Println()
+	fmt.Printf("Query Error %s\n", err.Error())
 	return
 }
 
 fmt.Println("Account Query")
 fmt.Println("-------------------")
-fmt.Printf("%+v", record)
-fmt.Println()
+fmt.Printf("%+v\n", record)
 ```
 Return specific `SObject` fields.
 ```go
@@ -376,15 +360,13 @@ query := &query{
 
 record, err := sobjResources.ExternalQuery(query)
 if err != nil {
-	fmt.Printf("Query Error %s", err.Error())
-	fmt.Println()
+	fmt.Printf("Query Error %s\n", err.Error())
 	return
 }
 
 fmt.Println("Account Query")
 fmt.Println("-------------------")
-fmt.Printf("%+v", record)
-fmt.Println()
+fmt.Printf("%+v\n", record)
 ```
 ### List of Deleted Records
 ```go
@@ -392,15 +374,13 @@ sobjResources := sobject.NewResources(session)
 
 deletedRecords, err := sobjResources.DeletedRecords("Account", time.Now().Add(time.Hour*-12), time.Now())
 if err != nil {
-	fmt.Printf("Deleted Records Error %s", err.Error())
-	fmt.Println()
+	fmt.Printf("Deleted Records Error %s\n", err.Error())
 	return
 }
 
 fmt.Println("Deleted Account Records")
 fmt.Println("-------------------")
-fmt.Printf("%+v", deletedRecords)
-fmt.Println()
+fmt.Printf("%+v\n", deletedRecords)
 ```
 ### List of Updated Records
 ```go
@@ -408,15 +388,13 @@ sobjResources := sobject.NewResources(session)
 
 updatedRecords, err := sobjResources.UpdatedRecords("Account", time.Now().Add(time.Hour*-12), time.Now())
 if err != nil {
-	fmt.Printf("Deleted Records Error %s", err.Error())
-	fmt.Println()
+	fmt.Printf("Deleted Records Error %s\n", err.Error())
 	return
 }
 
 fmt.Println("Updated Account Records")
 fmt.Println("-------------------")
-fmt.Printf("%+v", updatedRecords)
-fmt.Println()
+fmt.Printf("%+v\n", updatedRecords)
 
 ```
 ### Get Attachment and Document Content
@@ -425,15 +403,13 @@ sobjResources := sobject.NewResources(session)
 
 attachment, err := sobjResources.GetContent("Attachment ID", sobject.AttachmentType)
 if err != nil {
-	fmt.Printf("Error %s", err.Error())
-	fmt.Println()
+	fmt.Printf("Error %s\n", err.Error())
 	return
 }
 
 document, err := sobjResources.GetContent("Document ID", sobject.DocumentType)
 if err != nil {
-	fmt.Printf("Error %s", err.Error())
-	fmt.Println()
+	fmt.Printf("Error %s\n", err.Error())
 	return
 }
 ```

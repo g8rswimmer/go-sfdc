@@ -86,8 +86,7 @@ insertRecords = append(insertRecords, con2)
 resource := collections.NewResources(session)
 values, err := resource.Insert(true, insertRecords)
 if err != nil {
-	fmt.Printf("Collection Error %s", err.Error())
-	fmt.Println()
+	fmt.Printf("Collection Error %s\n", err.Error())
 	return
 }
 
@@ -170,8 +169,7 @@ deleteRecords := []string{
 resource := collections.NewResources(session)
 values, err := resource.Delete(true, deleteRecords)
 if err != nil {
-	fmt.Printf("Collection Error %s", err.Error())
-	fmt.Println()
+	fmt.Printf("Collection Error %s\n", err.Error())
 	return
 }
 
@@ -209,8 +207,7 @@ queryRecords = append(queryRecords, acc2)
 resource := collections.NewResources(session)
 values, err := resource.Query("Account", queryRecords)
 if err != nil {
-	fmt.Printf("Collection Error %s", err.Error())
-	fmt.Println()
+	fmt.Printf("Collection Error %s\n", err.Error())
 	return
 }
 

@@ -71,28 +71,24 @@ contactRef4Builder := &treeBuilder{
 
 account1RecordBuilder, err := tree.NewRecordBuilder(accountRef1Builder)
 if err != nil {
-	fmt.Printf("NewRecordBuilder Error %s", err.Error())
-	fmt.Println()
+	fmt.Printf("NewRecordBuilder Error %s\n", err.Error())
 	return
 }
 contact1RecordBuilder, err := tree.NewRecordBuilder(contactRef3Builder)
 if err != nil {
-	fmt.Printf("NewRecordBuilder Error %s", err.Error())
-	fmt.Println()
+	fmt.Printf("NewRecordBuilder Error %s\n", err.Error())
 	return
 }
 contact2RecordBuilder, err := tree.NewRecordBuilder(contactRef4Builder)
 if err != nil {
-	fmt.Printf("NewRecordBuilder Error %s", err.Error())
-	fmt.Println()
+	fmt.Printf("NewRecordBuilder Error %s\n", err.Error())
 	return
 }
 account1RecordBuilder.SubRecords("contacts", contact1RecordBuilder.Build(), contact2RecordBuilder.Build())
 
 account2RecordBuilder, err := tree.NewRecordBuilder(accountRef2Builder)
 if err != nil {
-	fmt.Printf("NewRecordBuilder Error %s", err.Error())
-	fmt.Println()
+	fmt.Printf("NewRecordBuilder Error %s\n", err.Error())
 	return
 }
 
@@ -110,8 +106,7 @@ inserter := &treeInserter{
 resource := tree.NewResource(session)
 value, err := resource.Insert(inserter)
 if err != nil {
-	fmt.Printf("resource.Insert Error %s", err.Error())
-	fmt.Println()
+	fmt.Printf("resource.Insert Error %s\n", err.Error())
 	return
 }
 fmt.Printf("%+v\n", *value)

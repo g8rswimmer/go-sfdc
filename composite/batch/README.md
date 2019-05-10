@@ -58,16 +58,14 @@ func (b *batchSubrequester) RichInput() map[string]interface{} {
 
 	resource, err := batch.NewResource(session)
 	if err != nil {
-		fmt.Printf("Batch Composite Error %s", err.Error())
-		fmt.Println()
+		fmt.Printf("Batch Composite Error %s\n", err.Error())
 		return
 	}
 	value, err := resource.Retrieve(false, subRequests)
 	if err != nil {
-		fmt.Printf("Batch Composite Error %s", err.Error())
-		fmt.Println()
+		fmt.Printf("Batch Composite Error %s\n", err.Error())
 		return
 	}
 
-	fmt.Printf("%+v", value)
+	fmt.Printf("%+v\n", value)
 ```
