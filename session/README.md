@@ -6,16 +6,21 @@ The session is used to authenticate with `Salesforce` and retrieve the org's inf
 ## Example
 The following example demonstrates how to create a session.
 ```go
-creds := credentials.PasswordCredentails{
+pwdCreds, err := credentials.NewPasswordCredentials(credentials.PasswordCredentails{
 	URL:          "https://login.salesforce.com",
 	Username:     "my.user@name.com",
 	Password:     "greatpassword",
 	ClientID:     "asdfnapodfnavppe",
 	ClientSecret: "12312573857105",
+})
+
+if err != nil {
+    fmt.Printf("error %v\n", err)
+    return
 }
 
 config := sfdc.Configuration{
-	Credentials: credentials.NewPasswordCredentials(creds),
+	Credentials: pwdCreds,
 	Client:      http.DefaultClient,
 	Version:     44,
 }
@@ -23,7 +28,7 @@ config := sfdc.Configuration{
 session, err := session.Open(config)
 
 if err != nil {
-	fmt.Printf("Error %s\n", err.Error())
+	fmt.Printf("Error %v\n", err)
 	return
 }
 
