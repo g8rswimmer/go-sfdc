@@ -6,7 +6,7 @@ type Resource struct {
 	session session.ServiceFormatter
 }
 
-func (r *Resource) CreateJob(options JobOptions) (*Job, error) {
+func (r *Resource) CreateJob(options Options) (*Job, error) {
 	job := &Job{
 		session: r.session,
 	}

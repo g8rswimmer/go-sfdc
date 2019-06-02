@@ -66,22 +66,22 @@ const (
 
 const createEndpoint = "/jobs/ingest"
 
-type JobUnprocessedRecord struct {
+type UnprocessedRecord struct {
 	Fields map[string]string
 }
 type JobRecord struct {
 	ID string
-	JobUnprocessedRecord
+	UnprocessedRecord
 }
-type JobSuccessfulRecord struct {
+type SuccessfulRecord struct {
 	Created bool
 	JobRecord
 }
-type JobFailedRecord struct {
+type FailedRecord struct {
 	Error string
 	JobRecord
 }
-type JobOptions struct {
+type Options struct {
 	ColumnDelimiter     ColumnDelimiter `json:"columnDelimiter"`
 	ContentType         ContentType     `json:"contentType"`
 	ExternalIDFieldName string          `json:"externalIdFieldName"`
@@ -90,7 +90,7 @@ type JobOptions struct {
 	Operation           Operation       `json:"operation"`
 }
 
-type JobResponse struct {
+type Response struct {
 	APIVersion          string `json:"apiVersion"`
 	ColumnDelimiter     string `json:"columnDelimiter"`
 	ConcurrencyMode     string `json:"concurrencyMode"`
@@ -108,8 +108,8 @@ type JobResponse struct {
 	SystemModstamp      string `json:"systemModstamp"`
 }
 
-type JobInfo struct {
-	JobResponse
+type Info struct {
+	Response
 	ApexProcessingTime      int `json:"apexProcessingTime"`
 	APIActiveProcessingTime int `json:"apiActiveProcessingTime"`
 	NumberRecordsFailed     int `json:"numberRecordsFailed"`
@@ -119,10 +119,10 @@ type JobInfo struct {
 }
 type Job struct {
 	session session.ServiceFormatter
-	info    JobResponse
+	info    Response
 }
 
-func (j *Job) create(options JobOptions) error {
+func (j *Job) create(options Options) error {
 	err := j.formatOptions(&options)
 	if err != nil {
 		return err
@@ -135,7 +135,7 @@ func (j *Job) create(options JobOptions) error {
 	return nil
 }
 
-func (j *Job) formatOptions(options *JobOptions) error {
+func (j *Job) formatOptions(options *Options) error {
 	if options.Operation == "" {
 		return errors.New("bulk job: operation is required")
 	}
@@ -159,15 +159,15 @@ func (j *Job) formatOptions(options *JobOptions) error {
 	return nil
 }
 
-func (j *Job) createCallout(options JobOptions) (JobResponse, error) {
+func (j *Job) createCallout(options Options) (Response, error) {
 	url := j.session.ServiceURL() + createEndpoint
 	body, err := json.Marshal(options)
 	if err != nil {
-		return JobResponse{}, err
+		return Response{}, err
 	}
 	request, err := http.NewRequest(http.MethodPost, url, bytes.NewReader(body))
 	if err != nil {
-		return JobResponse{}, err
+		return Response{}, err
 	}
 	request.Header.Add("Accept", "application/json")
 	request.Header.Add("Content-Type", "application/json")
@@ -176,10 +176,10 @@ func (j *Job) createCallout(options JobOptions) (JobResponse, error) {
 	return j.response(request)
 }
 
-func (j *Job) response(request *http.Request) (JobResponse, error) {
+func (j *Job) response(request *http.Request) (Response, error) {
 	response, err := j.session.Client().Do(request)
 	if err != nil {
-		return JobResponse{}, err
+		return Response{}, err
 	}
 
 	decoder := json.NewDecoder(response.Body)
@@ -197,21 +197,21 @@ func (j *Job) response(request *http.Request) (JobResponse, error) {
 			errMsg = fmt.Errorf("insert response err: %d %s", response.StatusCode, response.Status)
 		}
 
-		return JobResponse{}, errMsg
+		return Response{}, errMsg
 	}
 
-	var value JobResponse
+	var value Response
 	err = decoder.Decode(&value)
 	if err != nil {
-		return JobResponse{}, err
+		return Response{}, err
 	}
 	return value, nil
 }
-func (j *Job) Info() (JobInfo, error) {
+func (j *Job) Info() (Info, error) {
 	url := j.session.ServiceURL() + createEndpoint + "/" + j.info.ID
 	request, err := http.NewRequest(http.MethodGet, url, nil)
 	if err != nil {
-		return JobInfo{}, err
+		return Info{}, err
 	}
 	request.Header.Add("Accept", "application/json")
 	request.Header.Add("Content-Type", "application/json")
@@ -220,10 +220,10 @@ func (j *Job) Info() (JobInfo, error) {
 	return j.infoResponse(request)
 }
 
-func (j *Job) infoResponse(request *http.Request) (JobInfo, error) {
+func (j *Job) infoResponse(request *http.Request) (Info, error) {
 	response, err := j.session.Client().Do(request)
 	if err != nil {
-		return JobInfo{}, err
+		return Info{}, err
 	}
 
 	decoder := json.NewDecoder(response.Body)
@@ -241,18 +241,18 @@ func (j *Job) infoResponse(request *http.Request) (JobInfo, error) {
 			errMsg = fmt.Errorf("job err: %d %s", response.StatusCode, response.Status)
 		}
 
-		return JobInfo{}, errMsg
+		return Info{}, errMsg
 	}
 
-	var value JobInfo
+	var value Info
 	err = decoder.Decode(&value)
 	if err != nil {
-		return JobInfo{}, err
+		return Info{}, err
 	}
 	return value, nil
 }
 
-func (j *Job) setState(state State) (JobResponse, error) {
+func (j *Job) setState(state State) (Response, error) {
 	url := j.session.ServiceURL() + createEndpoint + "/" + j.info.ID
 	jobState := struct {
 		State string
@@ -261,11 +261,11 @@ func (j *Job) setState(state State) (JobResponse, error) {
 	}
 	body, err := json.Marshal(jobState)
 	if err != nil {
-		return JobResponse{}, err
+		return Response{}, err
 	}
 	request, err := http.NewRequest(http.MethodPatch, url, bytes.NewReader(body))
 	if err != nil {
-		return JobResponse{}, err
+		return Response{}, err
 	}
 	request.Header.Add("Accept", "application/json")
 	request.Header.Add("Content-Type", "application/json")
@@ -274,11 +274,11 @@ func (j *Job) setState(state State) (JobResponse, error) {
 	return j.response(request)
 }
 
-func (j *Job) Close() (JobResponse, error) {
+func (j *Job) Close() (Response, error) {
 	return j.setState(UpdateComplete)
 }
 
-func (j *Job) Abort() (JobResponse, error) {
+func (j *Job) Abort() (Response, error) {
 	return j.setState(Aborted)
 }
 
@@ -321,7 +321,7 @@ func (j *Job) Upload(body io.Reader) error {
 	return nil
 }
 
-func (j *Job) SuccessfulRecords() ([]JobSuccessfulRecord, error) {
+func (j *Job) SuccessfulRecords() ([]SuccessfulRecord, error) {
 	url := j.session.ServiceURL() + createEndpoint + "/" + j.info.ID + "/successfulResults/"
 	request, err := http.NewRequest(http.MethodGet, url, nil)
 	if err != nil {
@@ -354,14 +354,14 @@ func (j *Job) SuccessfulRecords() ([]JobSuccessfulRecord, error) {
 	scanner := bufio.NewScanner(response.Body)
 	defer response.Body.Close()
 	scanner.Split(bufio.ScanLines)
-	var records []JobSuccessfulRecord
+	var records []SuccessfulRecord
 	delimiter := j.delimiter()
 	fields, err := j.fields(scanner, delimiter, 2)
 	if err != nil {
 		return nil, err
 	}
 	for scanner.Scan() {
-		var record JobSuccessfulRecord
+		var record SuccessfulRecord
 		values := strings.Split(scanner.Text(), delimiter)
 		created, err := strconv.ParseBool(values[0])
 		if err != nil {
@@ -376,7 +376,7 @@ func (j *Job) SuccessfulRecords() ([]JobSuccessfulRecord, error) {
 	return records, nil
 }
 
-func (j *Job) FailedRecords() ([]JobFailedRecord, error) {
+func (j *Job) FailedRecords() ([]FailedRecord, error) {
 	url := j.session.ServiceURL() + createEndpoint + "/" + j.info.ID + "/failedResults/"
 	request, err := http.NewRequest(http.MethodGet, url, nil)
 	if err != nil {
@@ -409,14 +409,14 @@ func (j *Job) FailedRecords() ([]JobFailedRecord, error) {
 	scanner := bufio.NewScanner(response.Body)
 	defer response.Body.Close()
 	scanner.Split(bufio.ScanLines)
-	var records []JobFailedRecord
+	var records []FailedRecord
 	delimiter := j.delimiter()
 	fields, err := j.fields(scanner, delimiter, 2)
 	if err != nil {
 		return nil, err
 	}
 	for scanner.Scan() {
-		var record JobFailedRecord
+		var record FailedRecord
 		values := strings.Split(scanner.Text(), delimiter)
 		record.Error = values[0]
 		record.ID = values[1]
@@ -427,7 +427,7 @@ func (j *Job) FailedRecords() ([]JobFailedRecord, error) {
 	return records, nil
 }
 
-func (j *Job) UnprocessedRecords() ([]JobUnprocessedRecord, error) {
+func (j *Job) UnprocessedRecords() ([]UnprocessedRecord, error) {
 	url := j.session.ServiceURL() + createEndpoint + "/" + j.info.ID + "/failedResults/"
 	request, err := http.NewRequest(http.MethodGet, url, nil)
 	if err != nil {
@@ -460,14 +460,14 @@ func (j *Job) UnprocessedRecords() ([]JobUnprocessedRecord, error) {
 	scanner := bufio.NewScanner(response.Body)
 	defer response.Body.Close()
 	scanner.Split(bufio.ScanLines)
-	var records []JobUnprocessedRecord
+	var records []UnprocessedRecord
 	delimiter := j.delimiter()
 	fields, err := j.fields(scanner, delimiter, 0)
 	if err != nil {
 		return nil, err
 	}
 	for scanner.Scan() {
-		var record JobUnprocessedRecord
+		var record UnprocessedRecord
 		values := strings.Split(scanner.Text(), delimiter)
 		record.Fields = j.record(fields, values)
 		records = append(records, record)
@@ -505,9 +505,16 @@ func (j *Job) delimiter() string {
 		return "^"
 	case Backquote:
 		return "`"
-	case Comma:
-		fallthrough
 	default:
 		return ","
+	}
+}
+
+func (j *Job) newline() string {
+	switch LineEnding(j.info.LineEnding) {
+	case CarriageReturnLinefeed:
+		return "\r\n"
+	default:
+		return "\n"
 	}
 }
