@@ -483,7 +483,7 @@ func (j *Job) fields(scanner *bufio.Scanner, delimiter string, offset int) ([]st
 	}
 	values := strings.Split(scanner.Text(), delimiter)
 	fields := make([]string, len(values)-offset)
-	copy(values[offset:], fields[:])
+	copy(fields[:], values[offset:])
 	return fields, nil
 }
 func (j *Job) record(fields, values []string) map[string]string {
