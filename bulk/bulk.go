@@ -1,9 +1,22 @@
 package bulk
 
-import "github.com/g8rswimmer/go-sfdc/session"
+import (
+	"errors"
+
+	"github.com/g8rswimmer/go-sfdc/session"
+)
 
 type Resource struct {
 	session session.ServiceFormatter
+}
+
+func NewResource(session session.ServiceFormatter) (*Resource, error) {
+	if session == nil {
+		return nil, errors.New("bulk: session can not be nil")
+	}
+	return &Resource{
+		session: session,
+	}, nil
 }
 
 func (r *Resource) CreateJob(options Options) (*Job, error) {

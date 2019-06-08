@@ -91,31 +91,32 @@ type Options struct {
 }
 
 type Response struct {
-	APIVersion          string `json:"apiVersion"`
-	ColumnDelimiter     string `json:"columnDelimiter"`
-	ConcurrencyMode     string `json:"concurrencyMode"`
-	ContentType         string `json:"contentType"`
-	ContentURL          string `json:"contentUrl"`
-	CreatedByID         string `json:"createdById"`
-	CreatedDate         string `json:"createdDate"`
-	ExternalIDFieldName string `json:"externalIdFieldName"`
-	ID                  string `json:"id"`
-	JobType             string `json:"jobType"`
-	LineEnding          string `json:"lineEnding"`
-	Object              string `json:"object"`
-	Operation           string `json:"operation"`
-	State               string `json:"state"`
-	SystemModstamp      string `json:"systemModstamp"`
+	APIVersion          float32 `json:"apiVersion"`
+	ColumnDelimiter     string  `json:"columnDelimiter"`
+	ConcurrencyMode     string  `json:"concurrencyMode"`
+	ContentType         string  `json:"contentType"`
+	ContentURL          string  `json:"contentUrl"`
+	CreatedByID         string  `json:"createdById"`
+	CreatedDate         string  `json:"createdDate"`
+	ExternalIDFieldName string  `json:"externalIdFieldName"`
+	ID                  string  `json:"id"`
+	JobType             string  `json:"jobType"`
+	LineEnding          string  `json:"lineEnding"`
+	Object              string  `json:"object"`
+	Operation           string  `json:"operation"`
+	State               string  `json:"state"`
+	SystemModstamp      string  `json:"systemModstamp"`
 }
 
 type Info struct {
 	Response
-	ApexProcessingTime      int `json:"apexProcessingTime"`
-	APIActiveProcessingTime int `json:"apiActiveProcessingTime"`
-	NumberRecordsFailed     int `json:"numberRecordsFailed"`
-	NumberRecordsProcessed  int `json:"numberRecordsProcessed"`
-	Retries                 int `json:"retries"`
-	TotalProcessingTime     int `json:"totalProcessingTime"`
+	ApexProcessingTime      int    `json:"apexProcessingTime"`
+	APIActiveProcessingTime int    `json:"apiActiveProcessingTime"`
+	NumberRecordsFailed     int    `json:"numberRecordsFailed"`
+	NumberRecordsProcessed  int    `json:"numberRecordsProcessed"`
+	Retries                 int    `json:"retries"`
+	TotalProcessingTime     int    `json:"totalProcessingTime"`
+	ErrorMessage            string `json:"errorMessage"`
 }
 type Job struct {
 	session session.ServiceFormatter
@@ -255,7 +256,7 @@ func (j *Job) infoResponse(request *http.Request) (Info, error) {
 func (j *Job) setState(state State) (Response, error) {
 	url := j.session.ServiceURL() + createEndpoint + "/" + j.info.ID
 	jobState := struct {
-		State string
+		State string `json:"state"`
 	}{
 		State: string(state),
 	}

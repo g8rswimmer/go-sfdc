@@ -24,12 +24,17 @@ func NewFormatter(job *Job, fields []string, insertNull bool) (*Formatter, error
 	if len(fields) == 0 {
 		return nil, errors.New("bulk formatter: fields are required")
 	}
-	return &Formatter{
+
+	f := &Formatter{
 		job:        job,
 		fields:     fields,
 		insertNull: insertNull,
 		sb:         strings.Builder{},
-	}, nil
+	}
+	f.sb.WriteString(strings.Join(fields, job.delimiter()))
+	f.sb.WriteString(job.newline())
+
+	return f, nil
 }
 
 func (f *Formatter) Add(records ...Record) error {
