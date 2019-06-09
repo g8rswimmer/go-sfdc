@@ -1262,7 +1262,7 @@ func TestJob_SuccessfulRecords(t *testing.T) {
 							}
 						}
 
-						resp := "sf__Created|sf__Id|FirstName|LastName|DOB\ntrue|2345|John|Doe|1/1/1970\ntrue|9876|Jane|Doe|1/1/1980\n"
+						resp := "\"sf__Created\"|\"sf__Id\"|FirstName|LastName|DOB\ntrue|2345|John|Doe|1/1/1970\ntrue|9876|Jane|Doe|1/1/1980\n"
 						return &http.Response{
 							StatusCode: http.StatusOK,
 							Status:     "Good",

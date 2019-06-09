@@ -421,11 +421,11 @@ func (j *Job) SuccessfulRecords() ([]SuccessfulRecord, error) {
 	if err != nil {
 		return nil, err
 	}
-	createIdx, err := j.headerPosition("sf__Created", columns)
+	createIdx, err := j.headerPosition(`"sf__Created"`, columns)
 	if err != nil {
 		return nil, err
 	}
-	idIdx, err := j.headerPosition("sf__Id", columns)
+	idIdx, err := j.headerPosition(`"sf__Id"`, columns)
 	if err != nil {
 		return nil, err
 	}
