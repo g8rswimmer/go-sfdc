@@ -1,7 +1,6 @@
 package bulk
 
 import (
-	"bufio"
 	"io"
 	"io/ioutil"
 	"net/http"
@@ -301,42 +300,27 @@ func TestJob_fields(t *testing.T) {
 		info    Response
 	}
 	type args struct {
-		scanner   *bufio.Scanner
-		delimiter string
-		offset    int
+		columns []string
+		offset  int
 	}
 	tests := []struct {
-		name    string
-		fields  fields
-		args    args
-		want    []string
-		wantErr bool
+		name   string
+		fields fields
+		args   args
+		want   []string
 	}{
 		{
 			name:   "passing",
 			fields: fields{},
 			args: args{
-				scanner:   bufio.NewScanner(strings.NewReader("sf_id|first|last|DOB")),
-				delimiter: "|",
-				offset:    1,
+				columns: []string{"sf_id", "first", "last", "DOB"},
+				offset:  1,
 			},
 			want: []string{
 				"first",
 				"last",
 				"DOB",
 			},
-			wantErr: false,
-		},
-		{
-			name:   "error",
-			fields: fields{},
-			args: args{
-				scanner:   bufio.NewScanner(strings.NewReader("")),
-				delimiter: "|",
-				offset:    1,
-			},
-			want:    nil,
-			wantErr: true,
 		},
 	}
 	for _, tt := range tests {
@@ -345,11 +329,7 @@ func TestJob_fields(t *testing.T) {
 				session: tt.fields.session,
 				info:    tt.fields.info,
 			}
-			got, err := j.fields(tt.args.scanner, tt.args.delimiter, tt.args.offset)
-			if (err != nil) != tt.wantErr {
-				t.Errorf("Job.fields() error = %v, wantErr %v", err, tt.wantErr)
-				return
-			}
+			got := j.fields(tt.args.columns, tt.args.offset)
 			if !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("Job.fields() = %v, want %v", got, tt.want)
 			}
@@ -1382,7 +1362,7 @@ func TestJob_FailedRecords(t *testing.T) {
 							}
 						}
 
-						resp := "sf__Error|sf__Id|FirstName|LastName|DOB\nREQUIRED_FIELD_MISSING:Required fields are missing: [Name]:Name --||John|Doe|1/1/1970\nREQUIRED_FIELD_MISSING:Required fields are missing: [Name]:Name --||Jane|Doe|1/1/1980\n"
+						resp := "\"sf__Error\"|\"sf__Id\"|FirstName|LastName|DOB\nREQUIRED_FIELD_MISSING:Required fields are missing: [Name]:Name --||John|Doe|1/1/1970\nREQUIRED_FIELD_MISSING:Required fields are missing: [Name]:Name --||Jane|Doe|1/1/1980\n"
 						return &http.Response{
 							StatusCode: http.StatusOK,
 							Status:     "Good",

@@ -417,19 +417,28 @@ func (j *Job) SuccessfulRecords() ([]SuccessfulRecord, error) {
 	scanner.Split(bufio.ScanLines)
 	var records []SuccessfulRecord
 	delimiter := j.delimiter()
-	fields, err := j.fields(scanner, delimiter, 2)
+	columns, err := j.recordResultHeader(scanner, delimiter)
 	if err != nil {
 		return nil, err
 	}
+	createIdx, err := j.headerPosition("sf__Created", columns)
+	if err != nil {
+		return nil, err
+	}
+	idIdx, err := j.headerPosition("sf__Id", columns)
+	if err != nil {
+		return nil, err
+	}
+	fields := j.fields(columns, 2)
 	for scanner.Scan() {
 		var record SuccessfulRecord
 		values := strings.Split(scanner.Text(), delimiter)
-		created, err := strconv.ParseBool(values[0])
+		created, err := strconv.ParseBool(values[createIdx])
 		if err != nil {
 			return nil, err
 		}
 		record.Created = created
-		record.ID = values[1]
+		record.ID = values[idIdx]
 		record.Fields = j.record(fields, values[2:])
 		records = append(records, record)
 	}
@@ -473,15 +482,24 @@ func (j *Job) FailedRecords() ([]FailedRecord, error) {
 	scanner.Split(bufio.ScanLines)
 	var records []FailedRecord
 	delimiter := j.delimiter()
-	fields, err := j.fields(scanner, delimiter, 2)
+	columns, err := j.recordResultHeader(scanner, delimiter)
 	if err != nil {
 		return nil, err
 	}
+	errorIdx, err := j.headerPosition(`"sf__Error"`, columns)
+	if err != nil {
+		return nil, err
+	}
+	idIdx, err := j.headerPosition(`"sf__Id"`, columns)
+	if err != nil {
+		return nil, err
+	}
+	fields := j.fields(columns, 2)
 	for scanner.Scan() {
 		var record FailedRecord
 		values := strings.Split(scanner.Text(), delimiter)
-		record.Error = values[0]
-		record.ID = values[1]
+		record.Error = values[errorIdx]
+		record.ID = values[idIdx]
 		record.Fields = j.record(fields, values[2:])
 		records = append(records, record)
 	}
@@ -525,10 +543,11 @@ func (j *Job) UnprocessedRecords() ([]UnprocessedRecord, error) {
 	scanner.Split(bufio.ScanLines)
 	var records []UnprocessedRecord
 	delimiter := j.delimiter()
-	fields, err := j.fields(scanner, delimiter, 0)
+	columns, err := j.recordResultHeader(scanner, delimiter)
 	if err != nil {
 		return nil, err
 	}
+	fields := j.fields(columns, 0)
 	for scanner.Scan() {
 		var record UnprocessedRecord
 		values := strings.Split(scanner.Text(), delimiter)
@@ -539,14 +558,24 @@ func (j *Job) UnprocessedRecords() ([]UnprocessedRecord, error) {
 	return records, nil
 }
 
-func (j *Job) fields(scanner *bufio.Scanner, delimiter string, offset int) ([]string, error) {
+func (j *Job) recordResultHeader(scanner *bufio.Scanner, delimiter string) ([]string, error) {
 	if scanner.Scan() == false {
 		return nil, errors.New("job: response needs to have header")
 	}
-	values := strings.Split(scanner.Text(), delimiter)
-	fields := make([]string, len(values)-offset)
-	copy(fields[:], values[offset:])
-	return fields, nil
+	return strings.Split(scanner.Text(), delimiter), nil
+}
+func (j *Job) headerPosition(column string, header []string) (int, error) {
+	for idx, col := range header {
+		if col == column {
+			return idx, nil
+		}
+	}
+	return -1, fmt.Errorf("job header: %s column is not in header", column)
+}
+func (j *Job) fields(header []string, offset int) []string {
+	fields := make([]string, len(header)-offset)
+	copy(fields[:], header[offset:])
+	return fields
 }
 func (j *Job) record(fields, values []string) map[string]string {
 	record := make(map[string]string)
