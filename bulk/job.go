@@ -15,72 +15,121 @@ import (
 	"github.com/g8rswimmer/go-sfdc/session"
 )
 
+// JobType is the bulk job type.
 type JobType string
 
 const (
+	// BigObjects is the big objects job.
 	BigObjects JobType = "BigObjectIngest"
-	Classic    JobType = "Classic"
-	V2Ingest   JobType = "V2Ingest"
+	// Classic is the bulk job 1.0.
+	Classic JobType = "Classic"
+	// V2Ingest is the bulk job 2.0.
+	V2Ingest JobType = "V2Ingest"
 )
 
+// ColumnDelimiter is the column delimiter used for CSV job data.
 type ColumnDelimiter string
 
 const (
+	// Backquote is the (`) character.
 	Backquote ColumnDelimiter = "BACKQUOTE"
-	Caret     ColumnDelimiter = "CARET"
-	Comma     ColumnDelimiter = "COMMA"
-	Pipe      ColumnDelimiter = "PIPE"
+	// Caret is the (^) character.
+	Caret ColumnDelimiter = "CARET"
+	// Comma is the (,) character.
+	Comma ColumnDelimiter = "COMMA"
+	// Pipe is the (|) character.
+	Pipe ColumnDelimiter = "PIPE"
+	// SemiColon is the (;) character.
 	SemiColon ColumnDelimiter = "SEMICOLON"
-	Tab       ColumnDelimiter = "TAB"
+	// Tab is the (\t) character.
+	Tab ColumnDelimiter = "TAB"
 )
 
+// ContentType is the format of the data being processed.
 type ContentType string
 
+// CSV is the supported content data type.
 const CSV ContentType = "CSV"
 
+// LineEnding is the line ending used for the CSV job data.
 type LineEnding string
 
 const (
-	Linefeed               LineEnding = "LF"
+	// Linefeed is the (\n) character.
+	Linefeed LineEnding = "LF"
+	// CarriageReturnLinefeed is the (\r\n) character.
 	CarriageReturnLinefeed LineEnding = "CRLF"
 )
 
+// Operation is the processing operation for the job.
 type Operation string
 
 const (
+	// Insert is the object operation for inserting records.
 	Insert Operation = "insert"
+	// Delete is the object operation for deleting records.
 	Delete Operation = "delete"
+	// Update is the object operation for updating records.
 	Update Operation = "update"
+	// Upsert is the object operation for upserting records.
 	Upsert Operation = "upsert"
 )
 
+// State is the current state of processing for the job.
 type State string
 
 const (
-	Open           State = "Open"
+	// Open the job has been created and job data can be uploaded tothe job.
+	Open State = "Open"
+	// UpdateComplete all data for the job has been uploaded and the job is ready to be queued and processed.
 	UpdateComplete State = "UploadComplete"
-	Aborted        State = "Aborted"
-	JobComplete    State = "JobComplete"
-	Fialed         State = "Failed"
+	// Aborted the job has been aborted.
+	Aborted State = "Aborted"
+	// JobComplete the job was processed by Salesforce.
+	JobComplete State = "JobComplete"
+	// Failed some records in the job failed.
+	Failed State = "Failed"
 )
 
 const createEndpoint = "/jobs/ingest"
 
+// UnprocessedRecord is the unprocessed records from the job.
 type UnprocessedRecord struct {
 	Fields map[string]string
 }
+
+// JobRecord is the record for the job.  Includes the Salesforce ID along with the fields.
 type JobRecord struct {
 	ID string
 	UnprocessedRecord
 }
+
+// SuccessfulRecord indicates for the record was created and the data that was uploaded.
 type SuccessfulRecord struct {
 	Created bool
 	JobRecord
 }
+
+// FailedRecord indicates why the record failed and the data of the record.
 type FailedRecord struct {
 	Error string
 	JobRecord
 }
+
+// Options are the options for the job.
+//
+// ColumnDelimiter is the delimiter used for the CSV job.  This field is optional.
+//
+// ContentType is the content type for the job.  This field is optional.
+//
+// ExternalIDFieldName is the external ID field in the object being updated.  Only needed for
+// upsert operations.  This field is required for upsert operations.
+//
+// LineEnding is the line ending used for the CSV job data.  This field is optional.
+//
+// Object is the object type for the data bneing processed. This field is required.
+//
+// Operation is the processing operation for the job. This field is required.
 type Options struct {
 	ColumnDelimiter     ColumnDelimiter `json:"columnDelimiter"`
 	ContentType         ContentType     `json:"contentType"`
@@ -90,6 +139,7 @@ type Options struct {
 	Operation           Operation       `json:"operation"`
 }
 
+// Response is the response to job APIs.
 type Response struct {
 	APIVersion          float32 `json:"apiVersion"`
 	ColumnDelimiter     string  `json:"columnDelimiter"`
@@ -108,6 +158,7 @@ type Response struct {
 	SystemModstamp      string  `json:"systemModstamp"`
 }
 
+// Info is the response to the job information API.
 type Info struct {
 	Response
 	ApexProcessingTime      int    `json:"apexProcessingTime"`
@@ -118,6 +169,8 @@ type Info struct {
 	TotalProcessingTime     int    `json:"totalProcessingTime"`
 	ErrorMessage            string `json:"errorMessage"`
 }
+
+// Job is the bulk job.
 type Job struct {
 	session session.ServiceFormatter
 	info    Response
@@ -208,6 +261,8 @@ func (j *Job) response(request *http.Request) (Response, error) {
 	}
 	return value, nil
 }
+
+// Info returns the current job information.
 func (j *Job) Info() (Info, error) {
 	url := j.session.ServiceURL() + createEndpoint + "/" + j.info.ID
 	request, err := http.NewRequest(http.MethodGet, url, nil)
@@ -275,14 +330,17 @@ func (j *Job) setState(state State) (Response, error) {
 	return j.response(request)
 }
 
+// Close will close the current job.
 func (j *Job) Close() (Response, error) {
 	return j.setState(UpdateComplete)
 }
 
+// Abort will abort the current job.
 func (j *Job) Abort() (Response, error) {
 	return j.setState(Aborted)
 }
 
+// Delete will delete the current job.
 func (j *Job) Delete() error {
 	url := j.session.ServiceURL() + createEndpoint + "/" + j.info.ID
 	request, err := http.NewRequest(http.MethodDelete, url, nil)
@@ -302,6 +360,7 @@ func (j *Job) Delete() error {
 	return nil
 }
 
+// Upload will upload data to processing.
 func (j *Job) Upload(body io.Reader) error {
 	url := j.session.ServiceURL() + createEndpoint + "/" + j.info.ID + "/batches"
 	request, err := http.NewRequest(http.MethodPut, url, body)
@@ -322,6 +381,7 @@ func (j *Job) Upload(body io.Reader) error {
 	return nil
 }
 
+// SuccessfulRecords returns the successful records for the job.
 func (j *Job) SuccessfulRecords() ([]SuccessfulRecord, error) {
 	url := j.session.ServiceURL() + createEndpoint + "/" + j.info.ID + "/successfulResults/"
 	request, err := http.NewRequest(http.MethodGet, url, nil)
@@ -377,6 +437,7 @@ func (j *Job) SuccessfulRecords() ([]SuccessfulRecord, error) {
 	return records, nil
 }
 
+// FailedRecords returns the failed records for the job.
 func (j *Job) FailedRecords() ([]FailedRecord, error) {
 	url := j.session.ServiceURL() + createEndpoint + "/" + j.info.ID + "/failedResults/"
 	request, err := http.NewRequest(http.MethodGet, url, nil)
@@ -428,8 +489,9 @@ func (j *Job) FailedRecords() ([]FailedRecord, error) {
 	return records, nil
 }
 
+// UnprocessedRecords returns the unprocessed records for the job.
 func (j *Job) UnprocessedRecords() ([]UnprocessedRecord, error) {
-	url := j.session.ServiceURL() + createEndpoint + "/" + j.info.ID + "/failedResults/"
+	url := j.session.ServiceURL() + createEndpoint + "/" + j.info.ID + "/unprocessedrecords/"
 	request, err := http.NewRequest(http.MethodGet, url, nil)
 	if err != nil {
 		return nil, err
