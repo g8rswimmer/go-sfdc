@@ -421,11 +421,11 @@ func (j *Job) SuccessfulRecords() ([]SuccessfulRecord, error) {
 	if err != nil {
 		return nil, err
 	}
-	createIdx, err := j.headerPosition(`"sf__Created"`, columns)
+	createIdx, err := j.headerPosition(`sf__Created`, columns)
 	if err != nil {
 		return nil, err
 	}
-	idIdx, err := j.headerPosition(`"sf__Id"`, columns)
+	idIdx, err := j.headerPosition(`sf__Id`, columns)
 	if err != nil {
 		return nil, err
 	}
@@ -433,7 +433,8 @@ func (j *Job) SuccessfulRecords() ([]SuccessfulRecord, error) {
 	for scanner.Scan() {
 		var record SuccessfulRecord
 		values := strings.Split(scanner.Text(), delimiter)
-		created, err := strconv.ParseBool(values[createIdx])
+		isCreated := strings.Replace(values[createIdx], "\"", "", -1)
+		created, err := strconv.ParseBool(isCreated)
 		if err != nil {
 			return nil, err
 		}
@@ -486,11 +487,11 @@ func (j *Job) FailedRecords() ([]FailedRecord, error) {
 	if err != nil {
 		return nil, err
 	}
-	errorIdx, err := j.headerPosition(`"sf__Error"`, columns)
+	errorIdx, err := j.headerPosition(`sf__Error`, columns)
 	if err != nil {
 		return nil, err
 	}
-	idIdx, err := j.headerPosition(`"sf__Id"`, columns)
+	idIdx, err := j.headerPosition(`sf__Id`, columns)
 	if err != nil {
 		return nil, err
 	}
@@ -562,7 +563,8 @@ func (j *Job) recordResultHeader(scanner *bufio.Scanner, delimiter string) ([]st
 	if scanner.Scan() == false {
 		return nil, errors.New("job: response needs to have header")
 	}
-	return strings.Split(scanner.Text(), delimiter), nil
+	text := strings.Replace(scanner.Text(), "\"", "", -1)
+	return strings.Split(text, delimiter), nil
 }
 func (j *Job) headerPosition(column string, header []string) (int, error) {
 	for idx, col := range header {
