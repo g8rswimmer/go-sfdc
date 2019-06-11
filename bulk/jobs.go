@@ -11,6 +11,11 @@ import (
 	"github.com/g8rswimmer/go-sfdc/session"
 )
 
+// Parameters to query the bulk jobs.
+//
+// IsPkChunkingEnabled will filter jobs with PK chunking enabled.
+//
+// JobType will filter jobs based on job type.
 type Parameters struct {
 	IsPkChunkingEnabled bool
 	JobType             JobType
@@ -22,6 +27,7 @@ type jobResponse struct {
 	NextRecordsURL string     `json:"nextRecordsUrl"`
 }
 
+// Jobs presents the response from the all jobs request.
 type Jobs struct {
 	session  session.ServiceFormatter
 	response jobResponse
@@ -48,17 +54,20 @@ func newJobs(session session.ServiceFormatter, parameters Parameters) (*Jobs, er
 	j.response = response
 	return j, nil
 }
+
+// Done indicates whether there are more jobs to get.
 func (j *Jobs) Done() bool {
 	return j.response.Done
 }
+
+// Records contains the information for each retrieved job.
 func (j *Jobs) Records() []Response {
 	return j.response.Records
 }
-func (j *Jobs) HasNext() bool {
-	return j.response.NextRecordsURL != ""
-}
+
+// Next will retrieve the next batch of job information.
 func (j *Jobs) Next() (*Jobs, error) {
-	if j.HasNext() == false {
+	if j.Done() == true {
 		return nil, errors.New("jobs: there is no more records")
 	}
 	request, err := j.request(j.response.NextRecordsURL)

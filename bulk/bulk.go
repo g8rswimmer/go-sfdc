@@ -37,6 +37,7 @@ func (r *Resource) CreateJob(options Options) (*Job, error) {
 	return job, nil
 }
 
+// AllJobs will retrieve all of the bulk 2.0 jobs.
 func (r *Resource) AllJobs(parameters Parameters) (*Jobs, error) {
 	jobs, err := newJobs(r.session, parameters)
 	if err != nil {
