@@ -91,8 +91,6 @@ const (
 	Failed State = "Failed"
 )
 
-const createEndpoint = "/jobs/ingest"
-
 // UnprocessedRecord is the unprocessed records from the job.
 type UnprocessedRecord struct {
 	Fields map[string]string
@@ -214,7 +212,7 @@ func (j *Job) formatOptions(options *Options) error {
 }
 
 func (j *Job) createCallout(options Options) (Response, error) {
-	url := j.session.ServiceURL() + createEndpoint
+	url := j.session.ServiceURL() + bulk2Endpoint
 	body, err := json.Marshal(options)
 	if err != nil {
 		return Response{}, err
@@ -264,7 +262,7 @@ func (j *Job) response(request *http.Request) (Response, error) {
 
 // Info returns the current job information.
 func (j *Job) Info() (Info, error) {
-	url := j.session.ServiceURL() + createEndpoint + "/" + j.info.ID
+	url := j.session.ServiceURL() + bulk2Endpoint + "/" + j.info.ID
 	request, err := http.NewRequest(http.MethodGet, url, nil)
 	if err != nil {
 		return Info{}, err
@@ -309,7 +307,7 @@ func (j *Job) infoResponse(request *http.Request) (Info, error) {
 }
 
 func (j *Job) setState(state State) (Response, error) {
-	url := j.session.ServiceURL() + createEndpoint + "/" + j.info.ID
+	url := j.session.ServiceURL() + bulk2Endpoint + "/" + j.info.ID
 	jobState := struct {
 		State string `json:"state"`
 	}{
@@ -342,7 +340,7 @@ func (j *Job) Abort() (Response, error) {
 
 // Delete will delete the current job.
 func (j *Job) Delete() error {
-	url := j.session.ServiceURL() + createEndpoint + "/" + j.info.ID
+	url := j.session.ServiceURL() + bulk2Endpoint + "/" + j.info.ID
 	request, err := http.NewRequest(http.MethodDelete, url, nil)
 	if err != nil {
 		return err
@@ -362,7 +360,7 @@ func (j *Job) Delete() error {
 
 // Upload will upload data to processing.
 func (j *Job) Upload(body io.Reader) error {
-	url := j.session.ServiceURL() + createEndpoint + "/" + j.info.ID + "/batches"
+	url := j.session.ServiceURL() + bulk2Endpoint + "/" + j.info.ID + "/batches"
 	request, err := http.NewRequest(http.MethodPut, url, body)
 	if err != nil {
 		return err
@@ -383,7 +381,7 @@ func (j *Job) Upload(body io.Reader) error {
 
 // SuccessfulRecords returns the successful records for the job.
 func (j *Job) SuccessfulRecords() ([]SuccessfulRecord, error) {
-	url := j.session.ServiceURL() + createEndpoint + "/" + j.info.ID + "/successfulResults/"
+	url := j.session.ServiceURL() + bulk2Endpoint + "/" + j.info.ID + "/successfulResults/"
 	request, err := http.NewRequest(http.MethodGet, url, nil)
 	if err != nil {
 		return nil, err
@@ -449,7 +447,7 @@ func (j *Job) SuccessfulRecords() ([]SuccessfulRecord, error) {
 
 // FailedRecords returns the failed records for the job.
 func (j *Job) FailedRecords() ([]FailedRecord, error) {
-	url := j.session.ServiceURL() + createEndpoint + "/" + j.info.ID + "/failedResults/"
+	url := j.session.ServiceURL() + bulk2Endpoint + "/" + j.info.ID + "/failedResults/"
 	request, err := http.NewRequest(http.MethodGet, url, nil)
 	if err != nil {
 		return nil, err
@@ -510,7 +508,7 @@ func (j *Job) FailedRecords() ([]FailedRecord, error) {
 
 // UnprocessedRecords returns the unprocessed records for the job.
 func (j *Job) UnprocessedRecords() ([]UnprocessedRecord, error) {
-	url := j.session.ServiceURL() + createEndpoint + "/" + j.info.ID + "/unprocessedrecords/"
+	url := j.session.ServiceURL() + bulk2Endpoint + "/" + j.info.ID + "/unprocessedrecords/"
 	request, err := http.NewRequest(http.MethodGet, url, nil)
 	if err != nil {
 		return nil, err
