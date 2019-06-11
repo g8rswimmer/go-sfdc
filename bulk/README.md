@@ -89,6 +89,11 @@ The following are examples to access the `APIs`.  It is assumed that a `sfdc` [s
 ```
 ### Delete a Job
 ```go
+	err := job.Delete()
+	if err != nil {
+		fmt.Printf("Job Delete Error %s\n", err.Error())
+		return
+	}
 ```
 ### Get All Jobs
 ```go
@@ -161,5 +166,21 @@ The following are examples to access the `APIs`.  It is assumed that a `sfdc` [s
 ```
 ### Get Job Unprocessed Records
 ```go
+	info, err = job.Info()
+	if err != nil {
+		fmt.Printf("Job Info Error %s\n", err.Error())
+		return
+	}
+
+	unprocessedRecords, err := job.UnprocessedRecords()
+	if err != nil {
+		fmt.Printf("Job Unprocessed Records Error %s\n", err.Error())
+		return
+	}
+	fmt.Println("Unprocessed Record(s)")
+	fmt.Println("-------------------")
+	for _, unprocessedRecord := range unprocessedRecords {
+		fmt.Printf("%+v\n\n", unprocessedRecord)
+	}
 ```
 
