@@ -11,7 +11,7 @@ import (
 	"github.com/g8rswimmer/go-sfdc/session"
 )
 
-// Parameters to query the bulk jobs.
+// Parameters to query all of the bulk jobs.
 //
 // IsPkChunkingEnabled will filter jobs with PK chunking enabled.
 //

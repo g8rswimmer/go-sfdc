@@ -33,13 +33,13 @@ func NewFormatter(job *Job, fields []string) (*Formatter, error) {
 		fields: fields,
 		sb:     strings.Builder{},
 	}
-	_, err := f.sb.WriteString(strings.Join(fields, job.delimiter()))
-	if err != nil {
+
+	if _, err := f.sb.WriteString(strings.Join(fields, job.delimiter())); err != nil {
 		return nil, err
 	}
-	_, err = f.sb.WriteString(job.newline())
-	if err != nil {
+	if _, err := f.sb.WriteString(job.newline()); err != nil {
 		return nil, err
+
 	}
 
 	return f, nil

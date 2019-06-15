@@ -8,12 +8,12 @@ import (
 
 const bulk2Endpoint = "/jobs/ingest"
 
-// Resource is the structure that can be just to create bulk 2.0 jobs.
+// Resource is the structure that can be used to create bulk 2.0 jobs.
 type Resource struct {
 	session session.ServiceFormatter
 }
 
-// NewResource create a new bulk 2.0 resource.  If the session is nil
+// NewResource creates a new bulk 2.0 REST resource.  If the session is nil
 // an error will be returned.
 func NewResource(session session.ServiceFormatter) (*Resource, error) {
 	if session == nil {
@@ -25,7 +25,7 @@ func NewResource(session session.ServiceFormatter) (*Resource, error) {
 }
 
 // CreateJob will create a new bulk 2.0 job from the options that where passed.
-// The Job structure that is returned can be used to upload object data to the Salesforce org.
+// The Job that is returned can be used to upload object data to the Salesforce org.
 func (r *Resource) CreateJob(options Options) (*Job, error) {
 	job := &Job{
 		session: r.session,
