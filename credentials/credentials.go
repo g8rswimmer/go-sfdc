@@ -82,19 +82,19 @@ func NewPasswordCredentials(creds PasswordCredentials) (*Credentials, error) {
 
 func validatePasswordCredentials(cred PasswordCredentials) error {
 	if cred.URL == "" {
-		return errors.New("credentials: password credentials's URL can not be empty")
+		return errors.New("credentials: password credential's URL can not be empty")
 	}
 	if cred.Username == "" {
-		return errors.New("credentials: password credentials's username can not be empty")
+		return errors.New("credentials: password credential's username can not be empty")
 	}
 	if cred.Password == "" {
-		return errors.New("credentials: password credentials's password can not be empty")
+		return errors.New("credentials: password credential's password can not be empty")
 	}
 	if cred.ClientID == "" {
-		return errors.New("credentials: password credentials's client ID can not be empty")
+		return errors.New("credentials: password credential's client ID can not be empty")
 	}
 	if cred.ClientSecret == "" {
-		return errors.New("credentials: password credentials's client secret can not be empty")
+		return errors.New("credentials: password credential's client secret can not be empty")
 	}
 	return nil
 }
