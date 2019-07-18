@@ -6,7 +6,7 @@ The session is used to authenticate with `Salesforce` and retrieve the org's inf
 ## Example
 The following example demonstrates how to create a session.
 ```go
-pwdCreds, err := credentials.NewPasswordCredentials(credentials.PasswordCredentails{
+pwdCreds, err := credentials.NewPasswordCredentials(credentials.PasswordCredentials{
 	URL:          "https://login.salesforce.com",
 	Username:     "my.user@name.com",
 	Password:     "greatpassword",

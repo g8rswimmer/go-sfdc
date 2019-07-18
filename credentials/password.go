@@ -7,7 +7,7 @@ import (
 )
 
 type passwordProvider struct {
-	creds PasswordCredentails
+	creds PasswordCredentials
 }
 
 func (provider *passwordProvider) Retrieve() (io.Reader, error) {

@@ -10,7 +10,7 @@ import (
 
 func TestNewPasswordCredentials(t *testing.T) {
 	type args struct {
-		creds PasswordCredentails
+		creds PasswordCredentials
 	}
 	tests := []struct {
 		name    string
@@ -21,7 +21,7 @@ func TestNewPasswordCredentials(t *testing.T) {
 		{
 			name: "Password Credentials",
 			args: args{
-				creds: PasswordCredentails{
+				creds: PasswordCredentials{
 					URL:          "http://test.password.session",
 					Username:     "myusername",
 					Password:     "12345",
@@ -31,7 +31,7 @@ func TestNewPasswordCredentials(t *testing.T) {
 			},
 			want: &Credentials{
 				provider: &passwordProvider{
-					creds: PasswordCredentails{
+					creds: PasswordCredentials{
 						URL:          "http://test.password.session",
 						Username:     "myusername",
 						Password:     "12345",
@@ -45,7 +45,7 @@ func TestNewPasswordCredentials(t *testing.T) {
 		{
 			name: "No URL",
 			args: args{
-				creds: PasswordCredentails{
+				creds: PasswordCredentials{
 					URL:          "",
 					Username:     "myusername",
 					Password:     "12345",
@@ -59,7 +59,7 @@ func TestNewPasswordCredentials(t *testing.T) {
 		{
 			name: "No Username",
 			args: args{
-				creds: PasswordCredentails{
+				creds: PasswordCredentials{
 					URL:          "http://test.password.session",
 					Username:     "",
 					Password:     "12345",
@@ -73,7 +73,7 @@ func TestNewPasswordCredentials(t *testing.T) {
 		{
 			name: "No password",
 			args: args{
-				creds: PasswordCredentails{
+				creds: PasswordCredentials{
 					URL:          "http://test.password.session",
 					Username:     "myusername",
 					Password:     "",
@@ -87,7 +87,7 @@ func TestNewPasswordCredentials(t *testing.T) {
 		{
 			name: "No client ID",
 			args: args{
-				creds: PasswordCredentails{
+				creds: PasswordCredentials{
 					URL:          "http://test.password.session",
 					Username:     "myusername",
 					Password:     "12345",
@@ -101,7 +101,7 @@ func TestNewPasswordCredentials(t *testing.T) {
 		{
 			name: "No client secret",
 			args: args{
-				creds: PasswordCredentails{
+				creds: PasswordCredentials{
 					URL:          "http://test.password.session",
 					Username:     "myusername",
 					Password:     "12345",
@@ -142,7 +142,7 @@ func TestNewCredentials(t *testing.T) {
 			name: "New Credentials",
 			args: args{
 				provider: &passwordProvider{
-					creds: PasswordCredentails{
+					creds: PasswordCredentials{
 						URL:          "http://test.password.session",
 						Username:     "myusername",
 						Password:     "12345",
@@ -153,7 +153,7 @@ func TestNewCredentials(t *testing.T) {
 			},
 			want: &Credentials{
 				provider: &passwordProvider{
-					creds: PasswordCredentails{
+					creds: PasswordCredentials{
 						URL:          "http://test.password.session",
 						Username:     "myusername",
 						Password:     "12345",
@@ -199,7 +199,7 @@ func TestCredentials_URL(t *testing.T) {
 			name: "Credential URL",
 			fields: fields{
 				provider: &passwordProvider{
-					creds: PasswordCredentails{
+					creds: PasswordCredentials{
 						URL:          "http://test.password.session",
 						Username:     "myusername",
 						Password:     "12345",
@@ -223,7 +223,7 @@ func TestCredentials_URL(t *testing.T) {
 	}
 }
 
-func mockCredentialsRetriveReader(creds PasswordCredentails) io.Reader {
+func mockCredentialsRetriveReader(creds PasswordCredentials) io.Reader {
 	form := url.Values{}
 	form.Add("grant_type", string(passwordGrantType))
 	form.Add("username", creds.Username)
@@ -249,7 +249,7 @@ func TestCredentials_Retrieve(t *testing.T) {
 			name: "Credential Retrieve",
 			fields: fields{
 				provider: &passwordProvider{
-					creds: PasswordCredentails{
+					creds: PasswordCredentials{
 						URL:          "http://test.password.session",
 						Username:     "myusername",
 						Password:     "12345",
@@ -258,7 +258,7 @@ func TestCredentials_Retrieve(t *testing.T) {
 					},
 				},
 			},
-			want: mockCredentialsRetriveReader(PasswordCredentails{
+			want: mockCredentialsRetriveReader(PasswordCredentials{
 				URL:          "http://test.password.session",
 				Username:     "myusername",
 				Password:     "12345",
