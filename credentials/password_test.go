@@ -8,7 +8,7 @@ import (
 	"testing"
 )
 
-func mockPasswordRetriveReader(creds PasswordCredentails) io.Reader {
+func mockPasswordRetriveReader(creds PasswordCredentials) io.Reader {
 	form := url.Values{}
 	form.Add("grant_type", string(passwordGrantType))
 	form.Add("username", creds.Username)
@@ -20,7 +20,7 @@ func mockPasswordRetriveReader(creds PasswordCredentails) io.Reader {
 }
 func Test_passwordProvider_Retrieve(t *testing.T) {
 	type fields struct {
-		creds PasswordCredentails
+		creds PasswordCredentials
 	}
 	tests := []struct {
 		name    string
@@ -32,7 +32,7 @@ func Test_passwordProvider_Retrieve(t *testing.T) {
 		{
 			name: "Password Retriever",
 			fields: fields{
-				creds: PasswordCredentails{
+				creds: PasswordCredentials{
 					URL:          "http://test.password.session",
 					Username:     "myusername",
 					Password:     "12345",
@@ -40,7 +40,7 @@ func Test_passwordProvider_Retrieve(t *testing.T) {
 					ClientSecret: "shhhh its a secret",
 				},
 			},
-			want: mockPasswordRetriveReader(PasswordCredentails{
+			want: mockPasswordRetriveReader(PasswordCredentials{
 				URL:          "http://test.password.session",
 				Username:     "myusername",
 				Password:     "12345",
@@ -69,7 +69,7 @@ func Test_passwordProvider_Retrieve(t *testing.T) {
 
 func Test_passwordProvider_URL(t *testing.T) {
 	type fields struct {
-		creds PasswordCredentails
+		creds PasswordCredentials
 	}
 	tests := []struct {
 		name   string
@@ -79,7 +79,7 @@ func Test_passwordProvider_URL(t *testing.T) {
 		{
 			name: "Password URL",
 			fields: fields{
-				creds: PasswordCredentails{
+				creds: PasswordCredentials{
 					URL:          "http://test.password.session",
 					Username:     "myusername",
 					Password:     "12345",
