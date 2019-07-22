@@ -10,7 +10,7 @@ Currently, this package supports `grant type` of password OAuth flow.  The packa
 The following are some example(s) of creating credentials to be used when opening a session.
 ### Password
 ```go
-creds := credentials.PasswordCredentails{
+creds := credentials.PasswordCredentials{
 	URL:          "https://login.salesforce.com",
 	Username:     "my.user@name.com",
 	Password:     "greatpassword",

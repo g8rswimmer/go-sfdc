@@ -17,12 +17,12 @@ func TestPasswordSessionRequest(t *testing.T) {
 
 	scenarios := []struct {
 		desc  string
-		creds credentials.PasswordCredentails
+		creds credentials.PasswordCredentials
 		err   error
 	}{
 		{
 			desc: "Passing HTTP request",
-			creds: credentials.PasswordCredentails{
+			creds: credentials.PasswordCredentials{
 				URL:          "http://test.password.session",
 				Username:     "myusername",
 				Password:     "12345",
@@ -33,7 +33,7 @@ func TestPasswordSessionRequest(t *testing.T) {
 		},
 		{
 			desc: "Bad URL",
-			creds: credentials.PasswordCredentails{
+			creds: credentials.PasswordCredentials{
 				URL:          "123://something.com",
 				Username:     "myusername",
 				Password:     "12345",
@@ -220,7 +220,7 @@ func TestPasswordSessionResponse(t *testing.T) {
 	}
 }
 
-func testNewPasswordCredentials(cred credentials.PasswordCredentails) *credentials.Credentials {
+func testNewPasswordCredentials(cred credentials.PasswordCredentials) *credentials.Credentials {
 	creds, err := credentials.NewPasswordCredentials(cred)
 	if err != nil {
 		return nil
@@ -237,7 +237,7 @@ func TestNewPasswordSession(t *testing.T) {
 		{
 			desc: "Passing",
 			config: sfdc.Configuration{
-				Credentials: testNewPasswordCredentials(credentials.PasswordCredentails{
+				Credentials: testNewPasswordCredentials(credentials.PasswordCredentials{
 					URL:          "http://test.password.session",
 					Username:     "myusername",
 					Password:     "12345",
@@ -279,7 +279,7 @@ func TestNewPasswordSession(t *testing.T) {
 		{
 			desc: "Error Request",
 			config: sfdc.Configuration{
-				Credentials: testNewPasswordCredentials(credentials.PasswordCredentails{
+				Credentials: testNewPasswordCredentials(credentials.PasswordCredentials{
 					URL:          "123://test.password.session",
 					Username:     "myusername",
 					Password:     "12345",
@@ -300,7 +300,7 @@ func TestNewPasswordSession(t *testing.T) {
 		{
 			desc: "Error Response",
 			config: sfdc.Configuration{
-				Credentials: testNewPasswordCredentials(credentials.PasswordCredentails{
+				Credentials: testNewPasswordCredentials(credentials.PasswordCredentials{
 					URL:          "http://test.password.session",
 					Username:     "myusername",
 					Password:     "12345",
