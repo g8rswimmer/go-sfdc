@@ -17,9 +17,22 @@ type Refresher struct {
 	stop        chan struct{}
 }
 
+// DefaultRefreshPeriod is the default refresh periods for the session.
+// One hour for normal refresh, if and error every 5 seonds.
+var DefaultRefreshPeriod = RefreshPeriod{
+	Normal: 3600,
+	Error:  5,
+}
+
+// RefreshPeriod is the time delays before requesting a new session.
+type RefreshPeriod struct {
+	Normal int
+	Error  int
+}
+
 // OpenRefresh will open the first session and set up a re-occuring refresh of the session token.
-func OpenRefresh(config sfdc.Configuration, refershTime int) (*Refresher, error) {
-	if refershTime <= 0 {
+func OpenRefresh(config sfdc.Configuration, period RefreshPeriod) (*Refresher, error) {
+	if period.Normal <= 0 || period.Error <= 0 {
 		return nil, errors.New("session refresh: refresh time can not be less than or equal to zero")
 	}
 	session, err := Open(config)
@@ -32,7 +45,7 @@ func OpenRefresh(config sfdc.Configuration, refershTime int) (*Refresher, error)
 	}
 
 	go func() {
-		sleep := time.Duration(refershTime) * time.Second
+		sleep := time.Duration(period.Normal) * time.Second
 		for {
 			select {
 			case <-refresher.stop:
@@ -42,10 +55,10 @@ func OpenRefresh(config sfdc.Configuration, refershTime int) (*Refresher, error)
 			time.Sleep(sleep)
 			if err := refresher.refresh(); err != nil {
 				refresher.err = err
-				sleep = 5 * time.Second
+				sleep = time.Duration(period.Error) * time.Second
 			} else {
 				refresher.err = nil
-				sleep = time.Duration(refershTime) * time.Second
+				sleep = time.Duration(period.Normal) * time.Second
 			}
 		}
 	}()
