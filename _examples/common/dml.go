@@ -88,7 +88,7 @@ func (i *Insert) Run(sobject *sobject.Resources) {
 	value, err := sobject.Insert(i)
 	Error(err)
 
-	Info("%s Insert", i.SObject)
+	Info("%s Insert", i.SObj)
 	Info("------------------------")
 	Info("%+v", value)
 	Info("------------------------")
@@ -115,7 +115,7 @@ func (u *Update) Run(sobject *sobject.Resources) {
 	err := sobject.Update(u)
 	Error(err)
 
-	Info("%s %s Updated", u.SObject, u.SObjID)
+	Info("%s %s Updated", u.SObj, u.SObjID)
 	Info("------------------------")
 }
 
@@ -144,7 +144,7 @@ func (u *Upsert) Run(sobject *sobject.Resources) {
 	value, err := sobject.Upsert(u)
 	Error(err)
 
-	Info("%s Upsert", u.SObject)
+	Info("%s Upsert", u.SObj)
 	Info("------------------------")
 	Info("%+v", value)
 	Info("------------------------")
@@ -167,6 +167,6 @@ func (d *Delete) Run(sobject *sobject.Resources) {
 	err := sobject.Delete(d)
 	Error(err)
 
-	Info("%s %s Deleted", d.SObject, d.SObjID)
+	Info("%s %s Deleted", d.SObj, d.SObjID)
 	Info("------------------------")
 }
