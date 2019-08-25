@@ -18,11 +18,11 @@ import (
 //
 // ClientSecret is the client secret from the connected application.
 type PasswordCredentials struct {
-	URL          string
-	Username     string
-	Password     string
-	ClientID     string
-	ClientSecret string
+	URL          string `json:"url"`
+	Username     string `json:"username"`
+	Password     string `json:"password"`
+	ClientID     string `json:"client_id"`
+	ClientSecret string `json:"client_secret"`
 }
 
 // Credentials is the structure that contains all of the
