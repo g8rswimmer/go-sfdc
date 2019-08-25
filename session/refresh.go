@@ -20,7 +20,7 @@ type Refresher struct {
 // OpenRefresh will open the first session and set up a re-occuring refresh of the session token.
 func OpenRefresh(config sfdc.Configuration, refershTime int) (*Refresher, error) {
 	if refershTime <= 0 {
-		return nil, errors.New("session refresh: refresh time can not be less than zero")
+		return nil, errors.New("session refresh: refresh time can not be less than or equal to zero")
 	}
 	session, err := Open(config)
 	if err != nil {
@@ -54,27 +54,27 @@ func OpenRefresh(config sfdc.Configuration, refershTime int) (*Refresher, error)
 }
 
 // Session will return the current session
-func (s *Refresher) Session() *Session {
-	s.sessionLock.RLock()
-	defer s.sessionLock.RUnlock()
-	return s.session
+func (r *Refresher) Session() *Session {
+	r.sessionLock.RLock()
+	defer r.sessionLock.RUnlock()
+	return r.session
 }
 
-func (s *Refresher) Error() error {
-	return s.err
+func (r *Refresher) Error() error {
+	return r.err
 }
 
 // Shutdown will close the refreshing of the seesion token.
-func (s *Refresher) Shutdown() {
-	close(s.stop)
+func (r *Refresher) Shutdown() {
+	close(r.stop)
 }
-func (s *Refresher) refresh() error {
-	session, err := Open(s.session.config)
+func (r *Refresher) refresh() error {
+	session, err := Open(r.session.config)
 	if err != nil {
 		return err
 	}
-	s.sessionLock.Lock()
-	defer s.sessionLock.Unlock()
-	s.session = session
+	r.sessionLock.Lock()
+	defer r.sessionLock.Unlock()
+	r.session = session
 	return nil
 }
