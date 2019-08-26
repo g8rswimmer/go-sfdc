@@ -9,12 +9,14 @@ import (
 	"github.com/g8rswimmer/go-sfdc/credentials"
 )
 
+// Payload is the structure used in the examples
 type Payload struct {
 	Credentials credentials.PasswordCredentials `json:"credentials"`
 	Version     int                             `json:"version"`
 	DML         *DML                            `json:"dml,omitempty"`
 }
 
+// RetrievePayload will return the payload if passed by file or object.
 func RetrievePayload() Payload {
 	filePtr := flag.String("file", "", "json payload file")
 	objPtr := flag.String("object", "", "json payload object")
