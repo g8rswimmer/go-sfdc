@@ -47,6 +47,45 @@ func Test_newQueryRecord(t *testing.T) {
 			wantErr: false,
 		},
 		{
+			name: "Record with Nested Object",
+			args: args{
+				jsonMap: map[string]interface{}{
+					"attributes": map[string]interface{}{
+						"type": "Contact",
+						"url":  "/services/data/v46.0/sobjects/Contact/003D000000IRFmaIAH",
+					},
+					"Id":        "003D000000IRFmaIAH",
+					"AccountId": "0012F00000Vmuz8QAB",
+					"Account": map[string]interface{}{
+						"attributes": map[string]interface{}{
+							"type": "Account",
+							"url":  "/services/data/v46.0/sobjects/Account/001D000000IRFmaIAH",
+						},
+						"Name": "Test Account",
+					},
+				},
+			},
+			want: &QueryRecord{
+				record: testQueryRecord(map[string]interface{}{
+					"attributes": map[string]interface{}{
+						"type": "Contact",
+						"url":  "/services/data/v46.0/sobjects/Contact/003D000000IRFmaIAH",
+					},
+					"Id":        "003D000000IRFmaIAH",
+					"AccountId": "0012F00000Vmuz8QAB",
+					"Account": map[string]interface{}{
+						"attributes": map[string]interface{}{
+							"type": "Account",
+							"url":  "/services/data/v46.0/sobjects/Account/001D000000IRFmaIAH",
+						},
+						"Name": "Test Account",
+					},
+				}),
+				subresults: make(map[string]*QueryResult),
+			},
+			wantErr: false,
+		},
+		{
 			name: "Sub results",
 			args: args{
 				jsonMap: map[string]interface{}{
@@ -177,6 +216,42 @@ func TestQueryRecord_Record(t *testing.T) {
 					"url":  "/services/data/v20.0/sobjects/Account/001D000000IRFmaIAH",
 				},
 				"Name": "Test 1",
+			}),
+		},
+		{
+			name: "Get Record With Nested",
+			fields: fields{
+				record: testQueryRecord(map[string]interface{}{
+					"attributes": map[string]interface{}{
+						"type": "Contact",
+						"url":  "/services/data/v46.0/sobjects/Contact/003D000000IRFmaIAH",
+					},
+					"Id":        "003D000000IRFmaIAH",
+					"AccountId": "0012F00000Vmuz8QAB",
+					"Account": map[string]interface{}{
+						"attributes": map[string]interface{}{
+							"type": "Account",
+							"url":  "/services/data/v46.0/sobjects/Account/001D000000IRFmaIAH",
+						},
+						"Name": "Test Account",
+					},
+				}),
+				subresults: make(map[string]*QueryResult),
+			},
+			want: testQueryRecord(map[string]interface{}{
+				"attributes": map[string]interface{}{
+					"type": "Contact",
+					"url":  "/services/data/v46.0/sobjects/Contact/003D000000IRFmaIAH",
+				},
+				"Id":        "003D000000IRFmaIAH",
+				"AccountId": "0012F00000Vmuz8QAB",
+				"Account": map[string]interface{}{
+					"attributes": map[string]interface{}{
+						"type": "Account",
+						"url":  "/services/data/v46.0/sobjects/Account/001D000000IRFmaIAH",
+					},
+					"Name": "Test Account",
+				},
 			}),
 		},
 	}

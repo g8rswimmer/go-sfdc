@@ -21,7 +21,7 @@ func newQueryRecord(jsonMap map[string]interface{}, resource *Resource) (*QueryR
 			if k != sfdc.RecordAttributes {
 				resp, err := newQueryResponseJSON(sub)
 				if err != nil {
-					return nil, err
+					continue
 				}
 				result, err := newQueryResult(resp, resource)
 				if err != nil {
