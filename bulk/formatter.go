@@ -39,7 +39,6 @@ func NewFormatter(job *Job, fields []string) (*Formatter, error) {
 	}
 	if _, err := f.sb.WriteString(job.newline()); err != nil {
 		return nil, err
-
 	}
 
 	return f, nil
@@ -52,22 +51,7 @@ func (f *Formatter) Add(records ...Record) error {
 	}
 
 	for _, record := range records {
-		recFields := record.Fields()
-		values := make([]string, len(f.fields))
-		insertNull := record.InsertNull()
-		for idx, field := range f.fields {
-			if insertNull {
-				values[idx] = "#N/A"
-			} else {
-				values[idx] = ""
-			}
-			if value, ok := recFields[field]; ok {
-				if value != nil {
-					values[idx] = fmt.Sprintf("%v", value)
-				}
-			}
-		}
-		_, err := f.sb.WriteString(strings.Join(values, f.job.delimiter()))
+		_, err := f.sb.WriteString(f.buildRecordString(record))
 		if err != nil {
 			return err
 		}
@@ -79,6 +63,25 @@ func (f *Formatter) Add(records ...Record) error {
 	}
 
 	return nil
+}
+
+func (f *Formatter) buildRecordString(record Record) string {
+	recFields := record.Fields()
+	values := make([]string, len(f.fields))
+	insertNull := record.InsertNull()
+	for idx, field := range f.fields {
+		if insertNull {
+			values[idx] = "#N/A"
+		} else {
+			values[idx] = ""
+		}
+		if value, ok := recFields[field]; ok {
+			if value != nil {
+				values[idx] = fmt.Sprintf("%v", value)
+			}
+		}
+	}
+	return strings.Join(values, f.job.delimiter())
 }
 
 // Reader will return a reader of the bulk uploader field record body.
