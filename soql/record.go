@@ -18,7 +18,7 @@ func newQueryRecord(jsonMap map[string]interface{}, resource *Resource) (*QueryR
 	subresults := make(map[string]*QueryResult)
 	for k, v := range jsonMap {
 		if sub, has := v.(map[string]interface{}); has {
-			if k != sfdc.RecordAttributes {
+			if isSubQuery(sub) {
 				resp, err := newQueryResponseJSON(sub)
 				if err != nil {
 					return nil, err
@@ -52,4 +52,17 @@ func (rec *QueryRecord) Subresults() map[string]*QueryResult {
 func (rec *QueryRecord) Subresult(sub string) (*QueryResult, bool) {
 	result, has := rec.subresults[sub]
 	return result, has
+}
+
+func isSubQuery(jsonMap map[string]interface{}) bool {
+	if _, has := jsonMap["totalSize"]; has == false {
+		return false
+	}
+	if _, has := jsonMap["done"]; has == false {
+		return false
+	}
+	if _, has := jsonMap["records"]; has == false {
+		return false
+	}
+	return true
 }
