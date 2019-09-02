@@ -18,6 +18,7 @@ type Record struct {
 	sobject string
 	url     string
 	fields  map[string]interface{}
+	lookUps map[string]*Record
 }
 
 // RecordFromJSONMap creates a recrod from a JSON map.
@@ -51,6 +52,7 @@ func (r *Record) UnmarshalJSON(data []byte) error {
 
 func (r *Record) fromJSONMap(jsonMap map[string]interface{}) {
 	r.fields = make(map[string]interface{})
+	r.lookUps = make(map[string]*Record)
 
 	for k, v := range jsonMap {
 		if k == RecordAttributes {
@@ -68,13 +70,43 @@ func (r *Record) fromJSONMap(jsonMap map[string]interface{}) {
 			}
 		} else {
 			if v != nil {
-				if _, is := v.(map[string]interface{}); is == false {
+				if obj, is := v.(map[string]interface{}); is == false {
 					r.fields[k] = v
-
+				} else {
+					if r.isLookUp(obj) {
+						if rec, err := RecordFromJSONMap(obj); err == nil {
+							r.lookUps[rec.sobject] = rec
+						}
+					}
 				}
 			}
 		}
 	}
+}
+
+func (r *Record) isLookUp(jsonMap map[string]interface{}) bool {
+	_, has := jsonMap[RecordAttributes]
+	return has
+}
+
+// LookUps returns all of the record's look ups
+func (r *Record) LookUps() []*Record {
+	records := make([]*Record, len(r.lookUps))
+	idx := 0
+	for _, r := range r.lookUps {
+		records[idx] = r
+		idx++
+	}
+	return records
+}
+
+// LookUp returns the look up record
+func (r *Record) LookUp(lookUp string) (*Record, bool) {
+	if len(r.lookUps) == 0 {
+		return nil, false
+	}
+	rec, has := r.lookUps[lookUp]
+	return rec, has
 }
 
 // SObject returns attribute's Salesforce object name.
