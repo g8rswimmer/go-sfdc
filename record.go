@@ -92,7 +92,7 @@ func (r *Record) isLookUp(jsonMap map[string]interface{}) bool {
 // LookUps returns all of the record's look ups
 func (r *Record) LookUps() []*Record {
 	records := make([]*Record, len(r.lookUps))
-	idx := 0
+	var idx int
 	for _, r := range r.lookUps {
 		records[idx] = r
 		idx++
