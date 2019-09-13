@@ -148,11 +148,11 @@ type FailedRecord struct {
 type Options struct {
 	ColumnDelimiter     ColumnDelimiter `json:"columnDelimiter"`
 	ContentType         ContentType     `json:"contentType"`
-	ExternalIDFieldName string          `json:"externalIdFieldName"`
+	ExternalIDFieldName string          `json:"externalIdFieldName,omitempty"`
 	LineEnding          LineEnding      `json:"lineEnding"`
-	Object              string          `json:"object"`
+	Object              string          `json:"object,omitempty"`
 	Operation           Operation       `json:"operation"`
-	Query               string          `json:"query"`
+	Query               string          `json:"query,omitempty"`
 }
 
 // Response is the response to job APIs.
