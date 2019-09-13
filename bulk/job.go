@@ -191,7 +191,7 @@ type Job struct {
 	session session.ServiceFormatter
 	options Options
 	info    Response
-	jobType    JobType
+	jobType JobType
 }
 
 func (j *Job) create(options Options) error {
@@ -260,6 +260,7 @@ func (j *Job) createCallout() (Response, error) {
 }
 
 func (j *Job) response(request *http.Request) (Response, error) {
+	fmt.Println(request.Header)
 	response, err := j.session.Client().Do(request)
 	if err != nil {
 		return Response{}, err
