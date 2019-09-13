@@ -222,9 +222,9 @@ func (j *Job) formatOptions() error {
 			return errors.New("bulk job: external id field name is required for upsert operation")
 		}
 	}
-	// if j.options.Object == "" && (j.options.Operation != "query" && j.options.Operation != "queryAll") {
-	// 	return errors.New("bulk job: object is required")
-	// }
+	if j.options.Object == "" && j.options.Operation != "query" && j.options.Operation != "queryAll" {
+		return errors.New("bulk job: object is required")
+	}
 	if j.options.LineEnding == "" {
 		j.options.LineEnding = Linefeed
 	}
