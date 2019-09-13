@@ -6,7 +6,12 @@ import (
 	"github.com/g8rswimmer/go-sfdc/session"
 )
 
-const bulk2Endpoint = "/jobs/ingest"
+func bulk2Endpoint(jobType JobType) string {
+	if jobType == "V2Query" {
+		return "/jobs/query"
+	}
+	return "/jobs/ingest"
+}
 
 // Resource is the structure that can be used to create bulk 2.0 jobs.
 type Resource struct {

@@ -25,6 +25,8 @@ const (
 	Classic JobType = "Classic"
 	// V2Ingest is the bulk job 2.0.
 	V2Ingest JobType = "V2Ingest"
+	// V2Query is the Query bulk job 2.0.
+	V2Query JobType = "V2Query"
 )
 
 // ColumnDelimiter is the column delimiter used for CSV job data.
@@ -73,6 +75,10 @@ const (
 	Update Operation = "update"
 	// Upsert is the object operation for upserting records.
 	Upsert Operation = "upsert"
+	// Query returns data that has not been deleted or archived
+	Query Operation = "query"
+	// QueryAll Rreturns records that have been deleted because of a merge or delete, and returns information about archived Task and Event records
+	QueryAll Operation = "queryAll"
 )
 
 // State is the current state of processing for the job.
@@ -83,6 +89,8 @@ const (
 	Open State = "Open"
 	// UpdateComplete all data for the job has been uploaded and the job is ready to be queued and processed.
 	UpdateComplete State = "UploadComplete"
+	// InProgress Salesforce is processing the job
+	InProgress State = "InProgress"
 	// Aborted the job has been aborted.
 	Aborted State = "Aborted"
 	// JobComplete the job was processed by Salesforce.
@@ -95,6 +103,15 @@ const (
 type UnprocessedRecord struct {
 	Fields map[string]string
 }
+
+type concurrencyMode string
+
+const (
+	// ConcurrencySerial ...
+	ConcurrencySerial concurrencyMode = "serial"
+	// ConcurrencyParallel ...
+	ConcurrencyParallel concurrencyMode = "parallel"
+)
 
 // JobRecord is the record for the job.  Includes the Salesforce ID along with the fields.
 type JobRecord struct {
@@ -135,6 +152,7 @@ type Options struct {
 	LineEnding          LineEnding      `json:"lineEnding"`
 	Object              string          `json:"object"`
 	Operation           Operation       `json:"operation"`
+	Query               string          `json:"query"`
 }
 
 // Response is the response to job APIs.
@@ -171,15 +189,23 @@ type Info struct {
 // Job is the bulk job.
 type Job struct {
 	session session.ServiceFormatter
+	options Options
 	info    Response
+	jobType    JobType
 }
 
 func (j *Job) create(options Options) error {
-	err := j.formatOptions(&options)
+	j.options = options
+	err := j.formatOptions()
 	if err != nil {
 		return err
 	}
-	j.info, err = j.createCallout(options)
+	if j.options.Operation == "query" || j.options.Operation == "queryAll" {
+		j.jobType = "V2Query"
+	} else {
+		j.jobType = "V2Ingest"
+	}
+	j.info, err = j.createCallout()
 	if err != nil {
 		return err
 	}
@@ -187,33 +213,38 @@ func (j *Job) create(options Options) error {
 	return nil
 }
 
-func (j *Job) formatOptions(options *Options) error {
-	if options.Operation == "" {
+func (j *Job) formatOptions() error {
+	if j.options.Operation == "" {
 		return errors.New("bulk job: operation is required")
 	}
-	if options.Operation == Upsert {
-		if options.ExternalIDFieldName == "" {
+	if j.options.Operation == Upsert {
+		if j.options.ExternalIDFieldName == "" {
 			return errors.New("bulk job: external id field name is required for upsert operation")
 		}
 	}
-	if options.Object == "" {
+	if j.options.Object == "" {
 		return errors.New("bulk job: object is required")
 	}
-	if options.LineEnding == "" {
-		options.LineEnding = Linefeed
+	if j.options.LineEnding == "" {
+		j.options.LineEnding = Linefeed
 	}
-	if options.ContentType == "" {
-		options.ContentType = CSV
+	if j.options.ContentType == "" {
+		j.options.ContentType = CSV
 	}
-	if options.ColumnDelimiter == "" {
-		options.ColumnDelimiter = Comma
+	if j.options.ColumnDelimiter == "" {
+		j.options.ColumnDelimiter = Comma
+	}
+	if j.options.Operation == "query" || j.options.Operation == "queryAll" {
+		if j.options.Query == "" {
+			return errors.New("bulk job: query is required for query or queryAll operations")
+		}
 	}
 	return nil
 }
 
-func (j *Job) createCallout(options Options) (Response, error) {
-	url := j.session.ServiceURL() + bulk2Endpoint
-	body, err := json.Marshal(options)
+func (j *Job) createCallout() (Response, error) {
+	url := j.session.ServiceURL() + bulk2Endpoint(j.jobType)
+	body, err := json.Marshal(j.options)
 	if err != nil {
 		return Response{}, err
 	}
@@ -262,7 +293,7 @@ func (j *Job) response(request *http.Request) (Response, error) {
 
 // Info returns the current job information.
 func (j *Job) Info() (Info, error) {
-	url := j.session.ServiceURL() + bulk2Endpoint + "/" + j.info.ID
+	url := j.session.ServiceURL() + bulk2Endpoint(j.jobType) + "/" + j.info.ID
 	request, err := http.NewRequest(http.MethodGet, url, nil)
 	if err != nil {
 		return Info{}, err
@@ -307,7 +338,7 @@ func (j *Job) infoResponse(request *http.Request) (Info, error) {
 }
 
 func (j *Job) setState(state State) (Response, error) {
-	url := j.session.ServiceURL() + bulk2Endpoint + "/" + j.info.ID
+	url := j.session.ServiceURL() + bulk2Endpoint(j.jobType) + "/" + j.info.ID
 	jobState := struct {
 		State string `json:"state"`
 	}{
@@ -340,7 +371,7 @@ func (j *Job) Abort() (Response, error) {
 
 // Delete will delete the current job.
 func (j *Job) Delete() error {
-	url := j.session.ServiceURL() + bulk2Endpoint + "/" + j.info.ID
+	url := j.session.ServiceURL() + bulk2Endpoint(j.jobType) + "/" + j.info.ID
 	request, err := http.NewRequest(http.MethodDelete, url, nil)
 	if err != nil {
 		return err
@@ -360,7 +391,7 @@ func (j *Job) Delete() error {
 
 // Upload will upload data to processing.
 func (j *Job) Upload(body io.Reader) error {
-	url := j.session.ServiceURL() + bulk2Endpoint + "/" + j.info.ID + "/batches"
+	url := j.session.ServiceURL() + bulk2Endpoint(j.jobType) + "/" + j.info.ID + "/batches"
 	request, err := http.NewRequest(http.MethodPut, url, body)
 	if err != nil {
 		return err
@@ -379,9 +410,50 @@ func (j *Job) Upload(body io.Reader) error {
 	return nil
 }
 
+// QueryResults Gets the results for a query job. The job must have the state JobComplete.
+func (j *Job) QueryResults(w io.Writer, maxRecords int, locator string) error {
+	url := j.session.ServiceURL() + bulk2Endpoint(j.jobType) + "/" + j.info.ID + "/results"
+	if locator != "" {
+		url += "?locator=" + locator
+		if maxRecords > 0 {
+			url += "&maxRecords=" + string(maxRecords)
+		}
+	} else if maxRecords > 0 {
+		url += "?maxRecords=" + string(maxRecords)
+	}
+	request, err := http.NewRequest(http.MethodGet, url, nil)
+	if err != nil {
+		return err
+	}
+	request.Header.Add("Accept", "text/csv")
+	j.session.AuthorizationHeader(request)
+
+	response, err := j.session.Client().Do(request)
+	if err != nil {
+		return err
+	}
+
+	if response.StatusCode != http.StatusOK {
+		return fmt.Errorf("%s", response.Status)
+	}
+
+	r := bufio.NewReader(response.Body)
+	defer response.Body.Close()
+
+	if _, err = r.WriteTo(w); err != nil {
+		return err
+	}
+	// response.Header.Get("Sforce-NumberOfRecords")
+	if response.Header.Get("Sforce-Locator") != "" {
+		return QueryResults(w, maxRecords, response.Header.Get("Sforce-Locator"))
+	}
+
+	return nil
+}
+
 // SuccessfulRecords returns the successful records for the job.
 func (j *Job) SuccessfulRecords() ([]SuccessfulRecord, error) {
-	url := j.session.ServiceURL() + bulk2Endpoint + "/" + j.info.ID + "/successfulResults/"
+	url := j.session.ServiceURL() + bulk2Endpoint(j.jobType) + "/" + j.info.ID + "/successfulResults/"
 	request, err := http.NewRequest(http.MethodGet, url, nil)
 	if err != nil {
 		return nil, err
@@ -447,7 +519,7 @@ func (j *Job) SuccessfulRecords() ([]SuccessfulRecord, error) {
 
 // FailedRecords returns the failed records for the job.
 func (j *Job) FailedRecords() ([]FailedRecord, error) {
-	url := j.session.ServiceURL() + bulk2Endpoint + "/" + j.info.ID + "/failedResults/"
+	url := j.session.ServiceURL() + bulk2Endpoint(j.jobType) + "/" + j.info.ID + "/failedResults/"
 	request, err := http.NewRequest(http.MethodGet, url, nil)
 	if err != nil {
 		return nil, err
@@ -508,7 +580,7 @@ func (j *Job) FailedRecords() ([]FailedRecord, error) {
 
 // UnprocessedRecords returns the unprocessed records for the job.
 func (j *Job) UnprocessedRecords() ([]UnprocessedRecord, error) {
-	url := j.session.ServiceURL() + bulk2Endpoint + "/" + j.info.ID + "/unprocessedrecords/"
+	url := j.session.ServiceURL() + bulk2Endpoint(j.jobType) + "/" + j.info.ID + "/unprocessedrecords/"
 	request, err := http.NewRequest(http.MethodGet, url, nil)
 	if err != nil {
 		return nil, err
