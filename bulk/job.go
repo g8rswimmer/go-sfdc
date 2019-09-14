@@ -260,7 +260,6 @@ func (j *Job) createCallout() (Response, error) {
 }
 
 func (j *Job) response(request *http.Request) (Response, error) {
-	fmt.Println(request.Header)
 	response, err := j.session.Client().Do(request)
 	if err != nil {
 		return Response{}, err
@@ -417,10 +416,10 @@ func (j *Job) QueryResults(w io.Writer, maxRecords int, locator string) error {
 	if locator != "" {
 		url += "?locator=" + locator
 		if maxRecords > 0 {
-			url += "&maxRecords=" + string(maxRecords)
+			url += "&maxRecords=" + strconv.Itoa(maxRecords)
 		}
 	} else if maxRecords > 0 {
-		url += "?maxRecords=" + string(maxRecords)
+		url += "?maxRecords=" + strconv.Itoa(maxRecords)
 	}
 	request, err := http.NewRequest(http.MethodGet, url, nil)
 	if err != nil {
