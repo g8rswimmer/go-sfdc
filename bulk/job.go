@@ -441,7 +441,7 @@ func (j *Job) QueryResults(w io.Writer, maxRecords int, locator string) error {
 		return err
 	}
 	q := request.URL.Query()
-	if locator != "" {
+	if locator != "" || locator != "null" {
 		q.Add("locator", locator)
 	}
 	if maxRecords > 0 {
@@ -467,7 +467,7 @@ func (j *Job) QueryResults(w io.Writer, maxRecords int, locator string) error {
 		return err
 	}
 	// response.Header.Get("Sforce-NumberOfRecords")
-	if response.Header.Get("Sforce-Locator") != "" {
+	if response.Header.Get("Sforce-Locator") != "null" {
 		return j.QueryResults(w, maxRecords, response.Header.Get("Sforce-Locator"))
 	}
 
