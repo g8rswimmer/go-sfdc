@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	//"strconv"
+	"strconv"
 
 	sfdc "github.com/g8rswimmer/go-sfdc"
 	"github.com/g8rswimmer/go-sfdc/session"
@@ -37,7 +37,7 @@ func jobsInfo(session session.ServiceFormatter, parameters Parameters) ([]Respon
 		return nil, err
 	}
 	q := request.URL.Query()
-	//q.Add("isPkChunkingEnabled", strconv.FormatBool(parameters.IsPkChunkingEnabled))
+	q.Add("isPkChunkingEnabled", strconv.FormatBool(parameters.IsPkChunkingEnabled))
 	//q.Add("jobType", string(parameters.JobType))
 	request.URL.RawQuery = q.Encode()
 
