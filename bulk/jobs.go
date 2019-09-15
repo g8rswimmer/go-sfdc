@@ -23,12 +23,12 @@ type Parameters struct {
 
 type jobsResponse struct {
 	Done           bool       `json:"done"`
-	Records        []Response `json:"records"`
+	Records        []*Response `json:"records"`
 	NextRecordsURL string     `json:"nextRecordsUrl"`
 }
 
-func jobsInfo(session session.ServiceFormatter, parameters Parameters) ([]Response, error) {
-	var responses []Response
+func jobsInfo(session session.ServiceFormatter, parameters Parameters) ([]*Response, error) {
+	var responses []*Response
 	url := session.ServiceURL() + bulk2Endpoint(parameters.JobType)
 	request, err := jobsRequest(session, url)
 	if err != nil {
@@ -69,10 +69,10 @@ func jobsRequest(session session.ServiceFormatter, url string) (*http.Request, e
 	return request, nil
 }
 
-func jobsDo(session session.ServiceFormatter, request *http.Request) (jobsResponse, error) {
+func jobsDo(session session.ServiceFormatter, request *http.Request) (*jobsResponse, error) {
 	response, err := session.Client().Do(request)
 	if err != nil {
-		return jobsResponse{}, err
+		return &jobsResponse{}, err
 	}
 
 	decoder := json.NewDecoder(response.Body)
@@ -90,13 +90,13 @@ func jobsDo(session session.ServiceFormatter, request *http.Request) (jobsRespon
 			errMsg = fmt.Errorf("insert response err: %d %s", response.StatusCode, response.Status)
 		}
 
-		return jobsResponse{}, errMsg
+		return &jobsResponse{}, errMsg
 	}
 
 	var value jobsResponse
 	err = decoder.Decode(&value)
 	if err != nil {
-		return jobsResponse{}, err
+		return &jobsResponse{}, err
 	}
-	return value, nil
+	return &value, nil
 }
