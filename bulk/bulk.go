@@ -50,3 +50,24 @@ func (r *Resource) AllJobs(parameters Parameters) (*Jobs, error) {
 	}
 	return jobs, nil
 }
+
+// WaitJobs - Wait jobs
+func (r *Resource) WaitJobs(parameters Parameters) error {
+	return return wait.ExponentialBackoff(wait.Backoff{
+		Duration: 100 * time.Millisecond,
+		Jitter:   0.5,
+		Factor:   1.5,
+		Cap:    60*time.Second,
+		Steps: 10,
+	}, func() (bool, error) {
+		jobs, err := AllJobs(parameters)
+		if err != nil {
+			return false, err
+		}
+		jobs.Response
+		if State(I.Response.State) == JobComplete {
+			return true, nil
+		}
+		return false, nil
+	})
+}
