@@ -37,8 +37,8 @@ func jobsInfo(session session.ServiceFormatter, parameters Parameters) ([]Respon
 		return nil, err
 	}
 	q := request.URL.Query()
-	q.Add("isPkChunkingEnabled", strconv.FormatBool(parameters.IsPkChunkingEnabled))
-	q.Add("jobType", string(parameters.JobType))
+	//q.Add("isPkChunkingEnabled", strconv.FormatBool(parameters.IsPkChunkingEnabled))
+	//q.Add("jobType", string(parameters.JobType))
 	request.URL.RawQuery = q.Encode()
 
 	jobResp, err := jobsDo(session, request)
