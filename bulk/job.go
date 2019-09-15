@@ -441,7 +441,7 @@ func (j *Job) QueryResults(w io.Writer, maxRecords int, locator string) error {
 		return err
 	}
 	q := request.URL.Query()
-	if locator != "" || locator != "null" {
+	if locator != "" {
 		q.Add("locator", locator)
 	}
 	if maxRecords > 0 {
