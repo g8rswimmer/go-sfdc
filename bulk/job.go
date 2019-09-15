@@ -420,7 +420,7 @@ func (j *Job) Wait() error {
 		Jitter:   0.5,
 		Factor:   1.5,
 		Cap:    60*time.Second,
-		Step: 10,
+		Steps: 10,
 	}, func() (bool, error) {
 		I, err := j.Info()
 		if err != nil {
