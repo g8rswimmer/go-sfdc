@@ -43,8 +43,8 @@ func (r *Resource) CreateJob(options Options) (*Job, error) {
 }
 
 // AllJobs will retrieve all of the bulk 2.0 jobs.
-func (r *Resource) AllJobs(parameters Parameters) (*Jobs, error) {
-	jobs, err := newJobs(r.session, parameters)
+func (r *Resource) AllJobs(parameters Parameters) ([]*Response, error) {
+	jobs, err := jobsInfo(r.session, parameters)
 	if err != nil {
 		return nil, err
 	}
@@ -52,22 +52,22 @@ func (r *Resource) AllJobs(parameters Parameters) (*Jobs, error) {
 }
 
 // WaitJobs - Wait jobs
-func (r *Resource) WaitJobs(parameters Parameters) error {
-	return return wait.ExponentialBackoff(wait.Backoff{
-		Duration: 100 * time.Millisecond,
-		Jitter:   0.5,
-		Factor:   1.5,
-		Cap:    60*time.Second,
-		Steps: 10,
-	}, func() (bool, error) {
-		jobs, err := AllJobs(parameters)
-		if err != nil {
-			return false, err
-		}
-		jobs.Response
-		if State(I.Response.State) == JobComplete {
-			return true, nil
-		}
-		return false, nil
-	})
-}
+// func (r *Resource) WaitJobs(parameters Parameters) error {
+// 	return  wait.ExponentialBackoff(wait.Backoff{
+// 		Duration: 100 * time.Millisecond,
+// 		Jitter:   0.5,
+// 		Factor:   1.5,
+// 		Cap:    60*time.Second,
+// 		Steps: 10,
+// 	}, func() (bool, error) {
+// 		jobs, err := AllJobs(parameters)
+// 		if err != nil {
+// 			return false, err
+// 		}
+// 		jobs.Response
+// 		if State(I.Response.State) == JobComplete {
+// 			return true, nil
+// 		}
+// 		return false, nil
+// 	})
+// }

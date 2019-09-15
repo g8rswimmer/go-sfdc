@@ -2,7 +2,6 @@ package bulk
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
 	"net/http"
 	"strconv"
@@ -42,11 +41,11 @@ func jobsInfo(session session.ServiceFormatter, parameters Parameters) ([]*Respo
 	q.Add("jobType", string(parameters.JobType))
 	request.URL.RawQuery = q.Encode()
 
-	jobResp, err := jobsDo(request)
+	jobResp, err := jobsDo(session, request)
 	if err != nil {
 		return nil, err
 	}
-	responses = append(responses, jobResp.Records)
+	responses = append(responses, jobResp.Records...)
 	for jobResp.Done != true {
 		var err error
 		request, err = jobsRequest(session, jobResp.NextRecordsURL)
@@ -57,7 +56,7 @@ func jobsInfo(session session.ServiceFormatter, parameters Parameters) ([]*Respo
 		if err != nil {
 			return responses, err
 		}
-		responses = append(responses, jobResp.Records)
+		responses = append(responses, jobResp.Records...)
 	}
 	return responses, nil
 }
