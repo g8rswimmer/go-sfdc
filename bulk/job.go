@@ -10,6 +10,9 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
+	"time"
+
+	"k8s.io/apimachinery/pkg/util/wait"
 
 	sfdc "github.com/g8rswimmer/go-sfdc"
 	"github.com/g8rswimmer/go-sfdc/session"
@@ -410,21 +413,40 @@ func (j *Job) Upload(body io.Reader) error {
 	return nil
 }
 
+// Wait - wait for job complete
+func (j *Job) Wait() error {
+	return wait.ExponentialBackoff(wait.Backoff{
+		Duration: 100 * time.Millisecond,
+		Jitter:   0.5,
+		Factor:   1.5,
+		Cap:    60*time.Second,
+	}, func() (bool, error) {
+		I, err := j.Info()
+		if err != nil {
+			return false, err
+		}
+		if State(I.Response.State) == JobComplete {
+			return true, nil
+		}
+		return false, nil
+	})
+}
+
 // QueryResults Gets the results for a query job. The job must have the state JobComplete.
 func (j *Job) QueryResults(w io.Writer, maxRecords int, locator string) error {
 	url := j.session.ServiceURL() + bulk2Endpoint(j.jobType) + "/" + j.info.ID + "/results"
-	if locator != "" {
-		url += "?locator=" + locator
-		if maxRecords > 0 {
-			url += "&maxRecords=" + strconv.Itoa(maxRecords)
-		}
-	} else if maxRecords > 0 {
-		url += "?maxRecords=" + strconv.Itoa(maxRecords)
-	}
 	request, err := http.NewRequest(http.MethodGet, url, nil)
 	if err != nil {
 		return err
 	}
+	q := request.URL.Query()
+	if locator != "" {
+		q.Add("locator", locator)
+	}
+	if maxRecords > 0 {
+		q.Add("maxRecords", strconv.Itoa(maxRecords))
+	}
+	request.URL.RawQuery = q.Encode()
 	request.Header.Add("Accept", "text/csv")
 	j.session.AuthorizationHeader(request)
 
