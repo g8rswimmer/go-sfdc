@@ -23,12 +23,12 @@ type Parameters struct {
 
 type jobsResponse struct {
 	Done           bool       `json:"done"`
-	Records        []*Response `json:"records"`
+	Records        []Response `json:"records"`
 	NextRecordsURL string     `json:"nextRecordsUrl"`
 }
 
-func jobsInfo(session session.ServiceFormatter, parameters Parameters) ([]*Response, error) {
-	var responses []*Response
+func jobsInfo(session session.ServiceFormatter, parameters Parameters) ([]Response, error) {
+	var responses []Response
 	url := session.ServiceURL() + bulk2Endpoint(parameters.JobType)
 	request, err := jobsRequest(session, url)
 	if err != nil {
