@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"strconv"
 
 	sfdc "github.com/g8rswimmer/go-sfdc"
 	"github.com/g8rswimmer/go-sfdc/session"
@@ -16,10 +15,10 @@ import (
 //
 // JobType will filter jobs based on job type.
 type Parameters struct {
-	IsPkChunkingEnabled bool
-	JobType             JobType
-	ConcurrencyMode     concurrencyMode
-	QueryLocator        string
+	//IsPkChunkingEnabled bool
+	JobType JobType
+	//ConcurrencyMode     concurrencyMode
+	//QueryLocator        string
 }
 
 type jobsResponse struct {
@@ -27,7 +26,6 @@ type jobsResponse struct {
 	Records        []Response `json:"records"`
 	NextRecordsURL string     `json:"nextRecordsUrl"`
 }
-
 
 func jobsInfo(session session.ServiceFormatter, parameters Parameters) ([]Response, error) {
 	var responses []Response
@@ -37,8 +35,8 @@ func jobsInfo(session session.ServiceFormatter, parameters Parameters) ([]Respon
 		return nil, err
 	}
 	q := request.URL.Query()
-	q.Add("isPkChunkingEnabled", strconv.FormatBool(parameters.IsPkChunkingEnabled))
-	//q.Add("jobType", string(parameters.JobType))
+	//q.Add("isPkChunkingEnabled", strconv.FormatBool(parameters.IsPkChunkingEnabled))
+	q.Add("jobType", string(parameters.JobType))
 	request.URL.RawQuery = q.Encode()
 
 	jobResp, err := jobsDo(session, request)
@@ -61,7 +59,6 @@ func jobsInfo(session session.ServiceFormatter, parameters Parameters) ([]Respon
 	return responses, nil
 }
 
-
 func jobsRequest(session session.ServiceFormatter, url string) (*http.Request, error) {
 	request, err := http.NewRequest(http.MethodGet, url, nil)
 	if err != nil {
@@ -71,7 +68,6 @@ func jobsRequest(session session.ServiceFormatter, url string) (*http.Request, e
 	session.AuthorizationHeader(request)
 	return request, nil
 }
-
 
 func jobsDo(session session.ServiceFormatter, request *http.Request) (jobsResponse, error) {
 	response, err := session.Client().Do(request)
