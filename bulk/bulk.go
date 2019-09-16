@@ -1,10 +1,21 @@
 package bulk
 
 import (
-	"errors"
+	"fmt"
+	"io"
+	"time"
+
+	"k8s.io/apimachinery/pkg/util/wait"
 
 	"github.com/g8rswimmer/go-sfdc/session"
 )
+
+func min(a, b int) int {
+	if a < b {
+		return a
+	}
+	return b
+}
 
 func bulk2Endpoint(jobType JobType) string {
 	if jobType == "V2Query" {
@@ -22,7 +33,7 @@ type Resource struct {
 // an error will be returned.
 func NewResource(session session.ServiceFormatter) (*Resource, error) {
 	if session == nil {
-		return nil, errors.New("bulk: session can not be nil")
+		return nil, fmt.Errorf("bulk: session can not be nil")
 	}
 	return &Resource{
 		session: session,
@@ -49,6 +60,46 @@ func (r *Resource) JobsInfo(parameters Parameters) ([]Response, error) {
 		return nil, err
 	}
 	return jobs, nil
+}
+
+// QueryJobsResults ...
+func (r *Resource) QueryJobsResults(jobs []*Job, writers []io.Writer, parameters Parameters, waitMaxDuration time.Duration, maxRecords int) (map[string]error, error) {
+
+	if len(jobs) != len(writers) {
+		return map[string]error{}, fmt.Errorf("len(jobs) %d != len(writes) %d", len(jobs), len(writers))
+	}
+
+	errsMap := make(map[string]error)
+	jobsMap := make(map[string]*Job)
+	writersMap := make(map[string]io.Writer)
+	for i, j := range jobs {
+		jobsMap[j.info.ID] = jobs[i]
+		writersMap[j.info.ID] = writers[i]
+		errsMap[j.info.ID] = nil
+	}
+
+	return errsMap, wait.ExponentialBackoff(wait.Backoff{
+		Duration: 100 * time.Millisecond,
+		Jitter:   0.5,
+		Factor:   1.5,
+		Cap:      30 * time.Second,
+		Steps:    min(1, int(waitMaxDuration.Seconds()/30.0)),
+	}, func() (bool, error) {
+		jobsResp, err := r.JobsInfo(parameters)
+		if err != nil {
+			return false, err
+		}
+		for _, res := range jobsResp {
+			if jobsMap[res.ID] != nil && State(res.State) == JobComplete {
+				errsMap[res.ID] = jobsMap[res.ID].QueryResults(writersMap[res.ID], maxRecords, "")
+				delete(jobsMap, res.ID)
+			}
+		}
+		if len(jobsMap) == 0 {
+			return true, nil
+		}
+		return false, nil
+	})
 }
 
 // WaitJobs - Wait jobs

@@ -414,13 +414,13 @@ func (j *Job) Upload(body io.Reader) error {
 }
 
 // Wait - wait for job complete
-func (j *Job) Wait() error {
+func (j *Job) Wait(maxDuration time.Duration) error {
 	return wait.ExponentialBackoff(wait.Backoff{
 		Duration: 100 * time.Millisecond,
 		Jitter:   0.5,
 		Factor:   1.5,
-		Cap:    60*time.Second,
-		Steps: 10,
+		Cap:    30*time.Second,
+		Steps: min(1,int(maxDuration.Seconds()/30.0)),
 	}, func() (bool, error) {
 		I, err := j.Info()
 		if err != nil {
