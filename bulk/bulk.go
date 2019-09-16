@@ -75,7 +75,6 @@ func (r *Resource) QueryJobsResults(jobs []*Job, writers []io.Writer, parameters
 	for i, j := range jobs {
 		jobsMap[j.info.ID] = jobs[i]
 		writersMap[j.info.ID] = writers[i]
-		errsMap[j.info.ID] = nil
 	}
 
 	return errsMap, wait.ExponentialBackoff(wait.Backoff{
@@ -91,8 +90,12 @@ func (r *Resource) QueryJobsResults(jobs []*Job, writers []io.Writer, parameters
 		}
 		for _, res := range jobsResp {
 			if jobsMap[res.ID] != nil && State(res.State) == JobComplete {
-				errsMap[res.ID] = jobsMap[res.ID].QueryResults(writersMap[res.ID], maxRecords, "")
+				err := jobsMap[res.ID].QueryResults(writersMap[res.ID], maxRecords, "")
+				if err != nil {
+					errsMap[res.ID] = err
+				}
 				delete(jobsMap, res.ID)
+				//delete(writersMap, res.ID)
 			}
 		}
 		if len(jobsMap) == 0 {

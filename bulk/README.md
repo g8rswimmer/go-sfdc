@@ -183,4 +183,83 @@ The following are examples to access the `APIs`.  It is assumed that a `sfdc` [s
 		fmt.Printf("%+v\n\n", unprocessedRecord)
 	}
 ```
+### Creating a Query Job
+```go
+	resource, err := bulk.NewResource(session)
+	if err != nil {
+		fmt.Printf("Bulk Resource Error %s\n", err.Error())
+		return
+	}
 
+	query := "SELECT Id, Name, BillingCity FROM Account"
+
+	jobOpts := bulk.Options{
+		ColumnDelimiter: bulk.Pipe,
+		Operation:       bulk.Query,
+		Query:          query,
+	}
+	job, err := resource.CreateJob(jobOpts)
+	if err != nil {
+		fmt.Printf("Job Create Error %s\n", err.Error())
+		return
+	}
+```
+
+### Get Results from a Query Job
+```go
+	info, err = job.Info()
+	if err != nil {
+		fmt.Printf("Job Info Error %s\n", err.Error())
+		return
+	}
+
+	if info.State == bulk.JobComplete {
+		f, err := os.Create("data/data.csv")
+		defer f.Close()
+		if err != nil {
+			fmt.Printf("File Create Error %s\n", err.Error())
+			return
+		}
+		if err := job.QueryResults(f, -1, ""); err != nil {
+			fmt.Printf("QueryResults Error %s\n", err.Error())
+			return
+		}
+	}
+```
+
+### Get Results from a Query Job using Wait
+```go
+	if err := job.Wait(5 * time.Minute); err != nil {
+		fmt.Printf("[Wait]: %s\n", err.Error())
+		return
+	}
+
+	f, err := os.Create("data/data.csv")
+	if err != nil {
+		fmt.Printf("[File Create]: %s\n", err.Error())
+		return
+	}
+
+	if err := job.QueryResults(f, -1, ""); err != nil {
+		fmt.Printf("[QueryResults]: %s\n", err.Error())
+		return
+	}
+```
+
+### Info from many Jobs
+```go
+	jobsInfo, err := resource.JobsInfo(bulk.Parameters{JobType: bulk.V2Query})
+	if err != nil {
+		fmt.Printf("[JobsInfo]: %s\n", err.Error())
+		return
+	}
+```
+
+### QueryJobResults from many Query Jobs
+```go
+	jobsInfo, err := resource.QueryJobsResults(bulk.Parameters{JobType: bulk.V2Query})
+	if err != nil {
+		fmt.Printf("[JobsInfo]: %s\n", err.Error())
+		return
+	}
+```
