@@ -434,7 +434,7 @@ func (j *Job) Wait(maxDuration time.Duration) error {
 }
 
 // QueryResults Gets the results for a query job. The job must have the state JobComplete.
-func (j *Job) QueryResults(w io.Writer, maxRecords int, locator string) error {
+func (j *Job) QueryResults(w *io.Writer, maxRecords int, locator string) error {
 	url := j.session.ServiceURL() + bulk2Endpoint(j.jobType) + "/" + j.info.ID + "/results"
 	request, err := http.NewRequest(http.MethodGet, url, nil)
 	if err != nil {
@@ -463,7 +463,7 @@ func (j *Job) QueryResults(w io.Writer, maxRecords int, locator string) error {
 	r := bufio.NewReader(response.Body)
 	defer response.Body.Close()
 
-	if _, err = r.WriteTo(w); err != nil {
+	if _, err = r.WriteTo(*w); err != nil {
 		return err
 	}
 	// response.Header.Get("Sforce-NumberOfRecords")
