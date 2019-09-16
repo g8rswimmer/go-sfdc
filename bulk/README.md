@@ -257,9 +257,17 @@ The following are examples to access the `APIs`.  It is assumed that a `sfdc` [s
 
 ### QueryJobResults from many Query Jobs
 ```go
-	jobsInfo, err := resource.QueryJobsResults(bulk.Parameters{JobType: bulk.V2Query})
+	mapErrs, err := resource.QueryJobsResults([]*Jobs{job1, job2}, []io.Write{f1, f2}, bulk.Parameters{JobType: bulk.V2Query}, 5*time.Minute, -1)
 	if err != nil {
-		fmt.Printf("[JobsInfo]: %s\n", err.Error())
+		fmt.Printf("[QueryJobsResults]: %s\n", err.Error())
+		return
+	}
+	if len(mapErrs) > 0 {
+		for k, e := range mapErrs {
+			if e != nil {
+				fmt.Printf("[QueryJobsResults]: JobID %s - %s\n", k, err.Error())
+			}
+		}
 		return
 	}
 ```
