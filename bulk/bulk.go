@@ -63,7 +63,7 @@ func (r *Resource) JobsInfo(parameters Parameters) ([]Response, error) {
 }
 
 // QueryJobsResults ...
-func (r *Resource) QueryJobsResults(jobs []*Job, writers []*io.Writer, parameters Parameters, waitMaxDuration time.Duration, maxRecords int) (map[string]error, error) {
+func (r *Resource) QueryJobsResults(jobs []*Job, writers []io.Writer, parameters Parameters, waitMaxDuration time.Duration, maxRecords int) (map[string]error, error) {
 
 	if len(jobs) != len(writers) {
 		return map[string]error{}, fmt.Errorf("len(jobs) %d != len(writes) %d", len(jobs), len(writers))
@@ -71,7 +71,7 @@ func (r *Resource) QueryJobsResults(jobs []*Job, writers []*io.Writer, parameter
 
 	errsMap := make(map[string]error)
 	jobsMap := make(map[string]*Job)
-	writersMap := make(map[string]*io.Writer)
+	writersMap := make(map[string]io.Writer)
 	for i, j := range jobs {
 		jobsMap[j.info.ID] = jobs[i]
 		writersMap[j.info.ID] = writers[i]
