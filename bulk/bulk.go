@@ -5,8 +5,6 @@ import (
 	"io"
 	"time"
 
-	"k8s.io/apimachinery/pkg/util/wait"
-
 	"github.com/g8rswimmer/go-sfdc/session"
 )
 
@@ -77,13 +75,7 @@ func (r *Resource) QueryJobsResults(jobs []*Job, writers []io.Writer, parameters
 		writersMap[j.info.ID] = writers[i]
 	}
 
-	return errsMap, wait.ExponentialBackoff(wait.Backoff{
-		Duration: 100 * time.Millisecond,
-		Jitter:   0.5,
-		Factor:   1.5,
-		Cap:      30 * time.Second,
-		Steps:    min(1, int(waitMaxDuration.Seconds()/30.0)),
-	}, func() (bool, error) {
+	return errsMap, Retry(Backoff{Initial: time.Second, Multiplier: 2, Max: 5 * time.Minute}, func() (bool, error) {
 		jobsResp, err := r.JobsInfo(parameters)
 		if err != nil {
 			return false, err

@@ -12,8 +12,6 @@ import (
 	"strings"
 	"time"
 
-	"k8s.io/apimachinery/pkg/util/wait"
-
 	sfdc "github.com/g8rswimmer/go-sfdc"
 	"github.com/g8rswimmer/go-sfdc/session"
 )
@@ -414,14 +412,8 @@ func (j *Job) Upload(body io.Reader) error {
 }
 
 // Wait - wait for job complete
-func (j *Job) Wait(maxDuration time.Duration) error {
-	return wait.ExponentialBackoff(wait.Backoff{
-		Duration: 100 * time.Millisecond,
-		Jitter:   0.5,
-		Factor:   1.5,
-		Cap:    30*time.Second,
-		Steps: min(1,int(maxDuration.Seconds()/30.0)),
-	}, func() (bool, error) {
+func (j *Job) Wait(max time.Duration) error {
+	return Retry(Backoff{Initial: time.Second, Multiplier: 2, Max: 5 * time.Minute}, func() (bool, error) {
 		I, err := j.Info()
 		if err != nil {
 			return false, err
