@@ -7,9 +7,9 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/g8rswimmer/go-sfdc"
+	"github.com/aheber/go-sfdc"
 
-	"github.com/g8rswimmer/go-sfdc/session"
+	"github.com/aheber/go-sfdc/session"
 )
 
 type mockInserter struct {
@@ -93,12 +93,12 @@ func Test_dml_Insert(t *testing.T) {
 					client: mockHTTPClient(func(req *http.Request) *http.Response {
 
 						resp := `
-							[ 
+							[
 								{
 									"message" : "Email: invalid email address: Not a real email address",
 									"errorCode" : "INVALID_EMAIL_ADDRESS",
 									"fields" : [ "Email" ]
-							  	} 
+							  	}
 							]`
 						return &http.Response{
 							StatusCode: 500,
@@ -264,7 +264,7 @@ func Test_dml_Update(t *testing.T) {
 							{
 								"message" : "The requested resource does not exist",
 								"errorCode" : "NOT_FOUND"
-							}							
+							}
 						]
 						`
 						return &http.Response{
@@ -391,7 +391,7 @@ func Test_dml_Upsert(t *testing.T) {
 							{
 								"message" : "The requested resource does not exist",
 								"errorCode" : "NOT_FOUND"
-							}							
+							}
 						]
 						`
 						return &http.Response{

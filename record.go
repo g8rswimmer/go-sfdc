@@ -3,6 +3,7 @@ package sfdc
 import (
 	"encoding/json"
 	"errors"
+	"strings"
 )
 
 const (
@@ -68,9 +69,13 @@ func (r *Record) fromJSONMap(jsonMap map[string]interface{}) {
 			}
 		} else {
 			if v != nil {
-				if _, is := v.(map[string]interface{}); is == false {
+				if m, is := v.(map[string]interface{}); is {
+					if _, has := m["records"]; has == false {
+						// Is not a nested record set so should be added to fields object
+						r.fields[k] = m
+					}
+				} else {
 					r.fields[k] = v
-
 				}
 			}
 		}
@@ -90,7 +95,20 @@ func (r *Record) URL() string {
 // FieldValue returns the field's value.  If there is no field
 // for the field name, then false will be returned.
 func (r *Record) FieldValue(field string) (interface{}, bool) {
-	value, has := r.fields[field]
+	fieldChain := strings.Split(field, ".")
+	var value interface{}
+	var has bool
+	value = r.fields
+	for _, f := range fieldChain {
+		if fieldMap, ok := value.(map[string]interface{}); ok {
+			value, has = fieldMap[f]
+			if has == false {
+				return value, has
+			}
+		} else {
+			return nil, false
+		}
+	}
 	return value, has
 }
 

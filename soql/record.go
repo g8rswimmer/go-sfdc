@@ -1,6 +1,6 @@
 package soql
 
-import "github.com/g8rswimmer/go-sfdc"
+import "github.com/aheber/go-sfdc"
 
 // QueryRecord is the result of the SOQL record.  If
 // the query statement contains an inner query, there
@@ -21,7 +21,7 @@ func newQueryRecord(jsonMap map[string]interface{}, resource *Resource) (*QueryR
 			if k != sfdc.RecordAttributes {
 				resp, err := newQueryResponseJSON(sub)
 				if err != nil {
-					return nil, err
+					continue
 				}
 				result, err := newQueryResult(resp, resource)
 				if err != nil {

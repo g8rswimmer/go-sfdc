@@ -7,7 +7,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/g8rswimmer/go-sfdc/session"
+	"github.com/aheber/go-sfdc/session"
 )
 
 func TestJobs_do(t *testing.T) {
@@ -49,7 +49,7 @@ func TestJobs_do(t *testing.T) {
 									"operation": "Insert",
 									"state": "Open",
 									"systemModstamp": "1/1/1980"
-								}								
+								}
 							]
 						}`
 						return &http.Response{
@@ -99,7 +99,7 @@ func TestJobs_do(t *testing.T) {
 								"fields" : [ "Id" ],
 								"message" : "Account ID: id value of incorrect type: 001900K0001pPuOAAU",
 								"errorCode" : "MALFORMED_ID"
-							}							
+							}
 						]`
 						return &http.Response{
 							StatusCode: http.StatusBadRequest,
@@ -168,7 +168,7 @@ func Test_newJobs(t *testing.T) {
 						"operation": "Insert",
 						"state": "Open",
 						"systemModstamp": "1/1/1980"
-					}								
+					}
 				]
 			}`
 			return &http.Response{
@@ -374,7 +374,7 @@ func TestJobs_Next(t *testing.T) {
 						"operation": "Insert",
 						"state": "Open",
 						"systemModstamp": "1/1/1980"
-					}								
+					}
 				]
 			}`
 			return &http.Response{

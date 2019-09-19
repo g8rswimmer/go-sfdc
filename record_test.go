@@ -206,6 +206,70 @@ func TestRecord_FieldValue(t *testing.T) {
 			want:  nil,
 			want1: false,
 		},
+		{
+			name: "Nested Field",
+			fields: fields{
+				fields: map[string]interface{}{
+					"Id": "x01D0000000002RIAQ",
+					"Account": map[string]interface{}{
+						"Name": "Test Account",
+						"Id":   "x01D0000000002RIAQ",
+					},
+				},
+			},
+			args: args{
+				field: "Account.Name",
+			},
+			want:  "Test Account",
+			want1: true,
+		},
+		{
+			name: "Nested Field 2",
+			fields: fields{
+				fields: map[string]interface{}{
+					"Id": "x01D0000000002RIAQ",
+					"Account": map[string]interface{}{
+						"Name": "Test Account",
+						"Id":   "x01D0000000002RIAQ",
+					},
+				},
+			},
+			args: args{
+				field: "Account",
+			},
+			want: map[string]interface{}{
+				"Name": "Test Account",
+				"Id":   "x01D0000000002RIAQ",
+			},
+			want1: true,
+		},
+		{
+			name: "Nested Field Empty",
+			fields: fields{
+				fields: map[string]interface{}{
+					"Id": "x01D0000000002RIAQ",
+				},
+			},
+			args: args{
+				field: "Account",
+			},
+			want:  nil,
+			want1: false,
+		},
+		{
+			name: "Not Nested",
+			fields: fields{
+				fields: map[string]interface{}{
+					"Country__c": "Argentina",
+					"Id":         "x01D0000000002RIAQ",
+				},
+			},
+			args: args{
+				field: "Country__c.Robots__c",
+			},
+			want:  nil,
+			want1: false,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -303,6 +367,46 @@ func TestRecordFromJSONMap(t *testing.T) {
 				url:     "/services/data/v20.0/sobjects/Account/001D000000IRFmaIAH",
 				fields: map[string]interface{}{
 					"Name": "Test 1",
+				},
+			},
+			wantErr: false,
+		},{
+			name: "JSON map with nested",
+			args: args{
+				jsonMap: map[string]interface{}{
+					"attributes": map[string]interface{}{
+						"type": "Account",
+						"url":  "/services/data/v20.0/sobjects/Account/001D000000IRFmaIAH",
+					},
+					"Name": "Test 1",
+					"Account": map[string]interface{}{
+						"Name": "Test Account",
+						"Id":   "x01D0000000002RIAQ",
+					},
+					"Contacts": map[string]interface{}{
+						"done":      "true",
+						"totalSize": 14,
+						"records": []map[string]interface{}{
+							{
+								"attributes": map[string]interface{}{
+									"type": "Contact",
+									"url":  "/services/data/v20.0/sobjects/Contact/001D000000IRFmaIAH",
+								},
+								"LastName": "Test 1",
+							},
+						},
+					},
+				},
+			},
+			want: &Record{
+				sobject: "Account",
+				url:     "/services/data/v20.0/sobjects/Account/001D000000IRFmaIAH",
+				fields: map[string]interface{}{
+					"Name": "Test 1",
+					"Account": map[string]interface{}{
+						"Name": "Test Account",
+						"Id":   "x01D0000000002RIAQ",
+					},
 				},
 			},
 			wantErr: false,

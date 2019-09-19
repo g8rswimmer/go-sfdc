@@ -5,7 +5,7 @@ import (
 
 	b64 "encoding/base64"
 
-	"github.com/g8rswimmer/go-sfdc/session"
+	"github.com/aheber/go-sfdc/session"
 )
 
 const (
