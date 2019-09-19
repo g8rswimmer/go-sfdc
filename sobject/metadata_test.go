@@ -7,7 +7,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/g8rswimmer/go-sfdc/session"
+	"github.com/aheber/go-sfdc/session"
 )
 
 func Test_metadata_Metadata(t *testing.T) {
@@ -45,12 +45,12 @@ func Test_metadata_Metadata(t *testing.T) {
 					client: mockHTTPClient(func(req *http.Request) *http.Response {
 
 						resp := `
-							[ 
+							[
 								{
 									"message" : "Email: invalid email address: Not a real email address",
 									"errorCode" : "INVALID_EMAIL_ADDRESS",
 									"fields" : [ "Email" ]
-							  	} 
+							  	}
 							]`
 						return &http.Response{
 							StatusCode: 500,

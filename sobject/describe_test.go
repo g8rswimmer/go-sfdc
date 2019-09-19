@@ -7,7 +7,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/g8rswimmer/go-sfdc/session"
+	"github.com/aheber/go-sfdc/session"
 )
 
 func Test_describe_Describe(t *testing.T) {
@@ -48,7 +48,7 @@ func Test_describe_Describe(t *testing.T) {
 							{
 								"message" : "The requested resource does not exist",
 								"errorCode" : "NOT_FOUND"
-							}							
+							}
 						]
 						`
 						return &http.Response{

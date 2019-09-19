@@ -8,7 +8,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/g8rswimmer/go-sfdc/session"
+	"github.com/aheber/go-sfdc/session"
 )
 
 type mockSubrequester struct {
@@ -300,7 +300,7 @@ func TestResource_Retrieve(t *testing.T) {
 								"fields" : [ "Id" ],
 								"message" : "Account ID: id value of incorrect type: 001900K0001pPuOAAU",
 								"errorCode" : "MALFORMED_ID"
-							}							
+							}
 						]`
 						return &http.Response{
 							StatusCode: http.StatusBadRequest,

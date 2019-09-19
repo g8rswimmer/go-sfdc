@@ -9,8 +9,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/g8rswimmer/go-sfdc"
-	"github.com/g8rswimmer/go-sfdc/session"
+	"github.com/aheber/go-sfdc"
+	"github.com/aheber/go-sfdc/session"
 )
 
 type mockQuery struct {
@@ -120,11 +120,11 @@ func Test_query_Query(t *testing.T) {
 					client: mockHTTPClient(func(req *http.Request) *http.Response {
 
 						resp := `
-							[ 
+							[
 								{
 									"message" : "Email: invalid email address: Not a real email address",
 									"errorCode" : "INVALID_EMAIL_ADDRESS"
-							  	} 
+							  	}
 							]`
 						return &http.Response{
 							StatusCode: 500,
@@ -325,11 +325,11 @@ func Test_query_ExternalQuery(t *testing.T) {
 					client: mockHTTPClient(func(req *http.Request) *http.Response {
 
 						resp := `
-							[ 
+							[
 								{
 									"message" : "Email: invalid email address: Not a real email address",
 									"errorCode" : "INVALID_EMAIL_ADDRESS"
-							  	} 
+							  	}
 							]`
 						return &http.Response{
 							StatusCode: 500,
@@ -531,11 +531,11 @@ func Test_query_DeletedRecords(t *testing.T) {
 					client: mockHTTPClient(func(req *http.Request) *http.Response {
 
 						resp := `
-							[ 
+							[
 								{
 									"message" : "Email: invalid email address: Not a real email address",
 									"errorCode" : "INVALID_EMAIL_ADDRESS"
-							  	} 
+							  	}
 							]`
 						return &http.Response{
 							StatusCode: 500,
@@ -586,11 +586,11 @@ func Test_query_DeletedRecords(t *testing.T) {
 					url: "https://test.salesforce.com",
 					client: mockHTTPClient(func(req *http.Request) *http.Response {
 						resp := `
-						{ 
-							"deletedRecords" : 
-							[ 
-								{ 
-									"id" : "a00D0000008pQRAIA2", 
+						{
+							"deletedRecords" :
+							[
+								{
+									"id" : "a00D0000008pQRAIA2",
 									"deletedDate" : "2013-05-03T15:57:00.000+0000"
 								}
 							],
@@ -734,11 +734,11 @@ func Test_query_UpdatedRecords(t *testing.T) {
 					client: mockHTTPClient(func(req *http.Request) *http.Response {
 
 						resp := `
-							[ 
+							[
 								{
 									"message" : "Email: invalid email address: Not a real email address",
 									"errorCode" : "INVALID_EMAIL_ADDRESS"
-							  	} 
+							  	}
 							]`
 						return &http.Response{
 							StatusCode: 500,
@@ -789,14 +789,14 @@ func Test_query_UpdatedRecords(t *testing.T) {
 					url: "https://test.salesforce.com",
 					client: mockHTTPClient(func(req *http.Request) *http.Response {
 						resp := `
-						{ 
-							"ids" : 
-							[ 
-								"a00D0000008pQR5IAM", 
-								"a00D0000008pQRGIA2", 
+						{
+							"ids" :
+							[
+								"a00D0000008pQR5IAM",
+								"a00D0000008pQRGIA2",
 								"a00D0000008pQRFIA2"
 							],
-							"latestDateCovered" : "2013-05-08T21:20:00.000+0000" 
+							"latestDateCovered" : "2013-05-08T21:20:00.000+0000"
 						}`
 
 						return &http.Response{

@@ -7,7 +7,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/g8rswimmer/go-sfdc/session"
+	"github.com/aheber/go-sfdc/session"
 )
 
 type mockQuerier struct {
@@ -155,22 +155,22 @@ func TestResource_Query(t *testing.T) {
 						{
 							"done" : true,
 							"totalSize" : 2,
-							"records" : 
-							[ 
-								{  
-									"attributes" : 
-									{    
-										"type" : "Account",    
-										"url" : "/services/data/v20.0/sobjects/Account/001D000000IRFmaIAH"  
-									},  
+							"records" :
+							[
+								{
+									"attributes" :
+									{
+										"type" : "Account",
+										"url" : "/services/data/v20.0/sobjects/Account/001D000000IRFmaIAH"
+									},
 									"Name" : "Test 1"
-								}, 
-								{  
-									"attributes" : 
-									{    
-										"type" : "Account",    
-										"url" : "/services/data/v20.0/sobjects/Account/001D000000IomazIAB"  
-									},  
+								},
+								{
+									"attributes" :
+									{
+										"type" : "Account",
+										"url" : "/services/data/v20.0/sobjects/Account/001D000000IomazIAB"
+									},
 									"Name" : "Test 2"
 								}
 							]
@@ -282,22 +282,22 @@ func TestResource_next(t *testing.T) {
 						{
 							"done" : true,
 							"totalSize" : 2,
-							"records" : 
-							[ 
-								{  
-									"attributes" : 
-									{    
-										"type" : "Account",    
-										"url" : "/services/data/v20.0/sobjects/Account/001D000000IRFmaIAH"  
-									},  
+							"records" :
+							[
+								{
+									"attributes" :
+									{
+										"type" : "Account",
+										"url" : "/services/data/v20.0/sobjects/Account/001D000000IRFmaIAH"
+									},
 									"Name" : "Test 1"
-								}, 
-								{  
-									"attributes" : 
-									{    
-										"type" : "Account",    
-										"url" : "/services/data/v20.0/sobjects/Account/001D000000IomazIAB"  
-									},  
+								},
+								{
+									"attributes" :
+									{
+										"type" : "Account",
+										"url" : "/services/data/v20.0/sobjects/Account/001D000000IomazIAB"
+									},
 									"Name" : "Test 2"
 								}
 							]
