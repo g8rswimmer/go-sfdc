@@ -75,7 +75,7 @@ func (r *Record) fromJSONMap(jsonMap map[string]interface{}) {
 				} else {
 					if r.isLookUp(obj) {
 						if rec, err := RecordFromJSONMap(obj); err == nil {
-							r.lookUps[rec.sobject] = rec
+							r.lookUps[k] = rec
 						}
 					}
 				}
