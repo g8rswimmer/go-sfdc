@@ -94,7 +94,7 @@ func TestRecord_UnmarshalJSON(t *testing.T) {
 					"Id":         "x01D0000000002RIAQ",
 				},
 				lookUps: map[string]*Record{
-					"SomeLookup__c": &Record{
+					"SomeLookup__r": &Record{
 						sobject: "SomeLookup__c",
 						url:     "/services/data/v44.0/sobjects/SomeLookup__c/0012E00001q0KijQAE",
 						fields: map[string]interface{}{
