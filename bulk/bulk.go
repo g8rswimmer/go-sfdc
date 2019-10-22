@@ -3,7 +3,6 @@ package bulk
 import (
 	"fmt"
 	"io"
-	"time"
 
 	"github.com/g8rswimmer/go-sfdc/session"
 )
@@ -61,7 +60,7 @@ func (r *Resource) JobsInfo(parameters Parameters) ([]Response, error) {
 }
 
 // QueryJobsResults ...
-func (r *Resource) QueryJobsResults(jobs []*Job, writers []io.Writer, parameters Parameters, waitMaxDuration time.Duration, maxRecords int) (map[string]error, error) {
+func (r *Resource) QueryJobsResults(jobs []*Job, writers []io.Writer, parameters Parameters, retry func(func() (bool, error)) error, maxRecords int) (map[string]error, error) {
 
 	if len(jobs) != len(writers) {
 		return map[string]error{}, fmt.Errorf("len(jobs) %d != len(writes) %d", len(jobs), len(writers))
@@ -75,7 +74,8 @@ func (r *Resource) QueryJobsResults(jobs []*Job, writers []io.Writer, parameters
 		writersMap[j.info.ID] = writers[i]
 	}
 
-	return errsMap, Retry(Backoff{Initial: time.Second, Multiplier: 2, Max: 5 * time.Minute}, func() (bool, error) {
+	//return errsMap, Retry(Backoff{Initial: time.Second, Multiplier: 2, Max: 5 * time.Minute}, func() (bool, error) {
+	return errsMap, retry(func() (bool, error) {
 		jobsResp, err := r.JobsInfo(parameters)
 		if err != nil {
 			return false, err

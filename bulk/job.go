@@ -412,8 +412,9 @@ func (j *Job) Upload(body io.Reader) error {
 }
 
 // Wait - wait for job complete
-func (j *Job) Wait(max time.Duration) error {
-	return Retry(Backoff{Initial: time.Second, Multiplier: 2, Max: 5 * time.Minute}, func() (bool, error) {
+func (j *Job) Wait(retry func(func() (bool, error)) error) error {
+	//return Retry(Backoff{Initial: time.Second, Multiplier: 2, Max: 5 * time.Minute}, func() (bool, error) {
+	return retry(func() (bool, error) {
 		I, err := j.Info()
 		if err != nil {
 			return false, err
