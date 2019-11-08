@@ -449,7 +449,7 @@ func (j *Job) QueryResults(w io.Writer, maxRecords int, locator string) (int, er
 	}
 
 	if response.StatusCode != http.StatusOK {
-		return fmt.Errorf("%s", response.Status)
+		return -1, fmt.Errorf("%s", response.Status)
 	}
 
 	r := bufio.NewReader(response.Body)
