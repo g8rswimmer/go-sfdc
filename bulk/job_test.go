@@ -8,7 +8,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/g8rswimmer/go-sfdc/session"
+	"github.com/TuSKan/go-sfdc/session"
 )
 
 func TestJob_formatOptions(t *testing.T) {

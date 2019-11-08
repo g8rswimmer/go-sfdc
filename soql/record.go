@@ -1,6 +1,6 @@
 package soql
 
-import "github.com/g8rswimmer/go-sfdc"
+import "github.com/TuSKan/go-sfdc"
 
 // QueryRecord is the result of the SOQL record.  If
 // the query statement contains an inner query, there

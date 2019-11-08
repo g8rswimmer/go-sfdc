@@ -220,7 +220,8 @@ The following are examples to access the `APIs`.  It is assumed that a `sfdc` [s
 			fmt.Printf("File Create Error %s\n", err.Error())
 			return
 		}
-		if err := job.QueryResults(f, -1, ""); err != nil {
+		n, err := job.QueryResults(f, -1, ""); 
+		if err != nil {
 			fmt.Printf("QueryResults Error %s\n", err.Error())
 			return
 		}
@@ -229,7 +230,7 @@ The following are examples to access the `APIs`.  It is assumed that a `sfdc` [s
 
 ### Get Results from a Query Job using Wait
 ```go
-	if err := job.Wait(5 * time.Minute); err != nil {
+	if err := job.Wait(bulk.Backoff{Initial: time.Second, Multiplier: 2, Max: 5 * time.Minute}); err != nil {
 		fmt.Printf("[Wait]: %s\n", err.Error())
 		return
 	}
@@ -240,7 +241,8 @@ The following are examples to access the `APIs`.  It is assumed that a `sfdc` [s
 		return
 	}
 
-	if err := job.QueryResults(f, -1, ""); err != nil {
+	n, err := job.QueryResults(f, -1, ""); 
+	if err != nil {
 		fmt.Printf("[QueryResults]: %s\n", err.Error())
 		return
 	}
@@ -257,7 +259,8 @@ The following are examples to access the `APIs`.  It is assumed that a `sfdc` [s
 
 ### QueryJobResults from many Query Jobs
 ```go
-	mapErrs, err := resource.QueryJobsResults([]*Jobs{job1, job2}, []io.Writer{f1, f2}, bulk.Parameters{JobType: bulk.V2Query}, 5*time.Minute, -1)
+	bo := Backoff{Initial: time.Second, Multiplier: 2, Max: 5 * time.Minute}
+	mapN, mapErrs, err := resource.QueryJobsResults([]*Jobs{job1, job2}, []io.Writer{f1, f2}, bulk.Parameters{JobType: bulk.V2Query}, bo, -1)
 	if err != nil {
 		fmt.Printf("[QueryJobsResults]: %s\n", err.Error())
 		return

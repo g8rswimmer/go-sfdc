@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"io"
 
-	"github.com/g8rswimmer/go-sfdc/session"
+	"github.com/TuSKan/go-sfdc/session"
 )
 
 func min(a, b int) int {
@@ -60,12 +60,13 @@ func (r *Resource) JobsInfo(parameters Parameters) ([]Response, error) {
 }
 
 // QueryJobsResults ...
-func (r *Resource) QueryJobsResults(jobs []*Job, writers []io.Writer, parameters Parameters, retry func(func() (bool, error)) error, maxRecords int) (map[string]error, error) {
+func (r *Resource) QueryJobsResults(jobs []*Job, writers []io.Writer, parameters Parameters, bo Backoff, maxRecords int) (map[string]int, map[string]error, error) {
 
 	if len(jobs) != len(writers) {
-		return map[string]error{}, fmt.Errorf("len(jobs) %d != len(writes) %d", len(jobs), len(writers))
+		return map[string]int{}, map[string]error{}, fmt.Errorf("len(jobs) %d != len(writes) %d", len(jobs), len(writers))
 	}
 
+	nrecMap := make(map[string]int)
 	errsMap := make(map[string]error)
 	jobsMap := make(map[string]*Job)
 	writersMap := make(map[string]io.Writer)
@@ -74,17 +75,18 @@ func (r *Resource) QueryJobsResults(jobs []*Job, writers []io.Writer, parameters
 		writersMap[j.info.ID] = writers[i]
 	}
 
-	//return errsMap, Retry(Backoff{Initial: time.Second, Multiplier: 2, Max: 5 * time.Minute}, func() (bool, error) {
-	return errsMap, retry(func() (bool, error) {
+	return nrecMap, errsMap, Retry(bo, func() (bool, error) {
 		jobsResp, err := r.JobsInfo(parameters)
 		if err != nil {
 			return false, err
 		}
 		for _, res := range jobsResp {
 			if jobsMap[res.ID] != nil && State(res.State) == JobComplete {
-				err := jobsMap[res.ID].QueryResults(writersMap[res.ID], maxRecords, "")
+				n, err := jobsMap[res.ID].QueryResults(writersMap[res.ID], maxRecords, "")
 				if err != nil {
 					errsMap[res.ID] = err
+				} else {
+					nrecMap[res.ID] = n
 				}
 				delete(jobsMap, res.ID)
 				//delete(writersMap, res.ID)

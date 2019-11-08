@@ -7,8 +7,8 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/g8rswimmer/go-sfdc"
-	"github.com/g8rswimmer/go-sfdc/credentials"
+	"github.com/TuSKan/go-sfdc"
+	"github.com/TuSKan/go-sfdc/credentials"
 )
 
 // Session is the authentication response.  This is used to generate the

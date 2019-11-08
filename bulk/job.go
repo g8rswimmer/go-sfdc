@@ -10,10 +10,9 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
-	"time"
 
-	sfdc "github.com/g8rswimmer/go-sfdc"
-	"github.com/g8rswimmer/go-sfdc/session"
+	sfdc "github.com/TuSKan/go-sfdc"
+	"github.com/TuSKan/go-sfdc/session"
 )
 
 // JobType is the bulk job type.
@@ -412,9 +411,8 @@ func (j *Job) Upload(body io.Reader) error {
 }
 
 // Wait - wait for job complete
-func (j *Job) Wait(retry func(func() (bool, error)) error) error {
-	//return Retry(Backoff{Initial: time.Second, Multiplier: 2, Max: 5 * time.Minute}, func() (bool, error) {
-	return retry(func() (bool, error) {
+func (j *Job) Wait(bo Backoff) error {
+	return Retry(bo, func() (bool, error) {
 		I, err := j.Info()
 		if err != nil {
 			return false, err
@@ -427,11 +425,12 @@ func (j *Job) Wait(retry func(func() (bool, error)) error) error {
 }
 
 // QueryResults Gets the results for a query job. The job must have the state JobComplete.
-func (j *Job) QueryResults(w io.Writer, maxRecords int, locator string) error {
+func (j *Job) QueryResults(w io.Writer, maxRecords int, locator string) (int, error) {
+	nrecords := 0
 	url := j.session.ServiceURL() + bulk2Endpoint(j.jobType) + "/" + j.info.ID + "/results"
 	request, err := http.NewRequest(http.MethodGet, url, nil)
 	if err != nil {
-		return err
+		return -1, err
 	}
 	q := request.URL.Query()
 	if locator != "" {
@@ -446,7 +445,7 @@ func (j *Job) QueryResults(w io.Writer, maxRecords int, locator string) error {
 
 	response, err := j.session.Client().Do(request)
 	if err != nil {
-		return err
+		return -1, err
 	}
 
 	if response.StatusCode != http.StatusOK {
@@ -457,14 +456,16 @@ func (j *Job) QueryResults(w io.Writer, maxRecords int, locator string) error {
 	defer response.Body.Close()
 
 	if _, err = r.WriteTo(w); err != nil {
-		return err
+		return -1, err
 	}
-	// response.Header.Get("Sforce-NumberOfRecords")
+	nrec, err := strconv.Atoi(response.Header.Get("Sforce-NumberOfRecords"))
+	if err == nil {
+		nrecords += nrec
+	}
 	if response.Header.Get("Sforce-Locator") != "null" {
 		return j.QueryResults(w, maxRecords, response.Header.Get("Sforce-Locator"))
 	}
-
-	return nil
+	return nrecords, nil
 }
 
 // SuccessfulRecords returns the successful records for the job.
