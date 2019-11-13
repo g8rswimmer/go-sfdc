@@ -243,7 +243,7 @@ func (j *Job) response(request *http.Request) (Response, error) {
 		var errMsg error
 		if err == nil {
 			for _, err := range errs {
-				errMsg = fmt.Errorf("insert response err: %s: %s", err.ErrorCode, err.Message)
+				errMsg += fmt.Errorf("insert response err: %s: %s\n", err.ErrorCode, err.Message)
 			}
 		} else {
 			errMsg = fmt.Errorf("insert response err: %d %s", response.StatusCode, response.Status)
