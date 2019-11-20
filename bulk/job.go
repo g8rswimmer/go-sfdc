@@ -11,8 +11,8 @@ import (
 	"strconv"
 	"strings"
 
-	sfdc "github.com/g8rswimmer/go-sfdc"
-	"github.com/g8rswimmer/go-sfdc/session"
+	sfdc "github.com/TheJumpCloud/go-sfdc"
+	"github.com/TheJumpCloud/go-sfdc/session"
 )
 
 // JobType is the bulk job type.
@@ -242,9 +242,11 @@ func (j *Job) response(request *http.Request) (Response, error) {
 		err = decoder.Decode(&errs)
 		var errMsg error
 		if err == nil {
+			var allErrs string
 			for _, err := range errs {
-				errMsg += fmt.Errorf("insert response err: %s: %s\n", err.ErrorCode, err.Message)
+				allErrs += fmt.Sprintf("insert response err: %s: %s\n", err.ErrorCode, err.Message)
 			}
+			errMsg = fmt.Errorf(allErrs)
 		} else {
 			errMsg = fmt.Errorf("insert response err: %d %s", response.StatusCode, response.Status)
 		}
@@ -288,9 +290,11 @@ func (j *Job) infoResponse(request *http.Request) (Info, error) {
 		err = decoder.Decode(&errs)
 		var errMsg error
 		if err == nil {
+			var allErrs string
 			for _, err := range errs {
-				errMsg = fmt.Errorf("job err: %s: %s", err.ErrorCode, err.Message)
+				allErrs += fmt.Sprintf("job err: %s: %s", err.ErrorCode, err.Message)
 			}
+			errMsg = fmt.Errorf(allErrs)
 		} else {
 			errMsg = fmt.Errorf("job err: %d %s", response.StatusCode, response.Status)
 		}
@@ -401,9 +405,11 @@ func (j *Job) SuccessfulRecords() ([]SuccessfulRecord, error) {
 		err = decoder.Decode(&errs)
 		var errMsg error
 		if err == nil {
+			var allErrs string
 			for _, err := range errs {
-				errMsg = fmt.Errorf("job err: %s: %s", err.ErrorCode, err.Message)
+				allErrs += fmt.Sprintf("job err: %s: %s", err.ErrorCode, err.Message)
 			}
+			errMsg = fmt.Errorf(allErrs)
 		} else {
 			errMsg = fmt.Errorf("job err: %d %s", response.StatusCode, response.Status)
 		}
@@ -467,9 +473,11 @@ func (j *Job) FailedRecords() ([]FailedRecord, error) {
 		err = decoder.Decode(&errs)
 		var errMsg error
 		if err == nil {
+			var allErrs string
 			for _, err := range errs {
-				errMsg = fmt.Errorf("job err: %s: %s", err.ErrorCode, err.Message)
+				allErrs += fmt.Sprintf("job err: %s: %s", err.ErrorCode, err.Message)
 			}
+			errMsg = fmt.Errorf(allErrs)
 		} else {
 			errMsg = fmt.Errorf("job err: %d %s", response.StatusCode, response.Status)
 		}
@@ -528,9 +536,11 @@ func (j *Job) UnprocessedRecords() ([]UnprocessedRecord, error) {
 		err = decoder.Decode(&errs)
 		var errMsg error
 		if err == nil {
+			var allErrs string
 			for _, err := range errs {
-				errMsg = fmt.Errorf("job err: %s: %s", err.ErrorCode, err.Message)
+				allErrs += fmt.Sprintf("job err: %s: %s\n", err.ErrorCode, err.Message)
 			}
+			errMsg = fmt.Errorf(allErrs)
 		} else {
 			errMsg = fmt.Errorf("job err: %d %s", response.StatusCode, response.Status)
 		}
@@ -580,6 +590,9 @@ func (j *Job) fields(header []string, offset int) []string {
 func (j *Job) record(fields, values []string) map[string]string {
 	record := make(map[string]string)
 	for idx, field := range fields {
+		if idx >= len(values) {
+			break
+		}
 		record[field] = values[idx]
 	}
 	return record
