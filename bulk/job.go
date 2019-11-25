@@ -463,7 +463,11 @@ func (j *Job) QueryResults(w io.Writer, maxRecords int, locator string) (int, er
 		nrecords += nrec
 	}
 	if response.Header.Get("Sforce-Locator") != "null" {
-		return j.QueryResults(w, maxRecords, response.Header.Get("Sforce-Locator"))
+		nrec, err := j.QueryResults(w, maxRecords, response.Header.Get("Sforce-Locator"))
+		if err != nil {
+			return nrecords, err
+		}
+		nrecords += nrec
 	}
 	return nrecords, nil
 }
