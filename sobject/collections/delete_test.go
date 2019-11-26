@@ -8,11 +8,11 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/TuSKan/go-sfdc/sobject"
+	"go-sfdc/sobject"
 
-	"github.com/TuSKan/go-sfdc"
+	"go-sfdc"
 
-	"github.com/TuSKan/go-sfdc/session"
+	"go-sfdc/session"
 )
 
 func TestDelete_values(t *testing.T) {

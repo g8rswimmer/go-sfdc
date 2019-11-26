@@ -8,7 +8,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/TuSKan/go-sfdc/session"
+	"go-sfdc/session"
 )
 
 type mockSubrequester struct {

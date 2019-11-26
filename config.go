@@ -3,7 +3,7 @@ package sfdc
 import (
 	"net/http"
 
-	"github.com/TuSKan/go-sfdc/credentials"
+	"go-sfdc/credentials"
 )
 
 // Configuration is the structure for goforce sessions.

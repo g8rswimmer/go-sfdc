@@ -6,9 +6,9 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/TuSKan/go-sfdc"
-	"github.com/TuSKan/go-sfdc/session"
-	"github.com/TuSKan/go-sfdc/sobject"
+	"go-sfdc"
+	"go-sfdc/session"
+	"go-sfdc/sobject"
 )
 
 type collectionQueryPayload struct {

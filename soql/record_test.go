@@ -4,7 +4,7 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/TuSKan/go-sfdc"
+	"go-sfdc"
 )
 
 func testQueryRecord(jsonMap map[string]interface{}) *sfdc.Record {

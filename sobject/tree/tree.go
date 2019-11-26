@@ -8,9 +8,9 @@ import (
 	"net/http"
 	"regexp"
 
-	"github.com/TuSKan/go-sfdc"
+	"go-sfdc"
 
-	"github.com/TuSKan/go-sfdc/session"
+	"go-sfdc/session"
 )
 
 // Inserter is used to define the SObject and it's records for the

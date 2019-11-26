@@ -6,8 +6,8 @@ import (
 	"regexp"
 	"time"
 
-	"github.com/TuSKan/go-sfdc"
-	"github.com/TuSKan/go-sfdc/session"
+	"go-sfdc"
+	"go-sfdc/session"
 )
 
 // ObjectURLs is the URL for the SObject metadata.

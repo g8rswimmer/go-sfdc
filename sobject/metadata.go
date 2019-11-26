@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/TuSKan/go-sfdc"
-	"github.com/TuSKan/go-sfdc/session"
+	"go-sfdc"
+	"go-sfdc/session"
 )
 
 // MetadataValue is the response from the SObject metadata API.

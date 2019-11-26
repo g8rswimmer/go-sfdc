@@ -8,7 +8,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/TuSKan/go-sfdc/session"
+	"go-sfdc/session"
 )
 
 func TestJob_formatOptions(t *testing.T) {

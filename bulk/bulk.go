@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"io"
 
-	"github.com/TuSKan/go-sfdc/session"
+	"go-sfdc/session"
 )
 
 func min(a, b int) int {

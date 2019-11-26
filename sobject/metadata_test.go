@@ -7,7 +7,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/TuSKan/go-sfdc/session"
+	"go-sfdc/session"
 )
 
 func Test_metadata_Metadata(t *testing.T) {

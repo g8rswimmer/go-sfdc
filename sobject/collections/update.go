@@ -4,8 +4,8 @@ import (
 	"bytes"
 	"net/http"
 
-	"github.com/TuSKan/go-sfdc/session"
-	"github.com/TuSKan/go-sfdc/sobject"
+	"go-sfdc/session"
+	"go-sfdc/sobject"
 )
 
 // UpdateValue is the return value from the

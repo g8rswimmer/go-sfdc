@@ -6,8 +6,8 @@ import (
 	"net/url"
 	"strings"
 
-	"github.com/TuSKan/go-sfdc/session"
-	"github.com/TuSKan/go-sfdc/sobject"
+	"go-sfdc/session"
+	"go-sfdc/sobject"
 )
 
 // DeleteValue is the return value from the

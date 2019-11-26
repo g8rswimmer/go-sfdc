@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"net/http"
 
-	sfdc "github.com/TuSKan/go-sfdc"
-	"github.com/TuSKan/go-sfdc/session"
+	sfdc "go-sfdc"
+	"go-sfdc/session"
 )
 
 // Parameters to query all of the bulk jobs.

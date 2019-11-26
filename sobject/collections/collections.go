@@ -11,9 +11,9 @@ import (
 	"net/url"
 	"regexp"
 
-	"github.com/TuSKan/go-sfdc"
-	"github.com/TuSKan/go-sfdc/session"
-	"github.com/TuSKan/go-sfdc/sobject"
+	"go-sfdc"
+	"go-sfdc/session"
+	"go-sfdc/sobject"
 )
 
 const (
