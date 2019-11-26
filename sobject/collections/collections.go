@@ -13,7 +13,7 @@ import (
 
 	"go-sfdc"
 	"go-sfdc/session"
-	"go-sfdc/sobject"
+	"./sobject"
 )
 
 const (

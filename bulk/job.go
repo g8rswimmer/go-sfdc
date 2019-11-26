@@ -11,7 +11,7 @@ import (
 	"strconv"
 	"strings"
 
-	sfdc "go-sfdc"
+	"go-sfdc"
 	"go-sfdc/session"
 )
 

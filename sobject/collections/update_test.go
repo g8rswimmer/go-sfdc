@@ -9,7 +9,7 @@ import (
 
 	"go-sfdc"
 	"go-sfdc/session"
-	"go-sfdc/sobject"
+	"./sobject"
 )
 
 type mockUpdater struct {

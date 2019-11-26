@@ -7,7 +7,7 @@ import (
 	"strings"
 
 	"go-sfdc/session"
-	"go-sfdc/sobject"
+	"./sobject"
 )
 
 // DeleteValue is the return value from the

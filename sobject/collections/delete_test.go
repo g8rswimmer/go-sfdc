@@ -8,7 +8,7 @@ import (
 	"strings"
 	"testing"
 
-	"go-sfdc/sobject"
+	"./sobject"
 
 	"go-sfdc"
 

@@ -11,7 +11,7 @@ import (
 
 	"go-sfdc"
 	"go-sfdc/session"
-	"go-sfdc/sobject"
+	"./sobject"
 )
 
 func Test_collection_send(t *testing.T) {

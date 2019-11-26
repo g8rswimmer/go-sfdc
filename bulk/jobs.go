@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"net/http"
 
-	sfdc "go-sfdc"
+	"go-sfdc"
 	"go-sfdc/session"
 )
 

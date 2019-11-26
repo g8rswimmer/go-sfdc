@@ -10,7 +10,7 @@ import (
 	"testing"
 
 	"go-sfdc"
-	"go-sfdc/credentials"
+	"./credentials"
 )
 
 func TestPasswordSessionRequest(t *testing.T) {

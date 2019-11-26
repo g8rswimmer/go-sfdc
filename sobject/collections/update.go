@@ -5,7 +5,7 @@ import (
 	"net/http"
 
 	"go-sfdc/session"
-	"go-sfdc/sobject"
+	"./sobject"
 )
 
 // UpdateValue is the return value from the
