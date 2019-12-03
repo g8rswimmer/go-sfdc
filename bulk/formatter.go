@@ -1,6 +1,7 @@
 package bulk
 
 import (
+	"encoding/csv"
 	"errors"
 	"fmt"
 	"strings"
@@ -14,9 +15,10 @@ type Record interface {
 
 // Formatter is the object that will add records for the bulk uploader.
 type Formatter struct {
-	job    *Job
-	fields []string
-	sb     strings.Builder
+	csvWriter *csv.Writer
+	job       *Job
+	fields    []string
+	sb        *strings.Builder
 }
 
 // NewFormatter creates a new formatter using the job and the list of fields.
@@ -31,16 +33,15 @@ func NewFormatter(job *Job, fields []string) (*Formatter, error) {
 	f := &Formatter{
 		job:    job,
 		fields: fields,
-		sb:     strings.Builder{},
+		sb:     &strings.Builder{},
 	}
+	f.csvWriter = csv.NewWriter(f.sb)
+	f.csvWriter.Comma = rune(job.delimiter()[0])
 
-	if _, err := f.sb.WriteString(strings.Join(fields, job.delimiter())); err != nil {
+	if err := f.csvWriter.Write(fields); err != nil {
 		return nil, err
 	}
-	if _, err := f.sb.WriteString(job.newline()); err != nil {
-		return nil, err
-
-	}
+	f.csvWriter.Flush()
 
 	return f, nil
 }
@@ -67,18 +68,14 @@ func (f *Formatter) Add(records ...Record) error {
 				}
 			}
 		}
-		_, err := f.sb.WriteString(strings.Join(values, f.job.delimiter()))
-		if err != nil {
-			return err
-		}
-		_, err = f.sb.WriteString(f.job.newline())
-		if err != nil {
-			return err
-		}
 
+		if err := f.csvWriter.Write(values); err != nil {
+			return err
+		}
 	}
 
-	return nil
+	f.csvWriter.Flush()
+	return f.csvWriter.Error()
 }
 
 // Reader will return a reader of the bulk uploader field record body.
