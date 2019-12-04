@@ -1,6 +1,7 @@
 package bulk
 
 import (
+	"encoding/csv"
 	"reflect"
 	"strings"
 	"testing"
@@ -11,6 +12,9 @@ func TestNewFormatter(t *testing.T) {
 		job    *Job
 		fields []string
 	}
+	sb := &strings.Builder{}
+	csvWriter := csv.NewWriter(sb)
+
 	tests := []struct {
 		name    string
 		args    args
@@ -28,7 +32,7 @@ func TestNewFormatter(t *testing.T) {
 				},
 				fields: []string{
 					"Name",
-					"Site",
+					`"Site"`,
 				},
 			},
 			want: &Formatter{
@@ -40,9 +44,10 @@ func TestNewFormatter(t *testing.T) {
 				},
 				fields: []string{
 					"Name",
-					"Site",
+					`"Site"`,
 				},
-				sb: strings.Builder{},
+				sb:        sb,
+				csvWriter: csvWriter,
 			},
 			wantErr: false,
 		},
@@ -82,12 +87,16 @@ func TestNewFormatter(t *testing.T) {
 			}
 
 			if tt.want != nil {
-				tt.want.sb.WriteString(strings.Join(tt.want.fields, tt.want.job.delimiter()))
-				tt.want.sb.WriteString(tt.want.job.newline())
+				tt.want.csvWriter.Comma = rune(tt.args.job.delimiter()[0])
+				if err := tt.want.csvWriter.Write(tt.want.fields); err != nil {
+					t.Errorf("error writting: %v", err)
+				}
+				tt.want.csvWriter.Flush()
 			}
 
 			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("NewFormatter() = %v, want %v", got, tt.want)
+				t.Logf("got: %q want: %q", got.sb.String(), tt.want.sb.String())
+				t.Errorf("NewFormatter() = %+v, want %+v", got, tt.want)
 			}
 		})
 	}
@@ -109,11 +118,14 @@ func TestFormatter_Add(t *testing.T) {
 		job        *Job
 		fields     []string
 		insertNull bool
-		sb         strings.Builder
+		sb         *strings.Builder
 	}
 	type args struct {
 		records []Record
 	}
+
+	sb := &strings.Builder{}
+
 	tests := []struct {
 		name    string
 		fields  fields
@@ -135,7 +147,7 @@ func TestFormatter_Add(t *testing.T) {
 					"Site",
 				},
 				insertNull: true,
-				sb:         strings.Builder{},
+				sb:         sb,
 			},
 			args: args{
 				records: []Record{
@@ -170,7 +182,7 @@ func TestFormatter_Add(t *testing.T) {
 					"Site",
 				},
 				insertNull: true,
-				sb:         strings.Builder{},
+				sb:         sb,
 			},
 			args: args{
 				records: nil,
@@ -182,10 +194,13 @@ func TestFormatter_Add(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			f := &Formatter{
-				job:    tt.fields.job,
-				fields: tt.fields.fields,
-				sb:     tt.fields.sb,
+				job:       tt.fields.job,
+				fields:    tt.fields.fields,
+				sb:        tt.fields.sb,
+				csvWriter: csv.NewWriter(sb),
 			}
+			f.csvWriter.Comma = rune(f.job.delimiter()[0])
+
 			var err error
 			if err = f.Add(tt.args.records...); (err != nil) != tt.wantErr {
 				t.Errorf("Formatter.Add() error = %v, wantErr %v", err, tt.wantErr)
