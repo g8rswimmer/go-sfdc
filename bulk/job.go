@@ -355,6 +355,7 @@ func (j *Job) Delete() error {
 	if err != nil {
 		return err
 	}
+	defer response.Body.Close()
 
 	if response.StatusCode != http.StatusNoContent {
 		return errors.New("job error: unable to delete job")
@@ -376,6 +377,7 @@ func (j *Job) Upload(body io.Reader) error {
 	if err != nil {
 		return err
 	}
+	defer response.Body.Close()
 
 	if response.StatusCode != http.StatusCreated {
 		return errors.New("job error: unable to upload job")
@@ -397,10 +399,10 @@ func (j *Job) SuccessfulRecords() ([]SuccessfulRecord, error) {
 	if err != nil {
 		return nil, err
 	}
+	defer response.Body.Close()
 
 	if response.StatusCode != http.StatusOK {
 		decoder := json.NewDecoder(response.Body)
-		defer response.Body.Close()
 		var errs []sfdc.Error
 		err = decoder.Decode(&errs)
 		var errMsg error
@@ -417,7 +419,6 @@ func (j *Job) SuccessfulRecords() ([]SuccessfulRecord, error) {
 	}
 
 	scanner := bufio.NewScanner(response.Body)
-	defer response.Body.Close()
 	scanner.Split(bufio.ScanLines)
 	var records []SuccessfulRecord
 	delimiter := j.delimiter()
@@ -465,10 +466,10 @@ func (j *Job) FailedRecords() ([]FailedRecord, error) {
 	if err != nil {
 		return nil, err
 	}
+	defer response.Body.Close()
 
 	if response.StatusCode != http.StatusOK {
 		decoder := json.NewDecoder(response.Body)
-		defer response.Body.Close()
 		var errs []sfdc.Error
 		err = decoder.Decode(&errs)
 		var errMsg error
@@ -485,7 +486,6 @@ func (j *Job) FailedRecords() ([]FailedRecord, error) {
 	}
 
 	scanner := bufio.NewScanner(response.Body)
-	defer response.Body.Close()
 	scanner.Split(bufio.ScanLines)
 	var records []FailedRecord
 	delimiter := j.delimiter()
@@ -528,10 +528,10 @@ func (j *Job) UnprocessedRecords() ([]UnprocessedRecord, error) {
 	if err != nil {
 		return nil, err
 	}
+	defer response.Body.Close()
 
 	if response.StatusCode != http.StatusOK {
 		decoder := json.NewDecoder(response.Body)
-		defer response.Body.Close()
 		var errs []sfdc.Error
 		err = decoder.Decode(&errs)
 		var errMsg error
@@ -548,7 +548,6 @@ func (j *Job) UnprocessedRecords() ([]UnprocessedRecord, error) {
 	}
 
 	scanner := bufio.NewScanner(response.Body)
-	defer response.Body.Close()
 	scanner.Split(bufio.ScanLines)
 	var records []UnprocessedRecord
 	delimiter := j.delimiter()
