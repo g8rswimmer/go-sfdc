@@ -4,8 +4,8 @@ import (
 	"bytes"
 	"net/http"
 
-	"go-sfdc/session"
-	"./sobject"
+	"github.com/TuSKan/go-sfdc/session"
+	"github.com/TuSKan/go-sfdc/sobject"
 )
 
 type insert struct {

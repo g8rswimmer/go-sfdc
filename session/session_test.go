@@ -9,7 +9,7 @@ import (
 	"strings"
 	"testing"
 
-	"go-sfdc"
+	"github.com/TuSKan/go-sfdc"
 	"./credentials"
 )
 

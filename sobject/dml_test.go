@@ -7,9 +7,9 @@ import (
 	"strings"
 	"testing"
 
-	"go-sfdc"
+	"github.com/TuSKan/go-sfdc"
 
-	"go-sfdc/session"
+	"github.com/TuSKan/go-sfdc/session"
 )
 
 type mockInserter struct {

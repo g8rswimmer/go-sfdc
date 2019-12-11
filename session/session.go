@@ -7,8 +7,8 @@ import (
 	"fmt"
 	"net/http"
 
-	"go-sfdc"
-	"go-sfdc/credentials"
+	"github.com/TuSKan/go-sfdc"
+	"github.com/TuSKan/go-sfdc/credentials"
 )
 
 // Session is the authentication response.  This is used to generate the

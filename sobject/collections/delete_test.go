@@ -10,9 +10,9 @@ import (
 
 	"./sobject"
 
-	"go-sfdc"
+	"github.com/TuSKan/go-sfdc"
 
-	"go-sfdc/session"
+	"github.com/TuSKan/go-sfdc/session"
 )
 
 func TestDelete_values(t *testing.T) {

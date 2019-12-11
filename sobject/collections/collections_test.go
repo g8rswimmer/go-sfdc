@@ -9,8 +9,8 @@ import (
 	"strings"
 	"testing"
 
-	"go-sfdc"
-	"go-sfdc/session"
+	"github.com/TuSKan/go-sfdc"
+	"github.com/TuSKan/go-sfdc/session"
 	"./sobject"
 )
 

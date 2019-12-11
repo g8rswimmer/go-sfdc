@@ -11,8 +11,8 @@ import (
 	"strconv"
 	"strings"
 
-	"go-sfdc"
-	"go-sfdc/session"
+	"github.com/TuSKan/go-sfdc"
+	"github.com/TuSKan/go-sfdc/session"
 )
 
 // JobType is the bulk job type.
