@@ -14,7 +14,7 @@ import (
 // Session is the authentication response.  This is used to generate the
 // authroization header for the Salesforce API calls.
 type Session struct {
-	response *sessionPasswordResponse
+	response *Response
 	config   sfdc.Configuration
 }
 
@@ -48,7 +48,8 @@ type ServiceFormatter interface {
 	ServiceURL() string
 }
 
-type sessionPasswordResponse struct {
+// Response ...
+type Response struct {
 	AccessToken string `json:"access_token"`
 	InstanceURL string `json:"instance_url"`
 	ID          string `json:"id"`
@@ -71,13 +72,13 @@ func Open(config sfdc.Configuration) (*Session, error) {
 	if config.Version <= 0 {
 		return nil, errors.New("session: configuration version can not be less than zero")
 	}
-	request, err := passwordSessionRequest(config.Credentials)
+	request, err := sessionRequest(config.Credentials)
 
 	if err != nil {
 		return nil, err
 	}
 
-	response, err := passwordSessionResponse(request, config.Client)
+	response, err := sessionResponse(request, config.Client)
 	if err != nil {
 		return nil, err
 	}
@@ -90,7 +91,72 @@ func Open(config sfdc.Configuration) (*Session, error) {
 	return session, nil
 }
 
-func passwordSessionRequest(creds *credentials.Credentials) (*http.Request, error) {
+// Refresh - refresh session
+func Refresh(session *Session) (*Session, error) {
+	rcreds := credentials.RefreshCredentials{
+		URL:          session.config.Credentials.URL(),
+		ClientID:     session.config.Credentials.ClientID(),
+		ClientSecret: session.config.Credentials.ClientSecret(),
+		AccessToken:  session.response.AccessToken,
+	}
+
+	newcred, err := credentials.NewRefreshCredentials(rcreds)
+	if err != nil {
+		return nil, err
+	}
+
+	request, err := sessionRequest(newcred)
+	if err != nil {
+		return nil, err
+	}
+
+	response, err := sessionResponse(request, session.config.Client)
+	if err != nil {
+		return nil, err
+	}
+
+	session = &Session{
+		response: response,
+		config:   session.config,
+	}
+
+	return session, nil
+}
+
+// IsValid ...
+func IsValid(session *Session) (bool, error) {
+
+	request, err := http.NewRequest(http.MethodGet, session.ServiceURL(), nil)
+
+	if err != nil {
+		return false, err
+	}
+
+	session.AuthorizationHeader(request)
+	request.Header.Add("Content-Type", "application/x-www-form-urlencoded")
+	request.Header.Add("Accept", "application/json")
+
+	response, err := session.Client().Do(request)
+	if err != nil {
+		return false, err
+	}
+
+	if response.StatusCode != http.StatusOK {
+		return false, fmt.Errorf("session response error: %d %s", response.StatusCode, response.Status)
+	}
+	decoder := json.NewDecoder(response.Body)
+	defer response.Body.Close()
+
+	var sessionResponse Response
+	err = decoder.Decode(&sessionResponse)
+	if err != nil {
+		return false, err
+	}
+
+	return true, nil
+}
+
+func sessionRequest(creds *credentials.Credentials) (*http.Request, error) {
 
 	oauthURL := creds.URL() + oauthEndpoint
 
@@ -110,7 +176,7 @@ func passwordSessionRequest(creds *credentials.Credentials) (*http.Request, erro
 	return request, nil
 }
 
-func passwordSessionResponse(request *http.Request, client *http.Client) (*sessionPasswordResponse, error) {
+func sessionResponse(request *http.Request, client *http.Client) (*Response, error) {
 	response, err := client.Do(request)
 	if err != nil {
 		return nil, err
@@ -122,7 +188,7 @@ func passwordSessionResponse(request *http.Request, client *http.Client) (*sessi
 	decoder := json.NewDecoder(response.Body)
 	defer response.Body.Close()
 
-	var sessionResponse sessionPasswordResponse
+	var sessionResponse Response
 	err = decoder.Decode(&sessionResponse)
 	if err != nil {
 		return nil, err

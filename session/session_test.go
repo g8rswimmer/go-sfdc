@@ -50,7 +50,7 @@ func TestPasswordSessionRequest(t *testing.T) {
 		if err != nil {
 			t.Fatal("password credentials can not return an error for these tests")
 		}
-		request, err := passwordSessionRequest(passwordCreds)
+		request, err := sessionRequest(passwordCreds)
 
 		if err != nil && scenario.err == nil {
 			t.Errorf("%s Error was not expected %s", scenario.desc, err.Error())
@@ -93,12 +93,12 @@ func TestPasswordSessionRequest(t *testing.T) {
 
 }
 
-func TestPasswordSessionResponse(t *testing.T) {
+func TestsessionResponse(t *testing.T) {
 	scenarios := []struct {
 		desc     string
 		url      string
 		client   *http.Client
-		response *sessionPasswordResponse
+		response *Response
 		err      error
 	}{
 		{
@@ -121,7 +121,7 @@ func TestPasswordSessionResponse(t *testing.T) {
 					Header:     make(http.Header),
 				}
 			}),
-			response: &sessionPasswordResponse{
+			response: &Response{
 				AccessToken: "token",
 				InstanceURL: "https://some.salesforce.instance.com",
 				ID:          "https://test.salesforce.com/id/123456789",
@@ -142,7 +142,7 @@ func TestPasswordSessionResponse(t *testing.T) {
 					Header:     make(http.Header),
 				}
 			}),
-			response: &sessionPasswordResponse{},
+			response: &Response{},
 			err:      fmt.Errorf("session response error: %d %s", http.StatusInternalServerError, "Some status"),
 		},
 		{
@@ -165,7 +165,7 @@ func TestPasswordSessionResponse(t *testing.T) {
 					Header:     make(http.Header),
 				}
 			}),
-			response: &sessionPasswordResponse{},
+			response: &Response{},
 			err:      errors.New("invalid character '}' looking for beginning of object key string"),
 		},
 	}
@@ -178,7 +178,7 @@ func TestPasswordSessionResponse(t *testing.T) {
 			t.Fatal(err.Error())
 		}
 
-		response, err := passwordSessionResponse(request, scenario.client)
+		response, err := sessionResponse(request, scenario.client)
 
 		if err != nil && scenario.err == nil {
 			t.Errorf("%s Error was not expected %s", scenario.desc, err.Error())
@@ -264,7 +264,7 @@ func TestNewPasswordSession(t *testing.T) {
 				Version: 45,
 			},
 			session: &Session{
-				response: &sessionPasswordResponse{
+				response: &Response{
 					AccessToken: "token",
 					InstanceURL: "https://some.salesforce.instance.com",
 					ID:          "https://test.salesforce.com/id/123456789",
@@ -369,7 +369,7 @@ func TestNewPasswordSession(t *testing.T) {
 
 func TestSession_ServiceURL(t *testing.T) {
 	type fields struct {
-		response *sessionPasswordResponse
+		response *Response
 		config   sfdc.Configuration
 	}
 	tests := []struct {
@@ -380,7 +380,7 @@ func TestSession_ServiceURL(t *testing.T) {
 		{
 			name: "Passing URL",
 			fields: fields{
-				response: &sessionPasswordResponse{
+				response: &Response{
 					InstanceURL: "https://www.my.salesforce.instance",
 				},
 				config: sfdc.Configuration{
@@ -405,7 +405,7 @@ func TestSession_ServiceURL(t *testing.T) {
 
 func TestSession_AuthorizationHeader(t *testing.T) {
 	type fields struct {
-		response *sessionPasswordResponse
+		response *Response
 		config   sfdc.Configuration
 	}
 	type args struct {
@@ -420,7 +420,7 @@ func TestSession_AuthorizationHeader(t *testing.T) {
 		{
 			name: "Authorization Test",
 			fields: fields{
-				response: &sessionPasswordResponse{
+				response: &Response{
 					TokenType:   "Type",
 					AccessToken: "Access",
 				},
@@ -452,7 +452,7 @@ func TestSession_AuthorizationHeader(t *testing.T) {
 
 func TestSession_Client(t *testing.T) {
 	type fields struct {
-		response *sessionPasswordResponse
+		response *Response
 		config   sfdc.Configuration
 	}
 	tests := []struct {
@@ -463,7 +463,7 @@ func TestSession_Client(t *testing.T) {
 		{
 			name: "Session Client",
 			fields: fields{
-				response: &sessionPasswordResponse{},
+				response: &Response{},
 				config: sfdc.Configuration{
 					Client: http.DefaultClient,
 				},
@@ -486,7 +486,7 @@ func TestSession_Client(t *testing.T) {
 
 func TestSession_InstanceURL(t *testing.T) {
 	type fields struct {
-		response *sessionPasswordResponse
+		response *Response
 		config   sfdc.Configuration
 	}
 	tests := []struct {
@@ -497,7 +497,7 @@ func TestSession_InstanceURL(t *testing.T) {
 		{
 			name: "Passing URL",
 			fields: fields{
-				response: &sessionPasswordResponse{
+				response: &Response{
 					InstanceURL: "https://www.my.salesforce.instance",
 				},
 				config: sfdc.Configuration{

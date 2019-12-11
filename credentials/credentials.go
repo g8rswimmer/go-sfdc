@@ -25,6 +25,14 @@ type PasswordCredentials struct {
 	ClientSecret string
 }
 
+// RefreshCredentials - OAuth Refresh Token
+type RefreshCredentials struct {
+	URL          string
+	ClientID     string
+	ClientSecret string
+	AccessToken  string
+}
+
 // Credentials is the structure that contains all of the
 // information for creating a session.
 type Credentials struct {
@@ -40,12 +48,15 @@ type Credentials struct {
 type Provider interface {
 	Retrieve() (io.Reader, error)
 	URL() string
+	ClientID() string
+	ClientSecret() string
 }
 
 type grantType string
 
 const (
 	passwordGrantType grantType = "password"
+	refreshGrantType  grantType = "refresh_token"
 )
 
 // Retrieve will return the reader for the HTTP request body.
@@ -56,6 +67,16 @@ func (creds *Credentials) Retrieve() (io.Reader, error) {
 // URL is the URL base for the session endpoint.
 func (creds *Credentials) URL() string {
 	return creds.provider.URL()
+}
+
+// ClientID is the ClientID
+func (creds *Credentials) ClientID() string {
+	return creds.provider.ClientID()
+}
+
+// ClientSecret is the ClientSecret
+func (creds *Credentials) ClientSecret() string {
+	return creds.provider.ClientSecret()
 }
 
 // NewCredentials will create a credential with the custom provider.
@@ -80,6 +101,18 @@ func NewPasswordCredentials(creds PasswordCredentials) (*Credentials, error) {
 	}, nil
 }
 
+// NewRefreshCredentials will create a crendential with the refresh credentials.
+func NewRefreshCredentials(creds RefreshCredentials) (*Credentials, error) {
+	if err := validateRefreshCredentials(creds); err != nil {
+		return nil, err
+	}
+	return &Credentials{
+		provider: &refreshProvider{
+			creds: creds,
+		},
+	}, nil
+}
+
 func validatePasswordCredentials(cred PasswordCredentials) error {
 	if cred.URL == "" {
 		return errors.New("credentials: password credential's URL can not be empty")
@@ -95,6 +128,22 @@ func validatePasswordCredentials(cred PasswordCredentials) error {
 	}
 	if cred.ClientSecret == "" {
 		return errors.New("credentials: password credential's client secret can not be empty")
+	}
+	return nil
+}
+
+func validateRefreshCredentials(cred RefreshCredentials) error {
+	if cred.URL == "" {
+		return errors.New("credentials: refresh credential's URL can not be empty")
+	}
+	if cred.ClientID == "" {
+		return errors.New("credentials: refresh credential's client ID can not be empty")
+	}
+	if cred.ClientSecret == "" {
+		return errors.New("credentials: refresh credential's client secret can not be empty")
+	}
+	if cred.AccessToken == "" {
+		return errors.New("credentials: refresh credential's access token can not be empty")
 	}
 	return nil
 }

@@ -24,3 +24,11 @@ func (provider *passwordProvider) Retrieve() (io.Reader, error) {
 func (provider *passwordProvider) URL() string {
 	return provider.creds.URL
 }
+
+func (provider *passwordProvider) ClientID() string {
+	return provider.creds.ClientID
+}
+
+func (provider *passwordProvider) ClientSecret() string {
+	return provider.creds.ClientSecret
+}
