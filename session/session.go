@@ -22,7 +22,6 @@ type Session struct {
 // the resources.
 type Clienter interface {
 	Client() *http.Client
-	Validade() error
 }
 
 // InstanceFormatter is the session interface that
@@ -223,21 +222,4 @@ func (session *Session) AuthorizationHeader(request *http.Request) {
 // Client returns the HTTP client to be used in APIs calls.
 func (session *Session) Client() *http.Client {
 	return session.config.Client
-}
-
-// Validade ...
-func (session *Session) Validade() error {
-	if session == nil {
-		return fmt.Errorf("session: can not be nil")
-	}
-	ok, err := session.IsAlive()
-	if err != nil {
-		return fmt.Errorf("session: fail to check if its alive")
-	}
-	if !ok {
-		if err = session.Refresh(); err != nil {
-			return fmt.Errorf("session: fail to refresh")
-		}
-	}
-	return nil
 }

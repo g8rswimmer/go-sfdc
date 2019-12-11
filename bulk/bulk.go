@@ -29,8 +29,8 @@ type Resource struct {
 // NewResource creates a new bulk 2.0 REST resource.  If the session is nil
 // an error will be returned.
 func NewResource(session session.ServiceFormatter) (*Resource, error) {
-	if err := session.Validade(); err != nil {
-		return nil, fmt.Errorf("bulk: %v", err)
+	if session == nil {
+		return nil, fmt.Errorf("session: can not be nil")
 	}
 	return &Resource{
 		session: session,
