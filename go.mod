@@ -1,3 +1,3 @@
-module github.com/TuSKan/go-sfdc
+module go-sfdc
 
 go 1.13
