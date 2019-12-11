@@ -22,6 +22,7 @@ type Session struct {
 // the resources.
 type Clienter interface {
 	Client() *http.Client
+	Validade() error
 }
 
 // InstanceFormatter is the session interface that
@@ -92,7 +93,7 @@ func Open(config sfdc.Configuration) (*Session, error) {
 }
 
 // Refresh - refresh session
-func Refresh(session *Session) (*Session, error) {
+func (session *Session) Refresh() error {
 	rcreds := credentials.RefreshCredentials{
 		URL:          session.config.Credentials.URL(),
 		ClientID:     session.config.Credentials.ClientID(),
@@ -102,17 +103,17 @@ func Refresh(session *Session) (*Session, error) {
 
 	newcred, err := credentials.NewRefreshCredentials(rcreds)
 	if err != nil {
-		return nil, err
+		return err
 	}
 
 	request, err := sessionRequest(newcred)
 	if err != nil {
-		return nil, err
+		return err
 	}
 
 	response, err := sessionResponse(request, session.config.Client)
 	if err != nil {
-		return nil, err
+		return err
 	}
 
 	session = &Session{
@@ -120,14 +121,13 @@ func Refresh(session *Session) (*Session, error) {
 		config:   session.config,
 	}
 
-	return session, nil
+	return nil
 }
 
-// IsValid ...
-func IsValid(session *Session) (bool, error) {
+// IsAlive ...
+func (session *Session) IsAlive() (bool, error) {
 
 	request, err := http.NewRequest(http.MethodGet, session.ServiceURL(), nil)
-
 	if err != nil {
 		return false, err
 	}
@@ -147,10 +147,14 @@ func IsValid(session *Session) (bool, error) {
 	decoder := json.NewDecoder(response.Body)
 	defer response.Body.Close()
 
-	var sessionResponse Response
-	err = decoder.Decode(&sessionResponse)
+	resources := make(map[string]string)
+	err = decoder.Decode(&resources)
 	if err != nil {
 		return false, err
+	}
+
+	if resources["errorCode"] == "INVALID_SESSION_ID" {
+		return false, nil
 	}
 
 	return true, nil
@@ -219,4 +223,21 @@ func (session *Session) AuthorizationHeader(request *http.Request) {
 // Client returns the HTTP client to be used in APIs calls.
 func (session *Session) Client() *http.Client {
 	return session.config.Client
+}
+
+// Validade ...
+func (session *Session) Validade() error {
+	if session == nil {
+		return fmt.Errorf("session: can not be nil")
+	}
+	ok, err := session.IsAlive()
+	if err != nil {
+		return fmt.Errorf("session: fail to check if its alive")
+	}
+	if !ok {
+		if err = session.Refresh(); err != nil {
+			return fmt.Errorf("session: fail to refresh")
+		}
+	}
+	return nil
 }
