@@ -187,7 +187,7 @@ func sessionResponse(request *http.Request, client *http.Client) (*Response, err
 	}
 
 	if response.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("session response error: %d %s", response.StatusCode, response.Status)
+		return nil, fmt.Errorf("session response error: %s", response.Status)
 	}
 	decoder := json.NewDecoder(response.Body)
 	defer response.Body.Close()

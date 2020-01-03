@@ -24,3 +24,6 @@ config := sfdc.Configuration{
 	Version:     44,
 }
 ```
+### TODO
+Implement JWTCredentials Doc: *https://help.salesforce.com/articleView?id=remoteaccess_oauth_jwt_flow.htm&type=5*
+Go Module: *https://github.com/dgrijalva/jwt-go*
