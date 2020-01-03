@@ -140,9 +140,10 @@ func (session *Session) IsAlive() (bool, error) {
 		return false, err
 	}
 
-	if response.StatusCode != http.StatusOK {
-		return false, fmt.Errorf("session response error: %d %s", response.StatusCode, response.Status)
+	if response.StatusCode == http.StatusUnauthorized {
+		return false, nil
 	}
+
 	decoder := json.NewDecoder(response.Body)
 	defer response.Body.Close()
 
