@@ -262,7 +262,7 @@ func (d *dml) upsertResponse(request *http.Request) (UpsertValue, error) {
 	var value UpsertValue
 
 	switch response.StatusCode {
-	case http.StatusCreated:
+	case http.StatusCreated, http.StatusOK:
 		defer response.Body.Close()
 		isInsert = true
 		err = decoder.Decode(&value)
