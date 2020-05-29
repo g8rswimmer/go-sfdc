@@ -76,11 +76,7 @@ func (r *Resource) callout(inserter Inserter) (*Value, error) {
 
 	value, err := r.response(request)
 
-	if err != nil {
-		return nil, err
-	}
-
-	return &value, nil
+	return &value, err
 }
 func (r *Resource) request(inserter Inserter) (*http.Request, error) {
 
