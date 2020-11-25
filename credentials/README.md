@@ -24,3 +24,35 @@ config := sfdc.Configuration{
 	Version:     44,
 }
 ```
+
+### JWT
+
+```
+// read the key file
+privateKeyFile, err := os.Open("/path/to/server.key")
+if err != nil {
+    panic()
+}
+pemfileinfo, _ := privateKeyFile.Stat()
+var size int64 = pemfileinfo.Size()
+pembytes := make([]byte, size)
+buffer := bufio.NewReader(privateKeyFile)
+_, err = buffer.Read(pembytes)
+pemData := []byte(pembytes)
+privateKeyFile.Close() // close file
+signKey, err := jwt.ParseRSAPrivateKeyFromPEM(pemData)
+
+// prepare the credentials
+jwtCreds := credentials.JwtCredentials{
+    URL: "https://login.salesforce.com",
+    ClientId: "glfeoeirjgouwehf",
+    ClientUsername: "my.user@name.com",
+    ClientKey: signKey,
+}
+
+config := sfdc.Configuration{
+    Credentials: credentials.NewJWTCredentials(jwtCreds),
+    Client:      &http.Client{},
+    Version:     44,
+}
+```
