@@ -1,6 +1,7 @@
 package credentials
 
 import (
+	"crypto/rsa"
 	"errors"
 	"io"
 )
@@ -25,6 +26,13 @@ type PasswordCredentials struct {
 	ClientSecret string
 }
 
+type JwtCredentials struct {
+	URL				string
+	ClientId 		string // the client id as defined in the connected app in SalesForce
+	ClientUsername 	string
+	ClientKey 		*rsa.PrivateKey  // the client RSA key uploaded for authentication in the ConnectedApp
+}
+
 // Credentials is the structure that contains all of the
 // information for creating a session.
 type Credentials struct {
@@ -46,6 +54,7 @@ type grantType string
 
 const (
 	passwordGrantType grantType = "password"
+	jwtGrantType grantType = "urn:ietf:params:oauth:grant-type:jwt-bearer"
 )
 
 // Retrieve will return the reader for the HTTP request body.
@@ -80,21 +89,43 @@ func NewPasswordCredentials(creds PasswordCredentials) (*Credentials, error) {
 	}, nil
 }
 
+// NewJWTCredentials weill create a credntial with all required info about generating a JWT claims parameter
+func NewJWTCredentials(creds JwtCredentials) (*Credentials, error) {
+	if err := validateJWTCredentials(creds); err != nil {return nil, err}
+	return &Credentials{
+		provider: &jwtProvider{
+			creds: creds,
+		},
+	}, nil
+}
+
 func validatePasswordCredentials(cred PasswordCredentials) error {
-	if cred.URL == "" {
+	switch {
+	case len(cred.URL) == 0:
 		return errors.New("credentials: password credential's URL can not be empty")
-	}
-	if cred.Username == "" {
+	case len(cred.Username) == 0:
 		return errors.New("credentials: password credential's username can not be empty")
-	}
-	if cred.Password == "" {
+	case len(cred.Password) == 0:
 		return errors.New("credentials: password credential's password can not be empty")
-	}
-	if cred.ClientID == "" {
+	case len(cred.ClientID) == 0:
 		return errors.New("credentials: password credential's client ID can not be empty")
-	}
-	if cred.ClientSecret == "" {
+	case len(cred.ClientSecret) == 0:
 		return errors.New("credentials: password credential's client secret can not be empty")
 	}
 	return nil
+}
+
+func validateJWTCredentials(cred JwtCredentials) error {
+	switch {
+	case len(cred.URL) == 0:
+		return errors.New("URL cannot be empty")
+	case cred.ClientKey == nil:
+		return errors.New("client key cannot be empty")
+	case len(cred.ClientUsername) == 0:
+		return errors.New("client username cannot be empty")
+	case len(cred.ClientId) == 0:
+		return errors.New("client id cannot be empty")
+	}
+	return nil
+
 }
