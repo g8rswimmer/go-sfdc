@@ -1,11 +1,16 @@
 package credentials
 
 import (
+	"fmt"
 	"github.com/dgrijalva/jwt-go"
 	"io"
 	"net/url"
 	"strings"
 	"time"
+)
+
+const (
+	JwtExpiration = 3 * time.Minute
 )
 
 type jwtProvider struct {
@@ -20,7 +25,7 @@ func (provider *jwtProvider) Retrieve() (io.Reader, error) {
 	expirationTime := provider.GetAppropriateExpirationTime()
 	tokenString, err := provider.BuildClaimsToken(expirationTime, provider.creds.URL, provider.creds.ClientId, provider.creds.ClientUsername)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("jwtProvider.Retrieve() error: %w", err)
 	}
 
 	form := url.Values{}
@@ -35,7 +40,7 @@ func (provider *jwtProvider) URL() string {
 }
 
 func (provider *jwtProvider) GetAppropriateExpirationTime() int64 {
-	return time.Now().Add(3 * time.Minute).Unix()
+	return time.Now().Add(JwtExpiration).Unix()
 }
 
 // builds the actual claims token required for authentication
@@ -50,5 +55,6 @@ func (provider *jwtProvider) BuildClaimsToken(expirationTime int64, url string, 
 		},
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodRS256, claims)
-	return token.SignedString(provider.creds.ClientKey)
+	tokenString, error := token.SignedString(provider.creds.ClientKey)
+	return tokenString, error
 }

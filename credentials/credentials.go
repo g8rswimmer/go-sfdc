@@ -100,29 +100,32 @@ func NewJWTCredentials(creds JwtCredentials) (*Credentials, error) {
 }
 
 func validatePasswordCredentials(cred PasswordCredentials) error {
-	if cred.URL == "" {
+	switch {
+	case len(cred.URL) == 0:
 		return errors.New("credentials: password credential's URL can not be empty")
-	}
-	if cred.Username == "" {
+	case len(cred.Username) == 0:
 		return errors.New("credentials: password credential's username can not be empty")
-	}
-	if cred.Password == "" {
+	case len(cred.Password) == 0:
 		return errors.New("credentials: password credential's password can not be empty")
-	}
-	if cred.ClientID == "" {
+	case len(cred.ClientID) == 0:
 		return errors.New("credentials: password credential's client ID can not be empty")
-	}
-	if cred.ClientSecret == "" {
+	case len(cred.ClientSecret) == 0:
 		return errors.New("credentials: password credential's client secret can not be empty")
 	}
 	return nil
 }
 
 func validateJWTCredentials(cred JwtCredentials) error {
-	if cred.URL == "" {return errors.New("URL cannot be empty")}
-	if cred.ClientKey == nil {return errors.New("client key cannot be empty")}
-	if cred.ClientUsername == "" {return errors.New("client username cannot be empty")}
-	if cred.ClientId == "" {return errors.New("client id cannot be empty")}
+	switch {
+	case len(cred.URL) == 0:
+		return errors.New("URL cannot be empty")
+	case cred.ClientKey == nil:
+		return errors.New("client key cannot be empty")
+	case len(cred.ClientUsername) == 0:
+		return errors.New("client username cannot be empty")
+	case len(cred.ClientId) == 0:
+		return errors.New("client id cannot be empty")
+	}
 	return nil
 
 }
