@@ -258,19 +258,17 @@ func (d *dml) upsertResponse(request *http.Request) (UpsertValue, error) {
 
 	decoder := json.NewDecoder(response.Body)
 
-	var isInsert bool
 	var value UpsertValue
 
 	switch response.StatusCode {
-	case http.StatusCreated:
+	case http.StatusCreated, http.StatusOK:
 		defer response.Body.Close()
-		isInsert = true
 		err = decoder.Decode(&value)
 		if err != nil {
 			return UpsertValue{}, err
 		}
 	case http.StatusNoContent:
-		isInsert = false
+		break // out of the switch
 	default:
 		defer response.Body.Close()
 		var upsetErrs []sfdc.Error
@@ -284,7 +282,9 @@ func (d *dml) upsertResponse(request *http.Request) (UpsertValue, error) {
 		return UpsertValue{}, errMsg
 	}
 
-	value.Inserted = isInsert
+	if response.StatusCode == http.StatusCreated {
+		value.Inserted = true
+	}
 
 	return value, nil
 }
