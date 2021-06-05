@@ -7,7 +7,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/g8rswimmer/go-sfdc/session"
+	"github.com/nettolicious/go-sfdc/session"
 )
 
 func TestNewResource(t *testing.T) {
