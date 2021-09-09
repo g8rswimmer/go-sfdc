@@ -1,6 +1,7 @@
 package composite
 
 import (
+	"encoding/json"
 	"io/ioutil"
 	"net/http"
 	"reflect"
@@ -170,11 +171,22 @@ func TestResource_payload(t *testing.T) {
 		allOrNone  bool
 		requesters []Subrequester
 	}
+	type compositeRequest struct {
+		Url         string
+		ReferenceId string
+		Method      string
+		HttpHeaders map[string]interface{}
+	}
+	type wantPayload struct {
+		AllOrNone        bool
+		CompositeRequest []compositeRequest
+	}
 	tests := []struct {
-		name    string
-		fields  fields
-		args    args
-		wantErr bool
+		name        string
+		fields      fields
+		args        args
+		wantPayload wantPayload
+		wantErr     bool
 	}{
 		{
 			name:   "success",
@@ -187,12 +199,25 @@ func TestResource_payload(t *testing.T) {
 						referenceID: "someID",
 						method:      http.MethodGet,
 						httpHeaders: http.Header(map[string][]string{
-							"Accept-Language": []string{"en-us,"},
+							"Accept-Language":   []string{"en-us"},
+							"Some-Other-Header": []string{"abc", "def"},
 						}),
 					},
 				},
 			},
 			wantErr: false,
+			wantPayload: wantPayload{
+				AllOrNone: true,
+				CompositeRequest: []compositeRequest{{
+					Url:         "www.something.com",
+					ReferenceId: "someID",
+					Method:      http.MethodGet,
+					HttpHeaders: map[string]interface{}{
+						"Accept-Language":   "en-us",
+						"Some-Other-Header": []interface{}{"abc", "def"},
+					},
+				}},
+			},
 		},
 	}
 	for _, tt := range tests {
@@ -200,7 +225,16 @@ func TestResource_payload(t *testing.T) {
 			r := &Resource{
 				session: tt.fields.session,
 			}
-			_, err := r.payload(tt.args.allOrNone, tt.args.requesters)
+			bytesReader, err := r.payload(tt.args.allOrNone, tt.args.requesters)
+			var m wantPayload
+			if err := json.NewDecoder(bytesReader).Decode(&m); err != nil {
+				t.Errorf("Decode() error = %v, wantErr %v", err, nil)
+				return
+			}
+			if !reflect.DeepEqual(m, tt.wantPayload) {
+				t.Errorf("actual payload = %+v, expected %+v", m, tt.wantPayload)
+				return
+			}
 			if (err != nil) != tt.wantErr {
 				t.Errorf("Resource.payload() error = %v, wantErr %v", err, tt.wantErr)
 				return

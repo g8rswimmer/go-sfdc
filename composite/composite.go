@@ -158,7 +158,15 @@ func (r *Resource) payload(allOrNone bool, requesters []Subrequester) (*bytes.Re
 			subRequest["body"] = requester.Body()
 		}
 		if requester.HTTPHeaders() != nil {
-			subRequest["httpHeaders"] = requester.HTTPHeaders()
+			salesforceHeaders := map[string]interface{}{}
+			for k, v := range requester.HTTPHeaders() {
+				if len(v) == 1 {
+					salesforceHeaders[k] = v[0]
+				} else {
+					salesforceHeaders[k] = v
+				}
+			}
+			subRequest["httpHeaders"] = salesforceHeaders
 		}
 		subRequests[idx] = subRequest
 	}
