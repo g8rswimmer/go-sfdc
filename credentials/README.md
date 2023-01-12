@@ -27,7 +27,7 @@ config := sfdc.Configuration{
 
 ### JWT
 
-```
+```go
 // read the key file
 privateKeyFile, err := os.Open("/path/to/server.key")
 if err != nil {
