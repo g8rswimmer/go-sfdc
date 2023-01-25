@@ -52,7 +52,7 @@ func (result *QueryResult) Records() []*QueryRecord {
 
 // Next will query the next set of records.
 func (result *QueryResult) Next() (*QueryResult, error) {
-	if result.MoreRecords() == false {
+	if !result.MoreRecords() {
 		return nil, errors.New("soql query result: no more records to query")
 	}
 	return result.resource.next(result.response.NextRecordsURL)

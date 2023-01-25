@@ -27,10 +27,10 @@ type PasswordCredentials struct {
 }
 
 type JwtCredentials struct {
-	URL				string
-	ClientId 		string // the client id as defined in the connected app in SalesForce
-	ClientUsername 	string
-	ClientKey 		*rsa.PrivateKey  // the client RSA key uploaded for authentication in the ConnectedApp
+	URL            string
+	ClientId       string // the client id as defined in the connected app in SalesForce
+	ClientUsername string
+	ClientKey      *rsa.PrivateKey // the client RSA key uploaded for authentication in the ConnectedApp
 }
 
 // Credentials is the structure that contains all of the
@@ -54,7 +54,7 @@ type grantType string
 
 const (
 	passwordGrantType grantType = "password"
-	jwtGrantType grantType = "urn:ietf:params:oauth:grant-type:jwt-bearer"
+	jwtGrantType      grantType = "urn:ietf:params:oauth:grant-type:jwt-bearer"
 )
 
 // Retrieve will return the reader for the HTTP request body.
@@ -91,7 +91,9 @@ func NewPasswordCredentials(creds PasswordCredentials) (*Credentials, error) {
 
 // NewJWTCredentials weill create a credntial with all required info about generating a JWT claims parameter
 func NewJWTCredentials(creds JwtCredentials) (*Credentials, error) {
-	if err := validateJWTCredentials(creds); err != nil {return nil, err}
+	if err := validateJWTCredentials(creds); err != nil {
+		return nil, err
+	}
 	return &Credentials{
 		provider: &jwtProvider{
 			creds: creds,

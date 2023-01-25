@@ -558,7 +558,7 @@ func (j *Job) UnprocessedRecords() ([]UnprocessedRecord, error) {
 }
 
 func (j *Job) recordResultHeader(scanner *bufio.Scanner, delimiter string) ([]string, error) {
-	if scanner.Scan() == false {
+	if !scanner.Scan() {
 		return nil, errors.New("job: response needs to have header")
 	}
 	text := strings.Replace(scanner.Text(), "\"", "", -1)

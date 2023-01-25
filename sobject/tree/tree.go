@@ -60,7 +60,7 @@ func (r *Resource) Insert(inserter Inserter) (*Value, error) {
 	if err != nil {
 		return nil, err
 	}
-	if matching == false {
+	if !matching {
 		return nil, fmt.Errorf("tree resourse: %s is not a valid sobject", sobject)
 	}
 

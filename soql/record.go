@@ -55,13 +55,13 @@ func (rec *QueryRecord) Subresult(sub string) (*QueryResult, bool) {
 }
 
 func isSubQuery(jsonMap map[string]interface{}) bool {
-	if _, has := jsonMap["totalSize"]; has == false {
+	if _, has := jsonMap["totalSize"]; !has {
 		return false
 	}
-	if _, has := jsonMap["done"]; has == false {
+	if _, has := jsonMap["done"]; !has {
 		return false
 	}
-	if _, has := jsonMap["records"]; has == false {
+	if _, has := jsonMap["records"]; !has {
 		return false
 	}
 	return true

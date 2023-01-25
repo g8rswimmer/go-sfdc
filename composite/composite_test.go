@@ -1,7 +1,7 @@
 package composite
 
 import (
-	"io/ioutil"
+	"io"
 	"net/http"
 	"reflect"
 	"strings"
@@ -277,7 +277,7 @@ func TestResource_Retrieve(t *testing.T) {
 							return &http.Response{
 								StatusCode: 500,
 								Status:     "Invalid URL",
-								Body:       ioutil.NopCloser(strings.NewReader(req.URL.String())),
+								Body:       io.NopCloser(strings.NewReader(req.URL.String())),
 								Header:     make(http.Header),
 							}
 						}
@@ -344,7 +344,7 @@ func TestResource_Retrieve(t *testing.T) {
 						return &http.Response{
 							StatusCode: http.StatusOK,
 							Status:     "Good",
-							Body:       ioutil.NopCloser(strings.NewReader(resp)),
+							Body:       io.NopCloser(strings.NewReader(resp)),
 							Header:     make(http.Header),
 						}
 
@@ -439,7 +439,7 @@ func TestResource_Retrieve(t *testing.T) {
 							return &http.Response{
 								StatusCode: 500,
 								Status:     "Invalid URL",
-								Body:       ioutil.NopCloser(strings.NewReader(req.URL.String())),
+								Body:       io.NopCloser(strings.NewReader(req.URL.String())),
 								Header:     make(http.Header),
 							}
 						}
@@ -454,7 +454,7 @@ func TestResource_Retrieve(t *testing.T) {
 						return &http.Response{
 							StatusCode: http.StatusBadRequest,
 							Status:     "Bad",
-							Body:       ioutil.NopCloser(strings.NewReader(resp)),
+							Body:       io.NopCloser(strings.NewReader(resp)),
 							Header:     make(http.Header),
 						}
 

@@ -123,7 +123,7 @@ func (r *Resource) validateSubrequests(requesters []Subrequester) error {
 		if requester.URL() == "" {
 			return errors.New("composite subrequest: must contain a url")
 		}
-		if _, has := validMethods[requester.Method()]; has == false {
+		if _, has := validMethods[requester.Method()]; !has {
 			return errors.New("composite subrequest: empty or invalid method " + requester.Method())
 		}
 	}

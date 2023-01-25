@@ -1,0 +1,44 @@
+name: CI
+
+on:
+  push:
+    branches: ["main", "master"]
+  pull_request:
+    branches: ["main", "master"]
+
+env:
+  GO111MODULE: on
+  GO_VERSION: "1.19"
+  LINTER_VERSION: "1.50.1"
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Install Go
+      uses: actions/setup-go@v2
+      with:
+        go-version: ${{ env.GO_VERSION }}.x
+    - name: Checkout code
+      uses: actions/checkout@v2
+    - name: Run linters
+      uses: golangci/golangci-lint-action@v2
+      with:
+        # Required: the version of golangci-lint is required and must be specified without patch version: they always use the latest patch version.
+        version: v${{ env.LINTER_VERSION }}
+        # enable gofmt to check formatting issues
+        args: --enable gofmt
+        # show only new issues if it's a pull request. The default value is `false`.
+        only-new-issues: true
+
+  test:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Install Go
+      uses: actions/setup-go@v2
+      with:
+        go-version: ${{ env.GO_VERSION }}.x
+    - name: Checkout code
+      uses: actions/checkout@v2
+    - name: Run tests
+      run: go test -count=1  ./...

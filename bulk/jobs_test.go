@@ -1,7 +1,7 @@
 package bulk
 
 import (
-	"io/ioutil"
+	"io"
 	"net/http"
 	"reflect"
 	"strings"
@@ -55,7 +55,7 @@ func TestJobs_do(t *testing.T) {
 						return &http.Response{
 							StatusCode: http.StatusOK,
 							Status:     "Good",
-							Body:       ioutil.NopCloser(strings.NewReader(resp)),
+							Body:       io.NopCloser(strings.NewReader(resp)),
 							Header:     make(http.Header),
 						}
 
@@ -104,7 +104,7 @@ func TestJobs_do(t *testing.T) {
 						return &http.Response{
 							StatusCode: http.StatusBadRequest,
 							Status:     "Bad",
-							Body:       ioutil.NopCloser(strings.NewReader(resp)),
+							Body:       io.NopCloser(strings.NewReader(resp)),
 							Header:     make(http.Header),
 						}
 					}),
@@ -144,7 +144,7 @@ func Test_newJobs(t *testing.T) {
 				return &http.Response{
 					StatusCode: 500,
 					Status:     "Invalid URL",
-					Body:       ioutil.NopCloser(strings.NewReader(req.URL.String())),
+					Body:       io.NopCloser(strings.NewReader(req.URL.String())),
 					Header:     make(http.Header),
 				}
 			}
@@ -174,7 +174,7 @@ func Test_newJobs(t *testing.T) {
 			return &http.Response{
 				StatusCode: http.StatusOK,
 				Status:     "Good",
-				Body:       ioutil.NopCloser(strings.NewReader(resp)),
+				Body:       io.NopCloser(strings.NewReader(resp)),
 				Header:     make(http.Header),
 			}
 		}),
@@ -350,7 +350,7 @@ func TestJobs_Next(t *testing.T) {
 				return &http.Response{
 					StatusCode: 500,
 					Status:     "Invalid URL",
-					Body:       ioutil.NopCloser(strings.NewReader(req.URL.String())),
+					Body:       io.NopCloser(strings.NewReader(req.URL.String())),
 					Header:     make(http.Header),
 				}
 			}
@@ -380,7 +380,7 @@ func TestJobs_Next(t *testing.T) {
 			return &http.Response{
 				StatusCode: http.StatusOK,
 				Status:     "Good",
-				Body:       ioutil.NopCloser(strings.NewReader(resp)),
+				Body:       io.NopCloser(strings.NewReader(resp)),
 				Header:     make(http.Header),
 			}
 		}),

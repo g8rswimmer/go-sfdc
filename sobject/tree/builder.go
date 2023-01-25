@@ -32,7 +32,7 @@ func NewRecordBuilder(builder Builder) (*RecordBuilder, error) {
 	if err != nil {
 		return nil, err
 	}
-	if matching == false {
+	if !matching {
 		return nil, fmt.Errorf("tree builder: %s is not a valid sobject", sobject)
 	}
 	if builder.ReferenceID() == "" {
