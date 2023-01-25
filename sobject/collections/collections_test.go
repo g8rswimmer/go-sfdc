@@ -2,7 +2,6 @@ package collections
 
 import (
 	"io"
-	"io/ioutil"
 	"net/http"
 	"net/url"
 	"reflect"
@@ -51,7 +50,7 @@ func Test_collection_send(t *testing.T) {
 							return &http.Response{
 								StatusCode: 500,
 								Status:     "Bad URL: " + req.URL.String(),
-								Body:       ioutil.NopCloser(strings.NewReader("resp")),
+								Body:       io.NopCloser(strings.NewReader("resp")),
 								Header:     make(http.Header),
 							}
 						}
@@ -60,7 +59,7 @@ func Test_collection_send(t *testing.T) {
 							return &http.Response{
 								StatusCode: 500,
 								Status:     "Bad Method",
-								Body:       ioutil.NopCloser(strings.NewReader("resp")),
+								Body:       io.NopCloser(strings.NewReader("resp")),
 								Header:     make(http.Header),
 							}
 						}
@@ -71,7 +70,7 @@ func Test_collection_send(t *testing.T) {
 							return &http.Response{
 								StatusCode: 500,
 								Status:     "No one value",
-								Body:       ioutil.NopCloser(strings.NewReader("resp")),
+								Body:       io.NopCloser(strings.NewReader("resp")),
 								Header:     make(http.Header),
 							}
 						}
@@ -80,7 +79,7 @@ func Test_collection_send(t *testing.T) {
 							return &http.Response{
 								StatusCode: 500,
 								Status:     "No two value",
-								Body:       ioutil.NopCloser(strings.NewReader("resp")),
+								Body:       io.NopCloser(strings.NewReader("resp")),
 								Header:     make(http.Header),
 							}
 						}
@@ -94,7 +93,7 @@ func Test_collection_send(t *testing.T) {
 						return &http.Response{
 							StatusCode: http.StatusOK,
 							Status:     "Some Status",
-							Body:       ioutil.NopCloser(strings.NewReader(resp)),
+							Body:       io.NopCloser(strings.NewReader(resp)),
 							Header:     make(http.Header),
 						}
 					}),
@@ -123,7 +122,7 @@ func Test_collection_send(t *testing.T) {
 							return &http.Response{
 								StatusCode: 500,
 								Status:     "Bad URL: " + req.URL.String(),
-								Body:       ioutil.NopCloser(strings.NewReader("resp")),
+								Body:       io.NopCloser(strings.NewReader("resp")),
 								Header:     make(http.Header),
 							}
 						}
@@ -132,7 +131,7 @@ func Test_collection_send(t *testing.T) {
 							return &http.Response{
 								StatusCode: 500,
 								Status:     "Bad Method",
-								Body:       ioutil.NopCloser(strings.NewReader("resp")),
+								Body:       io.NopCloser(strings.NewReader("resp")),
 								Header:     make(http.Header),
 							}
 						}
@@ -143,7 +142,7 @@ func Test_collection_send(t *testing.T) {
 							return &http.Response{
 								StatusCode: 500,
 								Status:     "No one value",
-								Body:       ioutil.NopCloser(strings.NewReader("resp")),
+								Body:       io.NopCloser(strings.NewReader("resp")),
 								Header:     make(http.Header),
 							}
 						}
@@ -152,7 +151,7 @@ func Test_collection_send(t *testing.T) {
 							return &http.Response{
 								StatusCode: 500,
 								Status:     "No two value",
-								Body:       ioutil.NopCloser(strings.NewReader("resp")),
+								Body:       io.NopCloser(strings.NewReader("resp")),
 								Header:     make(http.Header),
 							}
 						}
@@ -168,7 +167,7 @@ func Test_collection_send(t *testing.T) {
 						return &http.Response{
 							StatusCode: http.StatusConflict,
 							Status:     "Some Status",
-							Body:       ioutil.NopCloser(strings.NewReader(resp)),
+							Body:       io.NopCloser(strings.NewReader(resp)),
 							Header:     make(http.Header),
 						}
 					}),
@@ -282,7 +281,7 @@ func TestResource_Update(t *testing.T) {
 								return &http.Response{
 									StatusCode: 500,
 									Status:     "Bad URL: " + req.URL.String(),
-									Body:       ioutil.NopCloser(strings.NewReader("resp")),
+									Body:       io.NopCloser(strings.NewReader("resp")),
 									Header:     make(http.Header),
 								}
 							}
@@ -291,7 +290,7 @@ func TestResource_Update(t *testing.T) {
 								return &http.Response{
 									StatusCode: 500,
 									Status:     "Bad Method",
-									Body:       ioutil.NopCloser(strings.NewReader("resp")),
+									Body:       io.NopCloser(strings.NewReader("resp")),
 									Header:     make(http.Header),
 								}
 							}
@@ -318,7 +317,7 @@ func TestResource_Update(t *testing.T) {
 							return &http.Response{
 								StatusCode: http.StatusOK,
 								Status:     "Some Status",
-								Body:       ioutil.NopCloser(strings.NewReader(resp)),
+								Body:       io.NopCloser(strings.NewReader(resp)),
 								Header:     make(http.Header),
 							}
 						}),
@@ -428,7 +427,7 @@ func TestResource_Query(t *testing.T) {
 								return &http.Response{
 									StatusCode: 500,
 									Status:     "Bad URL: " + req.URL.String(),
-									Body:       ioutil.NopCloser(strings.NewReader("resp")),
+									Body:       io.NopCloser(strings.NewReader("resp")),
 									Header:     make(http.Header),
 								}
 							}
@@ -437,7 +436,7 @@ func TestResource_Query(t *testing.T) {
 								return &http.Response{
 									StatusCode: 500,
 									Status:     "Bad Method",
-									Body:       ioutil.NopCloser(strings.NewReader("resp")),
+									Body:       io.NopCloser(strings.NewReader("resp")),
 									Header:     make(http.Header),
 								}
 							}
@@ -466,7 +465,7 @@ func TestResource_Query(t *testing.T) {
 							return &http.Response{
 								StatusCode: http.StatusOK,
 								Status:     "Some Status",
-								Body:       ioutil.NopCloser(strings.NewReader(resp)),
+								Body:       io.NopCloser(strings.NewReader(resp)),
 								Header:     make(http.Header),
 							}
 						}),
@@ -570,7 +569,7 @@ func TestResource_Insert(t *testing.T) {
 								return &http.Response{
 									StatusCode: 500,
 									Status:     "Bad URL: " + req.URL.String(),
-									Body:       ioutil.NopCloser(strings.NewReader("resp")),
+									Body:       io.NopCloser(strings.NewReader("resp")),
 									Header:     make(http.Header),
 								}
 							}
@@ -579,7 +578,7 @@ func TestResource_Insert(t *testing.T) {
 								return &http.Response{
 									StatusCode: 500,
 									Status:     "Bad Method",
-									Body:       ioutil.NopCloser(strings.NewReader("resp")),
+									Body:       io.NopCloser(strings.NewReader("resp")),
 									Header:     make(http.Header),
 								}
 							}
@@ -606,7 +605,7 @@ func TestResource_Insert(t *testing.T) {
 							return &http.Response{
 								StatusCode: http.StatusOK,
 								Status:     "Some Status",
-								Body:       ioutil.NopCloser(strings.NewReader(resp)),
+								Body:       io.NopCloser(strings.NewReader(resp)),
 								Header:     make(http.Header),
 							}
 						}),
@@ -718,7 +717,7 @@ func TestResource_Delete(t *testing.T) {
 								return &http.Response{
 									StatusCode: 500,
 									Status:     "Bad URL: " + req.URL.String(),
-									Body:       ioutil.NopCloser(strings.NewReader("resp")),
+									Body:       io.NopCloser(strings.NewReader("resp")),
 									Header:     make(http.Header),
 								}
 							}
@@ -727,7 +726,7 @@ func TestResource_Delete(t *testing.T) {
 								return &http.Response{
 									StatusCode: 500,
 									Status:     "Bad Method",
-									Body:       ioutil.NopCloser(strings.NewReader("resp")),
+									Body:       io.NopCloser(strings.NewReader("resp")),
 									Header:     make(http.Header),
 								}
 							}
@@ -738,7 +737,7 @@ func TestResource_Delete(t *testing.T) {
 								return &http.Response{
 									StatusCode: 500,
 									Status:     "allOrNone",
-									Body:       ioutil.NopCloser(strings.NewReader("resp")),
+									Body:       io.NopCloser(strings.NewReader("resp")),
 									Header:     make(http.Header),
 								}
 							}
@@ -747,7 +746,7 @@ func TestResource_Delete(t *testing.T) {
 								return &http.Response{
 									StatusCode: 500,
 									Status:     "ids",
-									Body:       ioutil.NopCloser(strings.NewReader("resp")),
+									Body:       io.NopCloser(strings.NewReader("resp")),
 									Header:     make(http.Header),
 								}
 							}
@@ -773,7 +772,7 @@ func TestResource_Delete(t *testing.T) {
 							return &http.Response{
 								StatusCode: http.StatusOK,
 								Status:     "Some Status",
-								Body:       ioutil.NopCloser(strings.NewReader(resp)),
+								Body:       io.NopCloser(strings.NewReader(resp)),
 								Header:     make(http.Header),
 							}
 						}),

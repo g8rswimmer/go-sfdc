@@ -70,7 +70,7 @@ func (r *Record) fromJSONMap(jsonMap map[string]interface{}) {
 			}
 		} else {
 			if v != nil {
-				if obj, is := v.(map[string]interface{}); is == false {
+				if obj, is := v.(map[string]interface{}); !is {
 					r.fields[k] = v
 				} else {
 					if r.isLookUp(obj) {

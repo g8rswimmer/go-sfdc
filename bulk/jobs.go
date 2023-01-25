@@ -67,7 +67,7 @@ func (j *Jobs) Records() []Response {
 
 // Next will retrieve the next batch of job information.
 func (j *Jobs) Next() (*Jobs, error) {
-	if j.Done() == true {
+	if j.Done() {
 		return nil, errors.New("jobs: there is no more records")
 	}
 	request, err := j.request(j.response.NextRecordsURL)

@@ -9,17 +9,17 @@ import (
 
 // QueryInput is used to provide SOQL inputs.
 //
-// ObjectType is the Salesforce Object, like Account
+// # ObjectType is the Salesforce Object, like Account
 //
-// FieldList is the Salesforce Object's fields to query
+// # FieldList is the Salesforce Object's fields to query
 //
-// SubQuery is the inner query
+// # SubQuery is the inner query
 //
-// Where is the SOQL where cause
+// # Where is the SOQL where cause
 //
-// Order is the SOQL ordering
+// # Order is the SOQL ordering
 //
-// Limit is the SOQL record limit
+// # Limit is the SOQL record limit
 //
 // Offset is the SOQL record offset
 type QueryInput struct {
@@ -152,12 +152,11 @@ func WhereGreaterThan(field string, value interface{}, equals bool) (*WhereClaus
 		return nil, errors.New("soql where: value can not be nil")
 	}
 	var v string
-	switch value.(type) {
+	switch value := value.(type) {
 	case string, bool:
 		return nil, errors.New("where greater than: value can not be a string or bool")
 	case time.Time:
-		date := value.(time.Time)
-		v = date.Format(time.RFC3339)
+		v = value.Format(time.RFC3339)
 	default:
 		v = fmt.Sprintf("%v", value)
 	}
@@ -182,12 +181,11 @@ func WhereLessThan(field string, value interface{}, equals bool) (*WhereClause, 
 		return nil, errors.New("soql where: value can not be nil")
 	}
 	var v string
-	switch value.(type) {
+	switch value := value.(type) {
 	case string, bool:
 		return nil, errors.New("where less than: value can not be a string")
 	case time.Time:
-		date := value.(time.Time)
-		v = date.Format(time.RFC3339)
+		v = value.Format(time.RFC3339)
 	default:
 		v = fmt.Sprintf("%v", value)
 	}
@@ -209,12 +207,11 @@ func WhereEquals(field string, value interface{}) (*WhereClause, error) {
 	}
 	var v string
 	if value != nil {
-		switch value.(type) {
+		switch value := value.(type) {
 		case string:
-			v = fmt.Sprintf("'%s'", value.(string))
+			v = fmt.Sprintf("'%s'", value)
 		case time.Time:
-			date := value.(time.Time)
-			v = date.Format(time.RFC3339)
+			v = value.Format(time.RFC3339)
 		default:
 			v = fmt.Sprintf("%v", value)
 		}
@@ -234,12 +231,11 @@ func WhereNotEquals(field string, value interface{}) (*WhereClause, error) {
 	}
 	var v string
 	if value != nil {
-		switch value.(type) {
+		switch value := value.(type) {
 		case string:
-			v = fmt.Sprintf("'%s'", value.(string))
+			v = fmt.Sprintf("'%s'", value)
 		case time.Time:
-			date := value.(time.Time)
-			v = date.Format(time.RFC3339)
+			v = value.Format(time.RFC3339)
 		default:
 			v = fmt.Sprintf("%v", value)
 		}
@@ -262,14 +258,13 @@ func WhereIn(field string, values []interface{}) (*WhereClause, error) {
 	}
 	set := make([]string, len(values))
 	for idx, value := range values {
-		switch value.(type) {
+		switch value := value.(type) {
 		case string:
-			set[idx] = fmt.Sprintf("'%s'", value.(string))
+			set[idx] = fmt.Sprintf("'%s'", value)
 		case bool:
 			return nil, errors.New("where in: boolean is not a value set value")
 		case time.Time:
-			date := value.(time.Time)
-			set[idx] = date.Format(time.RFC3339)
+			set[idx] = value.Format(time.RFC3339)
 		default:
 			set[idx] = fmt.Sprintf("%v", value)
 		}
@@ -290,14 +285,13 @@ func WhereNotIn(field string, values []interface{}) (*WhereClause, error) {
 	}
 	set := make([]string, len(values))
 	for idx, value := range values {
-		switch value.(type) {
+		switch value := value.(type) {
 		case string:
-			set[idx] = fmt.Sprintf("'%s'", value.(string))
+			set[idx] = fmt.Sprintf("'%s'", value)
 		case bool:
 			return nil, errors.New("where not in: boolean is not a value set value")
 		case time.Time:
-			date := value.(time.Time)
-			set[idx] = date.Format(time.RFC3339)
+			set[idx] = value.Format(time.RFC3339)
 		default:
 			set[idx] = fmt.Sprintf("%v", value)
 		}

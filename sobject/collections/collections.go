@@ -116,7 +116,7 @@ func (r *Resource) Query(sobject string, records []sobject.Querier) ([]*sfdc.Rec
 		return nil, err
 	}
 
-	if matching == false {
+	if !matching {
 		return nil, fmt.Errorf("collection resource: %s is not a valid sobject", sobject)
 	}
 

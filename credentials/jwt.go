@@ -2,11 +2,12 @@ package credentials
 
 import (
 	"fmt"
-	"github.com/dgrijalva/jwt-go"
 	"io"
 	"net/url"
 	"strings"
 	"time"
+
+	jwt "github.com/golang-jwt/jwt/v4"
 )
 
 const (
@@ -18,7 +19,7 @@ type jwtProvider struct {
 }
 
 type claims struct {
-	jwt.StandardClaims
+	jwt.RegisteredClaims
 }
 
 func (provider *jwtProvider) Retrieve() (io.Reader, error) {
@@ -46,12 +47,12 @@ func (provider *jwtProvider) GetAppropriateExpirationTime() int64 {
 // builds the actual claims token required for authentication
 func (provider *jwtProvider) BuildClaimsToken(expirationTime int64, url string, clientId string, clientUsername string) (string, error) {
 	claims := &claims{
-		StandardClaims: jwt.StandardClaims{
+		RegisteredClaims: jwt.RegisteredClaims{
 			// In JWT, the expiry time is expressed as unix milliseconds
-			ExpiresAt: expirationTime,
-			Audience:  url,                  // "https://test.salesforce.com" || "https://login.salesforce.com"
-			Issuer:    clientId, // consumer key of the connected app, hardcoded
-			Subject:   clientUsername,                       // username of the salesforce user, whose profile is added to the connected app
+			ExpiresAt: jwt.NewNumericDate(time.Unix(expirationTime, 0)),
+			Audience:  []string{url},  // "https://test.salesforce.com" || "https://login.salesforce.com"
+			Issuer:    clientId,       // consumer key of the connected app, hardcoded
+			Subject:   clientUsername, // username of the salesforce user, whose profile is added to the connected app
 		},
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodRS256, claims)

@@ -70,7 +70,7 @@ func (r *Resources) Metadata(sobject string) (MetadataValue, error) {
 		return MetadataValue{}, err
 	}
 
-	if matching == false {
+	if !matching {
 		return MetadataValue{}, fmt.Errorf("sobject salesforce api: %s is not a valid sobject", sobject)
 	}
 
@@ -88,7 +88,7 @@ func (r *Resources) Describe(sobject string) (DescribeValue, error) {
 		return DescribeValue{}, err
 	}
 
-	if matching == false {
+	if !matching {
 		return DescribeValue{}, fmt.Errorf("sobject salesforce api: %s is not a valid sobject", sobject)
 	}
 
@@ -187,7 +187,7 @@ func (r *Resources) DeletedRecords(sobject string, startDate, endDate time.Time)
 		return DeletedRecords{}, err
 	}
 
-	if matching == false {
+	if !matching {
 		return DeletedRecords{}, fmt.Errorf("sobject salesforce api: %s is not a valid sobject", sobject)
 	}
 
@@ -205,7 +205,7 @@ func (r *Resources) UpdatedRecords(sobject string, startDate, endDate time.Time)
 		return UpdatedRecords{}, err
 	}
 
-	if matching == false {
+	if !matching {
 		return UpdatedRecords{}, fmt.Errorf("sobject salesforce api: %s is not a valid sobject", sobject)
 	}
 

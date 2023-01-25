@@ -133,7 +133,7 @@ func (r *Resource) validateSubrequests(requesters []Subrequester) error {
 		if requester.ReferenceID() == "" {
 			return errors.New("composite subrequest: must contain a reference id")
 		}
-		if _, has := validMethods[requester.Method()]; has == false {
+		if _, has := validMethods[requester.Method()]; !has {
 			return errors.New("composite subrequest: empty or invalid method " + requester.Method())
 		}
 		if requester.HTTPHeaders() != nil {

@@ -2,7 +2,7 @@ package sobject
 
 import (
 	"encoding/json"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"reflect"
 	"strings"
@@ -27,12 +27,6 @@ func (mock *mockQuery) ID() string {
 }
 func (mock *mockQuery) Fields() []string {
 	return mock.fields
-}
-
-type mockRecord struct {
-	sobject string
-	url     string
-	fields  map[string]interface{}
 }
 
 func testNewRecord(data []byte) *sfdc.Record {
@@ -93,7 +87,7 @@ func Test_query_Query(t *testing.T) {
 						return &http.Response{
 							StatusCode: 500,
 							Status:     "Some Status",
-							Body:       ioutil.NopCloser(strings.NewReader("resp")),
+							Body:       io.NopCloser(strings.NewReader("resp")),
 							Header:     make(http.Header),
 						}
 					}),
@@ -129,7 +123,7 @@ func Test_query_Query(t *testing.T) {
 						return &http.Response{
 							StatusCode: 500,
 							Status:     "Some Status",
-							Body:       ioutil.NopCloser(strings.NewReader(resp)),
+							Body:       io.NopCloser(strings.NewReader(resp)),
 							Header:     make(http.Header),
 						}
 					}),
@@ -159,7 +153,7 @@ func Test_query_Query(t *testing.T) {
 
 						return &http.Response{
 							StatusCode: http.StatusOK,
-							Body:       ioutil.NopCloser(strings.NewReader(resp)),
+							Body:       io.NopCloser(strings.NewReader(resp)),
 							Header:     make(http.Header),
 						}
 					}),
@@ -192,7 +186,7 @@ func Test_query_Query(t *testing.T) {
 
 						return &http.Response{
 							StatusCode: http.StatusOK,
-							Body:       ioutil.NopCloser(strings.NewReader(resp)),
+							Body:       io.NopCloser(strings.NewReader(resp)),
 							Header:     make(http.Header),
 						}
 					}),
@@ -297,7 +291,7 @@ func Test_query_ExternalQuery(t *testing.T) {
 						return &http.Response{
 							StatusCode: 500,
 							Status:     "Some Status",
-							Body:       ioutil.NopCloser(strings.NewReader("resp")),
+							Body:       io.NopCloser(strings.NewReader("resp")),
 							Header:     make(http.Header),
 						}
 					}),
@@ -334,7 +328,7 @@ func Test_query_ExternalQuery(t *testing.T) {
 						return &http.Response{
 							StatusCode: 500,
 							Status:     "Some Status",
-							Body:       ioutil.NopCloser(strings.NewReader(resp)),
+							Body:       io.NopCloser(strings.NewReader(resp)),
 							Header:     make(http.Header),
 						}
 					}),
@@ -365,7 +359,7 @@ func Test_query_ExternalQuery(t *testing.T) {
 
 						return &http.Response{
 							StatusCode: http.StatusOK,
-							Body:       ioutil.NopCloser(strings.NewReader(resp)),
+							Body:       io.NopCloser(strings.NewReader(resp)),
 							Header:     make(http.Header),
 						}
 					}),
@@ -399,7 +393,7 @@ func Test_query_ExternalQuery(t *testing.T) {
 
 						return &http.Response{
 							StatusCode: http.StatusOK,
-							Body:       ioutil.NopCloser(strings.NewReader(resp)),
+							Body:       io.NopCloser(strings.NewReader(resp)),
 							Header:     make(http.Header),
 						}
 					}),
@@ -482,7 +476,7 @@ func Test_query_DeletedRecords(t *testing.T) {
 						return &http.Response{
 							StatusCode: 500,
 							Status:     "Some Status",
-							Body:       ioutil.NopCloser(strings.NewReader("resp")),
+							Body:       io.NopCloser(strings.NewReader("resp")),
 							Header:     make(http.Header),
 						}
 					}),
@@ -503,13 +497,13 @@ func Test_query_DeletedRecords(t *testing.T) {
 					url: "https://test.salesforce.com",
 					client: mockHTTPClient(func(req *http.Request) *http.Response {
 
-						if strings.HasPrefix(req.URL.String(), "https://test.salesforce.com/sobjects/Account/deleted/?") == false {
+						if !strings.HasPrefix(req.URL.String(), "https://test.salesforce.com/sobjects/Account/deleted/?") {
 							t.Errorf("Urls do not match %s", req.URL.String())
 						}
 						return &http.Response{
 							StatusCode: 500,
 							Status:     "Some Status",
-							Body:       ioutil.NopCloser(strings.NewReader("resp")),
+							Body:       io.NopCloser(strings.NewReader("resp")),
 							Header:     make(http.Header),
 						}
 					}),
@@ -540,7 +534,7 @@ func Test_query_DeletedRecords(t *testing.T) {
 						return &http.Response{
 							StatusCode: 500,
 							Status:     "Some Status",
-							Body:       ioutil.NopCloser(strings.NewReader(resp)),
+							Body:       io.NopCloser(strings.NewReader(resp)),
 							Header:     make(http.Header),
 						}
 					}),
@@ -565,7 +559,7 @@ func Test_query_DeletedRecords(t *testing.T) {
 
 						return &http.Response{
 							StatusCode: http.StatusOK,
-							Body:       ioutil.NopCloser(strings.NewReader(resp)),
+							Body:       io.NopCloser(strings.NewReader(resp)),
 							Header:     make(http.Header),
 						}
 					}),
@@ -600,7 +594,7 @@ func Test_query_DeletedRecords(t *testing.T) {
 
 						return &http.Response{
 							StatusCode: http.StatusOK,
-							Body:       ioutil.NopCloser(strings.NewReader(resp)),
+							Body:       io.NopCloser(strings.NewReader(resp)),
 							Header:     make(http.Header),
 						}
 					}),
@@ -685,7 +679,7 @@ func Test_query_UpdatedRecords(t *testing.T) {
 						return &http.Response{
 							StatusCode: 500,
 							Status:     "Some Status",
-							Body:       ioutil.NopCloser(strings.NewReader("resp")),
+							Body:       io.NopCloser(strings.NewReader("resp")),
 							Header:     make(http.Header),
 						}
 					}),
@@ -706,13 +700,13 @@ func Test_query_UpdatedRecords(t *testing.T) {
 					url: "https://test.salesforce.com",
 					client: mockHTTPClient(func(req *http.Request) *http.Response {
 
-						if strings.HasPrefix(req.URL.String(), "https://test.salesforce.com/sobjects/Account/updated/?") == false {
+						if !strings.HasPrefix(req.URL.String(), "https://test.salesforce.com/sobjects/Account/updated/?") {
 							t.Errorf("Urls do not match %s", req.URL.String())
 						}
 						return &http.Response{
 							StatusCode: 500,
 							Status:     "Some Status",
-							Body:       ioutil.NopCloser(strings.NewReader("resp")),
+							Body:       io.NopCloser(strings.NewReader("resp")),
 							Header:     make(http.Header),
 						}
 					}),
@@ -743,7 +737,7 @@ func Test_query_UpdatedRecords(t *testing.T) {
 						return &http.Response{
 							StatusCode: 500,
 							Status:     "Some Status",
-							Body:       ioutil.NopCloser(strings.NewReader(resp)),
+							Body:       io.NopCloser(strings.NewReader(resp)),
 							Header:     make(http.Header),
 						}
 					}),
@@ -768,7 +762,7 @@ func Test_query_UpdatedRecords(t *testing.T) {
 
 						return &http.Response{
 							StatusCode: http.StatusOK,
-							Body:       ioutil.NopCloser(strings.NewReader(resp)),
+							Body:       io.NopCloser(strings.NewReader(resp)),
 							Header:     make(http.Header),
 						}
 					}),
@@ -801,7 +795,7 @@ func Test_query_UpdatedRecords(t *testing.T) {
 
 						return &http.Response{
 							StatusCode: http.StatusOK,
-							Body:       ioutil.NopCloser(strings.NewReader(resp)),
+							Body:       io.NopCloser(strings.NewReader(resp)),
 							Header:     make(http.Header),
 						}
 					}),
@@ -880,7 +874,7 @@ func Test_query_GetContent(t *testing.T) {
 						return &http.Response{
 							StatusCode: 500,
 							Status:     "Some Status",
-							Body:       ioutil.NopCloser(strings.NewReader("resp")),
+							Body:       io.NopCloser(strings.NewReader("resp")),
 							Header:     make(http.Header),
 						}
 					}),
@@ -900,13 +894,13 @@ func Test_query_GetContent(t *testing.T) {
 					url: "https://test.salesforce.com",
 					client: mockHTTPClient(func(req *http.Request) *http.Response {
 
-						if strings.HasPrefix(req.URL.String(), "https://test.salesforce.com/sobjects/Attachment/001D000000INjVe/body") == false {
+						if !strings.HasPrefix(req.URL.String(), "https://test.salesforce.com/sobjects/Attachment/001D000000INjVe/body") {
 							t.Errorf("Urls do not match %s", req.URL.String())
 						}
 						return &http.Response{
 							StatusCode: 500,
 							Status:     "Some Status",
-							Body:       ioutil.NopCloser(strings.NewReader("resp")),
+							Body:       io.NopCloser(strings.NewReader("resp")),
 							Header:     make(http.Header),
 						}
 					}),
@@ -926,13 +920,13 @@ func Test_query_GetContent(t *testing.T) {
 					url: "https://test.salesforce.com",
 					client: mockHTTPClient(func(req *http.Request) *http.Response {
 
-						if strings.HasPrefix(req.URL.String(), "https://test.salesforce.com/sobjects/Document/001D000000INjVe/body") == false {
+						if !strings.HasPrefix(req.URL.String(), "https://test.salesforce.com/sobjects/Document/001D000000INjVe/body") {
 							t.Errorf("Urls do not match %s", req.URL.String())
 						}
 						return &http.Response{
 							StatusCode: 500,
 							Status:     "Some Status",
-							Body:       ioutil.NopCloser(strings.NewReader("resp")),
+							Body:       io.NopCloser(strings.NewReader("resp")),
 							Header:     make(http.Header),
 						}
 					}),
@@ -955,7 +949,7 @@ func Test_query_GetContent(t *testing.T) {
 
 						return &http.Response{
 							StatusCode: http.StatusOK,
-							Body:       ioutil.NopCloser(strings.NewReader(resp)),
+							Body:       io.NopCloser(strings.NewReader(resp)),
 							Header:     make(http.Header),
 						}
 					}),

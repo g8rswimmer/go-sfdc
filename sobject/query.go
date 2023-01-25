@@ -3,7 +3,7 @@ package sobject
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"net/url"
 	"strings"
@@ -352,7 +352,7 @@ func (q *query) contentResponse(request *http.Request) ([]byte, error) {
 		return nil, fmt.Errorf("deleted records response err: %d %s", response.StatusCode, response.Status)
 	}
 
-	body, err := ioutil.ReadAll(response.Body)
+	body, err := io.ReadAll(response.Body)
 	defer response.Body.Close()
 
 	return body, err

@@ -3,7 +3,7 @@ package session
 import (
 	"errors"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"reflect"
 	"strings"
@@ -70,7 +70,7 @@ func TestPasswordSessionRequest(t *testing.T) {
 					t.Errorf("%s URL not matching %s :: %s", scenario.desc, scenario.creds.URL+oauthEndpoint, request.URL.String())
 				}
 
-				buf, err := ioutil.ReadAll(request.Body)
+				buf, err := io.ReadAll(request.Body)
 				request.Body.Close()
 				if err != nil {
 					t.Fatal(err.Error())
@@ -79,7 +79,7 @@ func TestPasswordSessionRequest(t *testing.T) {
 				if err != nil {
 					t.Fatal(err.Error())
 				}
-				body, err := ioutil.ReadAll(reader)
+				body, err := io.ReadAll(reader)
 				if err != nil {
 					t.Fatal(err.Error())
 				}
@@ -117,7 +117,7 @@ func TestPasswordSessionResponse(t *testing.T) {
 
 				return &http.Response{
 					StatusCode: 200,
-					Body:       ioutil.NopCloser(strings.NewReader(resp)),
+					Body:       io.NopCloser(strings.NewReader(resp)),
 					Header:     make(http.Header),
 				}
 			}),
@@ -138,7 +138,7 @@ func TestPasswordSessionResponse(t *testing.T) {
 				return &http.Response{
 					StatusCode: http.StatusInternalServerError,
 					Status:     "Some status",
-					Body:       ioutil.NopCloser(strings.NewReader("")),
+					Body:       io.NopCloser(strings.NewReader("")),
 					Header:     make(http.Header),
 				}
 			}),
@@ -161,7 +161,7 @@ func TestPasswordSessionResponse(t *testing.T) {
 
 				return &http.Response{
 					StatusCode: 200,
-					Body:       ioutil.NopCloser(strings.NewReader(resp)),
+					Body:       io.NopCloser(strings.NewReader(resp)),
 					Header:     make(http.Header),
 				}
 			}),
@@ -257,7 +257,7 @@ func TestNewPasswordSession(t *testing.T) {
 
 					return &http.Response{
 						StatusCode: 200,
-						Body:       ioutil.NopCloser(strings.NewReader(resp)),
+						Body:       io.NopCloser(strings.NewReader(resp)),
 						Header:     make(http.Header),
 					}
 				}),
@@ -312,7 +312,7 @@ func TestNewPasswordSession(t *testing.T) {
 					return &http.Response{
 						StatusCode: http.StatusInternalServerError,
 						Status:     "Some status",
-						Body:       ioutil.NopCloser(strings.NewReader("")),
+						Body:       io.NopCloser(strings.NewReader("")),
 						Header:     make(http.Header),
 					}
 				}),
